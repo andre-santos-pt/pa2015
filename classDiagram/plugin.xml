@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="classDiagram"
+         name="Diagrama de Classes"
+         point="pt.iscte.pidesco.view">
+      <view
+            class="classdiagram.internal.ClassDiagramView"
+            icon="sitemap.png">
+      </view>
+   </extension>
+
+</plugin>

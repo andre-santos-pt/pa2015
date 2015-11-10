@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
-import pt.iscte.pidesco.windowBuilder.ui.FigureMoverResizer;
+import pt.iscte.pidesco.guibuilder.ui.FigureMoverResizer;
 
 public class GuiBuilderView implements PidescoView {
 	private Composite topComposite;

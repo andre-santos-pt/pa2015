@@ -1,4 +1,4 @@
-package pt.iscte.pidesco.windowBuilder.ui;
+package pt.iscte.pidesco.guibuilder.ui;
 
 
 import org.eclipse.draw2d.IFigure;

@@ -2,11 +2,11 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
-         name="Gui Manager"
+         id="guibuilder"
+         name="GUI Builder"
          point="pt.iscte.pidesco.view">
       <view
-            class="paproject.PidescoView1"
+            class="pt.iscte.pidesco.guibuilder.internal.GuiBuilderView"
             icon="iconframe24.png">
       </view>
    </extension>

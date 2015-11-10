@@ -1,10 +1,8 @@
-package paproject;
+package pt.iscte.pidesco.guibuilder.internal;
 
-import java.awt.Color;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -14,8 +12,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -27,16 +23,18 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
-import ui.FigureMoverResizer;
+import pt.iscte.pidesco.windowBuilder.ui.FigureMoverResizer;
 
-public class PidescoView1 implements PidescoView {
+public class GuiBuilderView implements PidescoView {
 
-	public PidescoView1() {
+	public GuiBuilderView() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void createContents(final Composite viewArea, Map<String, Image> imageMap) {
+		createViewTemporarySolution(viewArea,imageMap);
+		
 		//viewArea.setLayout(new RowLayout());
 
 	
@@ -47,7 +45,6 @@ public class PidescoView1 implements PidescoView {
 		//label.setImage(getCheckedImage(label.getDisplay()));
 		label.setImage(imageMap.get("frame.png"));
 		
-
 		addTabbar(viewArea);
 
 		addPopUpMenu(label);
@@ -184,5 +181,10 @@ public class PidescoView1 implements PidescoView {
 		iconItem.setText("Icon");
 
 		label.setMenu(popupMenu);
+	}
+
+
+	private void createViewTemporarySolution(Composite viewArea, Map<String, Image> imageMap){
+		
 	}
 }

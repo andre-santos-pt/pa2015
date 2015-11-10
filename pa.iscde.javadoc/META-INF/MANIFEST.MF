@@ -1,7 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Javadoc
-Bundle-SymbolicName: pa.iscde.javadoc
+Bundle-SymbolicName: pa.iscde.javadoc;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.osgi
+Require-Bundle: org.eclipse.osgi,
+ org.eclipse.swt
+Import-Package: org.eclipse.swt.widgets,
+ pt.iscte.pidesco.extensibility

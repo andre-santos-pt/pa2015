@@ -8,10 +8,11 @@ import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -26,6 +27,9 @@ import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.windowBuilder.ui.FigureMoverResizer;
 
 public class GuiBuilderView implements PidescoView {
+	private Composite topComposite;
+	private Composite bottomComposite;
+	
 
 	public GuiBuilderView() {
 		// TODO Auto-generated constructor stub
@@ -33,30 +37,24 @@ public class GuiBuilderView implements PidescoView {
 
 	@Override
 	public void createContents(final Composite viewArea, Map<String, Image> imageMap) {
-		createViewTemporarySolution(viewArea,imageMap);
+		createViewTemporarySolution(viewArea, imageMap);
+		populateTopComposite(topComposite);
+		populateBottomComposite(bottomComposite);
 		
-		//viewArea.setLayout(new RowLayout());
-
-	
-	
-		final Label label = new Label(viewArea, SWT.NONE);
-		label.setText("text on the label");
-
-		//label.setImage(getCheckedImage(label.getDisplay()));
-		label.setImage(imageMap.get("frame.png"));
-		
-		addTabbar(viewArea);
-
-		addPopUpMenu(label);
-		
-		
-		addFigDragDrop(viewArea);
-
-
-		
-		
-		
-		
+		// viewArea.setLayout(new RowLayout());
+//
+//		 final Label label = new Label(viewArea, SWT.NONE);
+//		 label.setText("text on the label");
+//		
+//		 //label.setImage(getCheckedImage(label.getDisplay()));
+//		 label.setImage(imageMap.get("frame.png"));
+//		
+//		 addTabbar(viewArea);
+//		
+//		 addPopUpMenu(label);
+//		
+//		
+//		 addFigDragDrop(viewArea);
 
 		// Create the tree and some tree items
 		// final Tree tree = new Tree(viewArea, SWT.NONE);
@@ -97,34 +95,30 @@ public class GuiBuilderView implements PidescoView {
 	}
 
 	private void addFigDragDrop(Composite viewArea) {
-	
+
 		Canvas canvas = new Canvas(viewArea, SWT.NONE);
 		LightweightSystem lws = new LightweightSystem(canvas);
 		Figure contents = new Figure();
-		
+
 		XYLayout contentsLayout = new XYLayout();
-		
+
 		contents.setLayoutManager(contentsLayout);
 
 		RectangleFigure fig = new RectangleFigure();
 		fig.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-		fig.setBounds(new Rectangle(5, 5, 100, 200));
+		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
 		new FigureMoverResizer(fig);
 
 		RoundedRectangle fig2 = new RoundedRectangle();
-		fig2.setBounds(new Rectangle(50, 50, 300, 200));
+		fig2.setBounds(new org.eclipse.draw2d.geometry.Rectangle(50, 50, 300, 200));
 		fig2.setCornerDimensions(new Dimension(20, 20));
 		new FigureMoverResizer(fig2);
-		
 
-	
-		
-		
 		lws.setContents(contents);
-		
+
 		contents.add(fig);
 		contents.add(fig2);
-		
+
 	}
 
 	private void addTabbar(final Composite viewArea) {
@@ -148,10 +142,10 @@ public class GuiBuilderView implements PidescoView {
 	}
 
 	static Image getCheckedImage(Display display) {
-		//Image image = new Image(display, 500, 500);
-		 Image image = new Image(display,"images/frame.png");
-		 
-		 //System.out.println(System.getProperty("user.dir"));
+		// Image image = new Image(display, 500, 500);
+		Image image = new Image(display, "images/frame.png");
+
+		// System.out.println(System.getProperty("user.dir"));
 		GC gc = new GC(image);
 		gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
 		gc.fillOval(0, 0, 16, 16);
@@ -163,7 +157,7 @@ public class GuiBuilderView implements PidescoView {
 	}
 
 	private void addPopUpMenu(final Label label) {
-		//escolher as opcoes para edição//ver o window builder
+		// escolher as opcoes para edição//ver o window builder
 		Menu popupMenu = new Menu(label);
 		MenuItem newItem = new MenuItem(popupMenu, SWT.CASCADE);
 		newItem.setText("New");
@@ -183,8 +177,68 @@ public class GuiBuilderView implements PidescoView {
 		label.setMenu(popupMenu);
 	}
 
+	private void createViewTemporarySolution(Composite viewArea, Map<String, Image> imageMap) {
+		viewArea.setLayout(new FillLayout());
 
-	private void createViewTemporarySolution(Composite viewArea, Map<String, Image> imageMap){
+		// Create the SashForm with VERTICAL
+		SashForm sashForm = new SashForm(viewArea, SWT.VERTICAL);
 		
+		topComposite = new Composite(sashForm, SWT.BORDER);
+		topComposite.setLayout(new FillLayout());
+		
+		bottomComposite = new Composite(sashForm, SWT.BORDER);
+		bottomComposite.setLayout(new FillLayout());
+	
+		// Define the relation between both composites
+		sashForm.setWeights(new int[] { 4, 1 });
+	}
+	
+	private void populateTopComposite(Composite composite){
+		Canvas canvas = new Canvas(composite, SWT.NONE);
+		LightweightSystem lws = new LightweightSystem(canvas);
+		Figure contents = new Figure();
+
+		XYLayout contentsLayout = new XYLayout();
+
+		contents.setLayoutManager(contentsLayout);
+
+		RectangleFigure fig = new RectangleFigure();
+		fig.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
+		new FigureMoverResizer(fig);
+
+		RoundedRectangle fig2 = new RoundedRectangle();
+		fig2.setBounds(new org.eclipse.draw2d.geometry.Rectangle(50, 50, 300, 200));
+		fig2.setCornerDimensions(new Dimension(20, 20));
+		new FigureMoverResizer(fig2);
+
+		lws.setContents(contents);
+
+		contents.add(fig);
+		contents.add(fig2);
+
+		
+		
+		
+	}
+	
+	private void populateBottomComposite(Composite composite){
+		final TabFolder tabFolder = new TabFolder(composite, SWT.TOP);
+
+		for (int loopIndex = 0; loopIndex < 10; loopIndex++) {
+			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
+			tabItem.setText("Tab " + loopIndex);
+
+			// Text text = new Text(tabFolder, SWT.BORDER);
+			// text.setText("This is page " + loopIndex);
+			// tabItem.setControl(text);
+			final Button button = new Button(tabFolder, SWT.FLAT);
+			button.setText("Button");
+			button.setAlignment(SWT.CENTER);
+			// button.setImage(new Image(viewArea.getDisplay(), "frame.png"));
+			tabItem.setControl(button);
+
+		}
+		tabFolder.setSize(400, 10);
 	}
 }

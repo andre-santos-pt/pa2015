@@ -39,7 +39,7 @@ public class GuiBuilderView implements PidescoView {
 	public void createContents(final Composite viewArea, Map<String, Image> imageMap) {
 		createViewTemporarySolution(viewArea, imageMap);
 		populateTopComposite(topComposite);
-		populateBottomComposite(bottomComposite);
+		populateBottomComposite(bottomComposite, imageMap);
 
 		// viewArea.setLayout(new RowLayout());
 		//
@@ -219,7 +219,7 @@ public class GuiBuilderView implements PidescoView {
 
 	}
 
-	private void populateBottomComposite(Composite composite) {
+	private void populateBottomComposite(Composite composite, Map<String, Image> imageMap) {
 
 		final TabFolder tabFolder = new TabFolder(composite, SWT.TOP);
 
@@ -231,12 +231,13 @@ public class GuiBuilderView implements PidescoView {
 			compositeButtons.setLayout(new FillLayout());
 
 			sci.setContent(compositeButtons);
- 
+
 			tabItem.setControl(sci);
 
 			switch (loopIndex) {
 			case 0:
 				tabItem.setText("Components");
+				tabItem.setImage(imageMap.get("icon_tab_components.png"));
 
 				for (int t = 0; t <= 4; t++) {
 					Button button = new Button(compositeButtons, SWT.PUSH);
@@ -268,6 +269,7 @@ public class GuiBuilderView implements PidescoView {
 
 			case 1:
 				tabItem.setText("Layouts");
+				tabItem.setImage(imageMap.get("icon_tab_layouts.png"));
 
 				for (int t = 0; t < 3; t++) {
 					Button button = new Button(compositeButtons, SWT.PUSH);
@@ -293,6 +295,7 @@ public class GuiBuilderView implements PidescoView {
 
 			case 2:
 				tabItem.setText("Containers");
+				tabItem.setImage(imageMap.get("icon_tab_containers.png"));
 
 				Button button = new Button(compositeButtons, SWT.PUSH);
 				button.setAlignment(SWT.CENTER);

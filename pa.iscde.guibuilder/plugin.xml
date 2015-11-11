@@ -7,7 +7,7 @@
          point="pt.iscte.pidesco.view">
       <view
             class="pt.iscte.pidesco.guibuilder.internal.GuiBuilderView"
-            icon="iconframe24.png">
+            icon="icon_gui.png">
       </view>
    </extension>
 

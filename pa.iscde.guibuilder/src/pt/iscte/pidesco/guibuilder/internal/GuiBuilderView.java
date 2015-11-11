@@ -1,8 +1,10 @@
 package pt.iscte.pidesco.guibuilder.internal;
 
+import java.awt.MouseInfo;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -11,6 +13,16 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -37,8 +49,9 @@ public class GuiBuilderView implements PidescoView {
 
 	@Override
 	public void createContents(final Composite viewArea, Map<String, Image> imageMap) {
+
 		createViewTemporarySolution(viewArea, imageMap);
-		populateTopComposite(topComposite);
+		populateTopComposite(topComposite, imageMap);
 		populateBottomComposite(bottomComposite, imageMap);
 
 		// viewArea.setLayout(new RowLayout());
@@ -55,42 +68,6 @@ public class GuiBuilderView implements PidescoView {
 		//
 		//
 		// addFigDragDrop(viewArea);
-
-		// Create the tree and some tree items
-		// final Tree tree = new Tree(viewArea, SWT.NONE);
-		// TreeItem item1 = new TreeItem(tree, SWT.NONE);
-		// item1.setText("Item 1");
-		// TreeItem item2 = new TreeItem(tree, SWT.NONE);
-		// item2.setText("Item 2");
-		// TreeItem item3 = new TreeItem(tree, SWT.NONE);
-		// item3.setText("Item 3");
-		// TreeItem item4 = new TreeItem(tree, SWT.NONE);
-		// item4.setText("Item 4");
-		//
-		// // Create the drag source on the tree
-		// DragSource ds = new DragSource(tree, DND.DROP_MOVE);
-		// ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-		// ds.addDragListener(new DragSourceAdapter() {
-		// public void dragSetData(DragSourceEvent event) {
-		// // Set the data to be the first selected item's text
-		// event.data = tree.getSelection()[0].getText();
-		// }
-		// });
-		//
-		// // Create the button
-		// final Button button = new Button(viewArea, SWT.FLAT);
-		// button.setText("Button");
-		// button.setAlignment(SWT.CENTER);
-		//
-		// // Create the drop target on the button
-		// DropTarget dt = new DropTarget(button, DND.DROP_MOVE);
-		// dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-		// dt.addDropListener(new DropTargetAdapter() {
-		// public void drop(DropTargetEvent event) {
-		// // Set the buttons text to be the text being dropped
-		// button.setText((String) event.data);
-		// }
-		// });
 
 	}
 
@@ -193,10 +170,11 @@ public class GuiBuilderView implements PidescoView {
 		sashForm.setWeights(new int[] { 4, 1 });
 	}
 
-	private void populateTopComposite(Composite composite) {
+	private void populateTopComposite(final Composite composite, final Map<String, Image> imageMap) {
+
 		Canvas canvas = new Canvas(composite, SWT.NONE);
 		LightweightSystem lws = new LightweightSystem(canvas);
-		Figure contents = new Figure();
+		final Figure contents = new Figure();
 
 		XYLayout contentsLayout = new XYLayout();
 
@@ -217,9 +195,43 @@ public class GuiBuilderView implements PidescoView {
 		contents.add(fig);
 		contents.add(fig2);
 
+		// Create the drop target on the composite
+		DropTarget dt = new DropTarget(composite, DND.DROP_MOVE);
+		dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+		dt.addDropListener(new DropTargetAdapter() {
+			public void drop(DropTargetEvent event) {
+
+				switch (event.data.toString()) {
+				case "JButton":
+					RoundedRectangle fig3 = new RoundedRectangle();
+					fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(MouseInfo.getPointerInfo().getLocation().x,
+							MouseInfo.getPointerInfo().getLocation().y, 100, 90));
+					fig3.setCornerDimensions(new Dimension(20, 20));
+
+					new FigureMoverResizer(fig3);
+					contents.add(fig3);
+
+					// final Label label = new Label(composite, SWT.NONE);
+					// //label.setLocation(fig3.getLocation().x,fig3.getLocation().y);
+					// label.setLocation(50, 50);
+					// label.setText("text on the label");
+
+					System.out.println("Fig: " + fig3.getLocation().x + "," + fig3.getLocation().y);
+					// System.out.println("Label: "+ label.getLocation().x +
+					// ","+ label.getLocation().y);
+					System.out.println(MouseInfo.getPointerInfo().getLocation());
+
+					break;
+
+				default:
+					break;
+				}
+
+			}
+		});
 	}
 
-	private void populateBottomComposite(Composite composite, Map<String, Image> imageMap) {
+	private void populateBottomComposite(final Composite composite, final Map<String, Image> imageMap) {
 
 		final TabFolder tabFolder = new TabFolder(composite, SWT.TOP);
 
@@ -240,15 +252,26 @@ public class GuiBuilderView implements PidescoView {
 				tabItem.setImage(imageMap.get("icon_tab_components.png"));
 
 				for (int t = 0; t <= 4; t++) {
-					Button button = new Button(compositeButtons, SWT.PUSH);
+					final Button button = new Button(compositeButtons, SWT.PUSH);
 					button.setAlignment(SWT.CENTER);
+
+					// Create the drag source on the composite
+					DragSource ds = new DragSource(button, DND.DROP_MOVE);
+					ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
 
 					switch (t) {
 					case 0:
 						button.setText("JButton");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
 						break;
 					case 1:
 						button.setText("JLabel");
+
 						break;
 					case 2:
 						button.setText("JTextField");

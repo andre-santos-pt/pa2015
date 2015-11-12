@@ -36,15 +36,15 @@ public class CheckStyleView implements PidescoView {
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
 		this.viewArea = viewArea;
 		this.imageMap = imageMap;
-		createView();
+		renderView();
 	}
 
 	/**
-	 * 
+	 * TODO
 	 * @param viewArea
 	 * @return
 	 */
-	private void createView() {
+	private void renderView() {
 		viewer = new TableViewer(viewArea, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
 
 		createColumns();
@@ -137,11 +137,18 @@ public class CheckStyleView implements PidescoView {
 		});
 	}
 
-	private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+	/**
+	 * TODO
+	 * @param title
+	 * @param width
+	 * @param colNumber
+	 * @return
+	 */
+	private TableViewerColumn createTableViewerColumn(String title, int width, final int colNumber) {
 		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
 		column.setText(title);
-		column.setWidth(bound);
+		column.setWidth(width);
 		column.setResizable(true);
 		column.setMoveable(true);
 		return viewerColumn;

@@ -12,11 +12,16 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
  * component.
  * 
  * For that end, we need to use the class {@link ProjectBrowserListener.Adapter}
- * . However only the elements defined as classes (isClass) are used and the
- * other ones are ignored.
+ * However only the elements defined as classes (isClass) are used and the other
+ * ones are ignored.
  *
  */
-public class SelectItemListener extends ProjectBrowserListener.Adapter {
+public class SelectedItemListener extends ProjectBrowserListener.Adapter {
+
+	/**
+	 * Used to enable/disable the console debug info.
+	 */
+	private static final boolean IS_DEBUG_ENABLED = true;
 
 	/**
 	 * This collection holds the selected elements from project browser
@@ -24,7 +29,10 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	 */
 	private Collection<SourceElement> selectedElements;
 
-	public SelectItemListener() {
+	/**
+	 * Default constructor.s
+	 */
+	public SelectedItemListener() {
 		this.selectedElements = new ArrayList<SourceElement>();
 	}
 
@@ -40,8 +48,7 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElements(elements);
 
-		System.out.println("selectionChanged:\n");
-		System.out.println(toString());
+		debugInfo("SelectedItemListener::selectionChanged:");
 	}
 
 	/**
@@ -56,8 +63,7 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElement(element);
 
-		System.out.println("doubleClick:\n");
-		System.out.println(toString());
+		debugInfo("SelectedItemListener::doubleClick:");
 	}
 
 	@Override
@@ -71,8 +77,11 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
+	 * This method is used to add one selected element into the collection of
+	 * selected elements.
 	 * 
 	 * @param element
+	 *            The selected element to be added.
 	 */
 	private void addElement(SourceElement element) {
 		if (element.isClass() && !this.selectedElements.contains(element)) {
@@ -81,8 +90,11 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
+	 * This method is used to add several selected element into the collection
+	 * of selected elements.
 	 * 
 	 * @param elements
+	 *            The selected elements to be added.
 	 */
 	private void addElements(Collection<SourceElement> elements) {
 		for (SourceElement element : elements) {
@@ -93,9 +105,24 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
-	 * 
+	 * This method is used to reinitialize the collection of selected elements
+	 * in order to avoid to have up-to-date records.
 	 */
 	private void resetSelectedElements() {
 		this.selectedElements.clear();
+	}
+
+	/**
+	 * This method is an auxiliary method used to write in the console some
+	 * debug information.
+	 * 
+	 * @param info
+	 *            The info to be written in the console.
+	 */
+	private void debugInfo(String info) {
+		if (IS_DEBUG_ENABLED) {
+			System.out.println(info);
+			System.out.println(toString());
+		}
 	}
 }

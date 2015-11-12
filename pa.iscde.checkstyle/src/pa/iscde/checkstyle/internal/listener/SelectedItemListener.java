@@ -19,6 +19,11 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 
 	/**
+	 * Used to enable/disable the console debug info.
+	 */
+	private static final boolean IS_DEBUG_ENABLED = true;
+
+	/**
 	 * This collection holds the selected elements from project browser
 	 * component for which the check style could be performed.
 	 */
@@ -43,8 +48,7 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElements(elements);
 
-		System.out.println("SelectedItemListener::selectionChanged:\n");
-		System.out.println(toString());
+		debugInfo("SelectedItemListener::selectionChanged:");
 	}
 
 	/**
@@ -59,8 +63,7 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElement(element);
 
-		System.out.println("SelectedItemListener::doubleClick:\n");
-		System.out.println(toString());
+		debugInfo("SelectedItemListener::doubleClick:");
 	}
 
 	@Override
@@ -107,5 +110,19 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 	 */
 	private void resetSelectedElements() {
 		this.selectedElements.clear();
+	}
+
+	/**
+	 * This method is an auxiliary method used to write in the console some
+	 * debug information.
+	 * 
+	 * @param info
+	 *            The info to be written in the console.
+	 */
+	private void debugInfo(String info) {
+		if (IS_DEBUG_ENABLED) {
+			System.out.println(info);
+			System.out.println(toString());
+		}
 	}
 }

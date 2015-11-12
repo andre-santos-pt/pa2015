@@ -16,6 +16,11 @@ import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 public class SelectedClassListener extends JavaEditorListener.Adapter {
 
 	/**
+	 * Used to enable/disable the console debug info.
+	 */
+	private static final boolean IS_DEBUG_ENABLED = true;
+	
+	/**
 	 * Holds a reference to Java editor services.
 	 */
 	private JavaEditorServices jeServices;
@@ -33,10 +38,10 @@ public class SelectedClassListener extends JavaEditorListener.Adapter {
 
 	@Override
 	public void fileSaved(File file) {
-		System.out.println("SelectedClassListener" + file.getName());
+		//System.out.println("SelectedClassListener" + file.getName());
 		// jeServices.addAnnotation(file, AnnotationType.ERROR, "Teste", 179,
 		// 56);
-		jeServices.insertLine(file, "//Teste", 1);
+		//jeServices.insertLine(file, "//Teste", 1);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package pt.iscte.pidesco.guibuilder.internal;
 
-import java.awt.MouseInfo;
+import java.awt.Window;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
@@ -10,6 +10,7 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -21,6 +22,10 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -83,12 +88,12 @@ public class GuiBuilderView implements PidescoView {
 		RectangleFigure fig = new RectangleFigure();
 		fig.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
-		new FigureMoverResizer(fig);
+		new FigureMoverResizer(fig, null, "");
 
 		RoundedRectangle fig2 = new RoundedRectangle();
 		fig2.setBounds(new org.eclipse.draw2d.geometry.Rectangle(50, 50, 300, 200));
 		fig2.setCornerDimensions(new Dimension(20, 20));
-		new FigureMoverResizer(fig2);
+		new FigureMoverResizer(fig2, null, "");
 
 		lws.setContents(contents);
 
@@ -171,18 +176,22 @@ public class GuiBuilderView implements PidescoView {
 
 	private void populateTopComposite(final Composite composite, final Map<String, Image> imageMap) {
 
-		Canvas canvas = new Canvas(composite, SWT.NONE);
+		final Canvas canvas = new Canvas(composite, SWT.NONE);
 		LightweightSystem lws = new LightweightSystem(canvas);
 		final Figure contents = new Figure();
+
+		// por alterar consoante o tamanho da "janela"
+		final int fakeWindowWidth = 400;
+		final int fakeWindowHeight = 400;
 
 		XYLayout contentsLayout = new XYLayout();
 
 		contents.setLayoutManager(contentsLayout);
 
 		RectangleFigure fig = new RectangleFigure();
-		fig.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
-		new FigureMoverResizer(fig);
+		fig.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, fakeWindowWidth, fakeWindowHeight));
+		new FigureMoverResizer(fig, null, "");
 
 		lws.setContents(contents);
 
@@ -194,23 +203,20 @@ public class GuiBuilderView implements PidescoView {
 		dt.addDropListener(new DropTargetAdapter() {
 			public void drop(DropTargetEvent event) {
 
+				final Point cursorLocation = Display.getCurrent().getCursorLocation();
+				final Point relativeCursorLocation = Display.getCurrent().getFocusControl().toControl(cursorLocation);
+
 				switch (event.data.toString()) {
 				case "JButton":
 
-					Point cursorLocation = Display.getCurrent().getCursorLocation();
-					Point relativeCursorLocation = Display.getCurrent().getFocusControl().toControl(cursorLocation);
-
 					RoundedRectangle fig3 = new RoundedRectangle();
 					fig3.setCornerDimensions(new Dimension(20, 20));
-					new FigureMoverResizer(fig3);
+					final FigureMoverResizer fmr = new FigureMoverResizer(fig3, canvas, "New Button");
+
 					contents.add(fig3);
 
 					int buttonWidth = 100;
 					int buttonHeight = 90;
-
-					// por alterar consoante o tamanho da "janela"
-					int fakeWindowWidth = 400;
-					int fakeWindowHeight = 400;
 
 					if (relativeCursorLocation.x < fakeWindowWidth && relativeCursorLocation.x > (buttonWidth / 2)
 							&& relativeCursorLocation.y < fakeWindowHeight
@@ -237,16 +243,68 @@ public class GuiBuilderView implements PidescoView {
 								relativeCursorLocation.x - (buttonWidth / 2), 0, buttonWidth, buttonHeight));
 						System.out.println("entrou4");
 					}
-			
-//					 final Label label = new Label(composite, SWT.NONE);
-//					// //label.setLocation(fig3.getLocation().x,fig3.getLocation().y);
-//					 label.setLocation(relativeCursorLocation.x, relativeCursorLocation.y);
-//					 label.setText("text on the label");
 
 					System.out.println(relativeCursorLocation.x + "," + relativeCursorLocation.y);
 
-					break;
+					Menu popupMenu = new Menu(canvas);
+					// MenuItem newItem = new MenuItem(popupMenu, SWT.CASCADE);
+					// newItem.setText("New");
+					final MenuItem renameItem = new MenuItem(popupMenu, SWT.NONE);
+					renameItem.setText("Rename");
+					// MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
+					// deleteItem.setText("Delete");
 
+					// Menu newMenu = new Menu(popupMenu);
+					// newItem.setMenu(newMenu);
+
+					// MenuItem shortcutItem = new MenuItem(newMenu, SWT.NONE);
+					// shortcutItem.setText("Shortcut");
+					// MenuItem iconItem = new MenuItem(newMenu, SWT.NONE);
+					// iconItem.setText("Icon");
+
+					canvas.setMenu(popupMenu);
+
+					renameItem.addSelectionListener(new SelectionListener() {
+
+						@Override
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							System.out.println("entrou menu rename");
+
+							String inputText = new InputDialog(cursorLocation.x, cursorLocation.y, composite.getShell(),
+									SWT.BAR).open();
+							fmr.setText(inputText);
+
+							// MessageBox messageBox = new
+							// MessageBox(composite.getShell(),
+							// SWT.ICON_QUESTION |SWT.YES | SWT.NO |SWT.INSERT);
+							// messageBox.setMessage("Is this question
+							// simple?");
+							//
+							// int rc = messageBox.open();
+						}
+					});
+
+					break;
+				case "JLabel":
+					final String text = "new label";
+
+					if (canvas != null) {
+						canvas.addPaintListener(new PaintListener() {
+
+							@Override
+							public void paintControl(PaintEvent e) {
+
+								e.gc.drawText(text, 100 - (text.length() * 3), 100);
+								canvas.redraw();
+								canvas.update();
+							}
+						});
+					}
+					break;
 				default:
 					break;
 				}
@@ -295,6 +353,12 @@ public class GuiBuilderView implements PidescoView {
 						break;
 					case 1:
 						button.setText("JLabel");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
 
 						break;
 					case 2:

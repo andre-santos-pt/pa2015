@@ -12,11 +12,11 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
  * component.
  * 
  * For that end, we need to use the class {@link ProjectBrowserListener.Adapter}
- * . However only the elements defined as classes (isClass) are used and the
- * other ones are ignored.
+ * However only the elements defined as classes (isClass) are used and the other
+ * ones are ignored.
  *
  */
-public class SelectItemListener extends ProjectBrowserListener.Adapter {
+public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 
 	/**
 	 * This collection holds the selected elements from project browser
@@ -24,7 +24,10 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	 */
 	private Collection<SourceElement> selectedElements;
 
-	public SelectItemListener() {
+	/**
+	 * Default constructor.s
+	 */
+	public SelectedItemListener() {
 		this.selectedElements = new ArrayList<SourceElement>();
 	}
 
@@ -40,7 +43,7 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElements(elements);
 
-		System.out.println("selectionChanged:\n");
+		System.out.println("SelectedItemListener::selectionChanged:\n");
 		System.out.println(toString());
 	}
 
@@ -56,7 +59,7 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 		resetSelectedElements();
 		addElement(element);
 
-		System.out.println("doubleClick:\n");
+		System.out.println("SelectedItemListener::doubleClick:\n");
 		System.out.println(toString());
 	}
 
@@ -71,8 +74,11 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
+	 * This method is used to add one selected element into the collection of
+	 * selected elements.
 	 * 
 	 * @param element
+	 *            The selected element to be added.
 	 */
 	private void addElement(SourceElement element) {
 		if (element.isClass() && !this.selectedElements.contains(element)) {
@@ -81,8 +87,11 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
+	 * This method is used to add several selected element into the collection
+	 * of selected elements.
 	 * 
 	 * @param elements
+	 *            The selected elements to be added.
 	 */
 	private void addElements(Collection<SourceElement> elements) {
 		for (SourceElement element : elements) {
@@ -93,7 +102,8 @@ public class SelectItemListener extends ProjectBrowserListener.Adapter {
 	}
 
 	/**
-	 * 
+	 * This method is used to reinitialize the collection of selected elements
+	 * in order to avoid to have up-to-date records.
 	 */
 	private void resetSelectedElements() {
 		this.selectedElements.clear();

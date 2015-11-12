@@ -4,35 +4,124 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import pa.iscde.checkstyle.internal.listener.SelectItemListener;
+import pa.iscde.checkstyle.internal.listener.SelectedClassListener;
+import pa.iscde.checkstyle.internal.listener.SelectedItemListener;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
-public class CheckStyleActivator implements BundleActivator{
+/**
+ * This class is responsible to register the service associated to CheckStyle
+ * component and to initialize the external services and listeners needed by it.
+ *
+ */
+public class CheckStyleActivator implements BundleActivator {
 
-	private static CheckStyleActivator instance;
+	/**
+	 * The Singleton instance of this class.
+	 */
+	private static CheckStyleActivator INSTANCE;
 
+	/**
+	 * Context from which the registered external services are obtained.
+	 */
 	private BundleContext context;
-	
+
+	/**
+	 * A project browser listener that is added to project browser component in
+	 * order to receive the notifications from events detected on it.
+	 */
 	private ProjectBrowserListener pblistener;
 
+	/**
+	 * Holds a reference for services exposed by project browser component.
+	 */
 	private ProjectBrowserServices pbServices;
-	
+
+	/**
+	 * A project browser listener that is added to project browser component in
+	 * order to receive the notifications from events detected on it.
+	 */
+	private JavaEditorListener jeListener;
+
+	/**
+	 * Holds a reference for services exposed by Java editor component.
+	 */
+	private JavaEditorServices jeServices;
+
+	/**
+	 * Return the single INSTANCE of this class.
+	 * 
+	 * @return INSTANCE
+	 */
+	public static CheckStyleActivator getInstance() {
+		return INSTANCE;
+	}
+
 	@Override
 	public void start(BundleContext context) throws Exception {
-		instance = this;
+		INSTANCE = this;
 		this.context = context;
-		
-		final ServiceReference<ProjectBrowserServices> ref = context.getServiceReference(ProjectBrowserServices.class);
-		pbServices = context.getService(ref);
-		
-		pblistener = new SelectItemListener();
-		pbServices.addListener(pblistener);
+
+		setupExternalServices();
+		addListenersToExternalServices();
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		instance = null;
+		INSTANCE = null;
 		this.context = null;
+
+		removeListenersFromExternalServices();
+		teardownExternalServices();
+	}
+
+	/**
+	 * This method is used to obtain the references for services exposed by
+	 * project browser component and Java editor component.
+	 */
+	private void setupExternalServices() {
+		final ServiceReference<ProjectBrowserServices> refPbServices = context
+				.getServiceReference(ProjectBrowserServices.class);
+		pbServices = context.getService(refPbServices);
+
+		final ServiceReference<JavaEditorServices> refJeServices = context
+				.getServiceReference(JavaEditorServices.class);
+		jeServices = context.getService(refJeServices);
+	}
+
+	/**
+	 * This method is used to clean the references for services exposed by
+	 * project browser component and Java editor component.
+	 */
+	private void teardownExternalServices() {
+		pbServices = null;
+		jeServices = null;
+	}
+
+	/**
+	 * This method is used to initialize and to add the listeners for project
+	 * browser and Java editor components in order to receive the notifications
+	 * from events detected on them.
+	 */
+	private void addListenersToExternalServices() {
+		pblistener = new SelectedItemListener();
+		pbServices.addListener(pblistener);
+
+		jeListener = new SelectedClassListener(jeServices);
+		jeServices.addListener(jeListener);
+	}
+
+	/**
+	 * This method is used to remove the listeners for project browser and Java
+	 * editor components.
+	 */
+	private void removeListenersFromExternalServices() {
+		pbServices.removeListener(pblistener);
+		pblistener = null;
+
+		jeServices.removeListener(jeListener);
+		jeListener = null;
 	}
 }

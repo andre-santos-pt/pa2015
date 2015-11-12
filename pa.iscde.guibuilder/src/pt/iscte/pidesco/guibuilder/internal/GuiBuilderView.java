@@ -4,7 +4,6 @@ import java.awt.MouseInfo;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -22,9 +21,9 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
@@ -185,15 +184,9 @@ public class GuiBuilderView implements PidescoView {
 		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
 		new FigureMoverResizer(fig);
 
-		RoundedRectangle fig2 = new RoundedRectangle();
-		fig2.setBounds(new org.eclipse.draw2d.geometry.Rectangle(50, 50, 300, 200));
-		fig2.setCornerDimensions(new Dimension(20, 20));
-		new FigureMoverResizer(fig2);
-
 		lws.setContents(contents);
 
 		contents.add(fig);
-		contents.add(fig2);
 
 		// Create the drop target on the composite
 		DropTarget dt = new DropTarget(composite, DND.DROP_MOVE);
@@ -203,23 +196,54 @@ public class GuiBuilderView implements PidescoView {
 
 				switch (event.data.toString()) {
 				case "JButton":
-					RoundedRectangle fig3 = new RoundedRectangle();
-					fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(MouseInfo.getPointerInfo().getLocation().x,
-							MouseInfo.getPointerInfo().getLocation().y, 100, 90));
-					fig3.setCornerDimensions(new Dimension(20, 20));
 
+					Point cursorLocation = Display.getCurrent().getCursorLocation();
+					Point relativeCursorLocation = Display.getCurrent().getFocusControl().toControl(cursorLocation);
+
+					RoundedRectangle fig3 = new RoundedRectangle();
+					fig3.setCornerDimensions(new Dimension(20, 20));
 					new FigureMoverResizer(fig3);
 					contents.add(fig3);
 
-					// final Label label = new Label(composite, SWT.NONE);
-					// //label.setLocation(fig3.getLocation().x,fig3.getLocation().y);
-					// label.setLocation(50, 50);
-					// label.setText("text on the label");
+					int buttonWidth = 100;
+					int buttonHeight = 90;
 
-					System.out.println("Fig: " + fig3.getLocation().x + "," + fig3.getLocation().y);
-					// System.out.println("Label: "+ label.getLocation().x +
-					// ","+ label.getLocation().y);
-					System.out.println(MouseInfo.getPointerInfo().getLocation());
+					// por alterar consoante o tamanho da "janela"
+					int fakeWindowWidth = 400;
+					int fakeWindowHeight = 400;
+
+					if (relativeCursorLocation.x < fakeWindowWidth && relativeCursorLocation.x > (buttonWidth / 2)
+							&& relativeCursorLocation.y < fakeWindowHeight
+							&& relativeCursorLocation.y > (buttonHeight / 2)) {
+						fig3.setBounds(
+								new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation.x - (buttonWidth / 2),
+										relativeCursorLocation.y - (buttonHeight / 2), buttonWidth, buttonHeight));
+						System.out.println("entrou1");
+					} else if (relativeCursorLocation.x < (buttonWidth / 2)
+							&& relativeCursorLocation.y < (buttonHeight / 2)) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(0, 0, buttonWidth, buttonHeight));
+						System.out.println("entrou2");
+					} else if (relativeCursorLocation.x < (buttonWidth / 2)
+							&& relativeCursorLocation.x < fakeWindowWidth
+							&& relativeCursorLocation.y < fakeWindowHeight) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(0,
+								relativeCursorLocation.y - (buttonHeight / 2), buttonWidth, buttonHeight));
+						System.out.println("entrou3");
+
+					} else if (relativeCursorLocation.y < (buttonHeight / 2)
+							&& relativeCursorLocation.x < fakeWindowWidth
+							&& relativeCursorLocation.y < fakeWindowHeight) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(
+								relativeCursorLocation.x - (buttonWidth / 2), 0, buttonWidth, buttonHeight));
+						System.out.println("entrou4");
+					}
+			
+//					 final Label label = new Label(composite, SWT.NONE);
+//					// //label.setLocation(fig3.getLocation().x,fig3.getLocation().y);
+//					 label.setLocation(relativeCursorLocation.x, relativeCursorLocation.y);
+//					 label.setText("text on the label");
+
+					System.out.println(relativeCursorLocation.x + "," + relativeCursorLocation.y);
 
 					break;
 

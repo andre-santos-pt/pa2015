@@ -1,5 +1,6 @@
 package pt.iscte.pidesco.guibuilder.internal;
 
+import java.awt.MouseInfo;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
@@ -10,8 +11,19 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
@@ -29,7 +41,6 @@ import pt.iscte.pidesco.guibuilder.ui.FigureMoverResizer;
 public class GuiBuilderView implements PidescoView {
 	private Composite topComposite;
 	private Composite bottomComposite;
-	
 
 	public GuiBuilderView() {
 		// TODO Auto-generated constructor stub
@@ -37,60 +48,25 @@ public class GuiBuilderView implements PidescoView {
 
 	@Override
 	public void createContents(final Composite viewArea, Map<String, Image> imageMap) {
-		createViewTemporarySolution(viewArea, imageMap);
-		populateTopComposite(topComposite);
-		populateBottomComposite(bottomComposite);
-		
-		// viewArea.setLayout(new RowLayout());
-//
-//		 final Label label = new Label(viewArea, SWT.NONE);
-//		 label.setText("text on the label");
-//		
-//		 //label.setImage(getCheckedImage(label.getDisplay()));
-//		 label.setImage(imageMap.get("frame.png"));
-//		
-//		 addTabbar(viewArea);
-//		
-//		 addPopUpMenu(label);
-//		
-//		
-//		 addFigDragDrop(viewArea);
 
-		// Create the tree and some tree items
-		// final Tree tree = new Tree(viewArea, SWT.NONE);
-		// TreeItem item1 = new TreeItem(tree, SWT.NONE);
-		// item1.setText("Item 1");
-		// TreeItem item2 = new TreeItem(tree, SWT.NONE);
-		// item2.setText("Item 2");
-		// TreeItem item3 = new TreeItem(tree, SWT.NONE);
-		// item3.setText("Item 3");
-		// TreeItem item4 = new TreeItem(tree, SWT.NONE);
-		// item4.setText("Item 4");
+		createViewTemporarySolution(viewArea, imageMap);
+		populateTopComposite(topComposite, imageMap);
+		populateBottomComposite(bottomComposite, imageMap);
+
+		// viewArea.setLayout(new RowLayout());
 		//
-		// // Create the drag source on the tree
-		// DragSource ds = new DragSource(tree, DND.DROP_MOVE);
-		// ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-		// ds.addDragListener(new DragSourceAdapter() {
-		// public void dragSetData(DragSourceEvent event) {
-		// // Set the data to be the first selected item's text
-		// event.data = tree.getSelection()[0].getText();
-		// }
-		// });
+		// final Label label = new Label(viewArea, SWT.NONE);
+		// label.setText("text on the label");
 		//
-		// // Create the button
-		// final Button button = new Button(viewArea, SWT.FLAT);
-		// button.setText("Button");
-		// button.setAlignment(SWT.CENTER);
+		// //label.setImage(getCheckedImage(label.getDisplay()));
+		// label.setImage(imageMap.get("frame.png"));
 		//
-		// // Create the drop target on the button
-		// DropTarget dt = new DropTarget(button, DND.DROP_MOVE);
-		// dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-		// dt.addDropListener(new DropTargetAdapter() {
-		// public void drop(DropTargetEvent event) {
-		// // Set the buttons text to be the text being dropped
-		// button.setText((String) event.data);
-		// }
-		// });
+		// addTabbar(viewArea);
+		//
+		// addPopUpMenu(label);
+		//
+		//
+		// addFigDragDrop(viewArea);
 
 	}
 
@@ -182,21 +158,22 @@ public class GuiBuilderView implements PidescoView {
 
 		// Create the SashForm with VERTICAL
 		SashForm sashForm = new SashForm(viewArea, SWT.VERTICAL);
-		
+
 		topComposite = new Composite(sashForm, SWT.BORDER);
 		topComposite.setLayout(new FillLayout());
-		
+
 		bottomComposite = new Composite(sashForm, SWT.BORDER);
 		bottomComposite.setLayout(new FillLayout());
-	
+
 		// Define the relation between both composites
 		sashForm.setWeights(new int[] { 4, 1 });
 	}
-	
-	private void populateTopComposite(Composite composite){
+
+	private void populateTopComposite(final Composite composite, final Map<String, Image> imageMap) {
+
 		Canvas canvas = new Canvas(composite, SWT.NONE);
 		LightweightSystem lws = new LightweightSystem(canvas);
-		Figure contents = new Figure();
+		final Figure contents = new Figure();
 
 		XYLayout contentsLayout = new XYLayout();
 
@@ -207,38 +184,175 @@ public class GuiBuilderView implements PidescoView {
 		fig.setBounds(new org.eclipse.draw2d.geometry.Rectangle(5, 5, 100, 200));
 		new FigureMoverResizer(fig);
 
-		RoundedRectangle fig2 = new RoundedRectangle();
-		fig2.setBounds(new org.eclipse.draw2d.geometry.Rectangle(50, 50, 300, 200));
-		fig2.setCornerDimensions(new Dimension(20, 20));
-		new FigureMoverResizer(fig2);
-
 		lws.setContents(contents);
 
 		contents.add(fig);
-		contents.add(fig2);
 
-		
-		
-		
+		// Create the drop target on the composite
+		DropTarget dt = new DropTarget(composite, DND.DROP_MOVE);
+		dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+		dt.addDropListener(new DropTargetAdapter() {
+			public void drop(DropTargetEvent event) {
+
+				switch (event.data.toString()) {
+				case "JButton":
+
+					Point cursorLocation = Display.getCurrent().getCursorLocation();
+					Point relativeCursorLocation = Display.getCurrent().getFocusControl().toControl(cursorLocation);
+
+					RoundedRectangle fig3 = new RoundedRectangle();
+					fig3.setCornerDimensions(new Dimension(20, 20));
+					new FigureMoverResizer(fig3);
+					contents.add(fig3);
+
+					int buttonWidth = 100;
+					int buttonHeight = 90;
+
+					// por alterar consoante o tamanho da "janela"
+					int fakeWindowWidth = 400;
+					int fakeWindowHeight = 400;
+
+					if (relativeCursorLocation.x < fakeWindowWidth && relativeCursorLocation.x > (buttonWidth / 2)
+							&& relativeCursorLocation.y < fakeWindowHeight
+							&& relativeCursorLocation.y > (buttonHeight / 2)) {
+						fig3.setBounds(
+								new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation.x - (buttonWidth / 2),
+										relativeCursorLocation.y - (buttonHeight / 2), buttonWidth, buttonHeight));
+						System.out.println("entrou1");
+					} else if (relativeCursorLocation.x < (buttonWidth / 2)
+							&& relativeCursorLocation.y < (buttonHeight / 2)) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(0, 0, buttonWidth, buttonHeight));
+						System.out.println("entrou2");
+					} else if (relativeCursorLocation.x < (buttonWidth / 2)
+							&& relativeCursorLocation.x < fakeWindowWidth
+							&& relativeCursorLocation.y < fakeWindowHeight) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(0,
+								relativeCursorLocation.y - (buttonHeight / 2), buttonWidth, buttonHeight));
+						System.out.println("entrou3");
+
+					} else if (relativeCursorLocation.y < (buttonHeight / 2)
+							&& relativeCursorLocation.x < fakeWindowWidth
+							&& relativeCursorLocation.y < fakeWindowHeight) {
+						fig3.setBounds(new org.eclipse.draw2d.geometry.Rectangle(
+								relativeCursorLocation.x - (buttonWidth / 2), 0, buttonWidth, buttonHeight));
+						System.out.println("entrou4");
+					}
+			
+//					 final Label label = new Label(composite, SWT.NONE);
+//					// //label.setLocation(fig3.getLocation().x,fig3.getLocation().y);
+//					 label.setLocation(relativeCursorLocation.x, relativeCursorLocation.y);
+//					 label.setText("text on the label");
+
+					System.out.println(relativeCursorLocation.x + "," + relativeCursorLocation.y);
+
+					break;
+
+				default:
+					break;
+				}
+
+			}
+		});
 	}
-	
-	private void populateBottomComposite(Composite composite){
+
+	private void populateBottomComposite(final Composite composite, final Map<String, Image> imageMap) {
+
 		final TabFolder tabFolder = new TabFolder(composite, SWT.TOP);
 
-		for (int loopIndex = 0; loopIndex < 10; loopIndex++) {
+		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
-			tabItem.setText("Tab " + loopIndex);
 
-			// Text text = new Text(tabFolder, SWT.BORDER);
-			// text.setText("This is page " + loopIndex);
-			// tabItem.setControl(text);
-			final Button button = new Button(tabFolder, SWT.FLAT);
-			button.setText("Button");
-			button.setAlignment(SWT.CENTER);
-			// button.setImage(new Image(viewArea.getDisplay(), "frame.png"));
-			tabItem.setControl(button);
+			final ScrolledComposite sci = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL);
+			Composite compositeButtons = new Composite(sci, SWT.NONE);
+			compositeButtons.setLayout(new FillLayout());
 
+			sci.setContent(compositeButtons);
+
+			tabItem.setControl(sci);
+
+			switch (loopIndex) {
+			case 0:
+				tabItem.setText("Components");
+				tabItem.setImage(imageMap.get("icon_tab_components.png"));
+
+				for (int t = 0; t <= 4; t++) {
+					final Button button = new Button(compositeButtons, SWT.PUSH);
+					button.setAlignment(SWT.CENTER);
+
+					// Create the drag source on the composite
+					DragSource ds = new DragSource(button, DND.DROP_MOVE);
+					ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+
+					switch (t) {
+					case 0:
+						button.setText("JButton");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
+						break;
+					case 1:
+						button.setText("JLabel");
+
+						break;
+					case 2:
+						button.setText("JTextField");
+						break;
+					case 3:
+						button.setText("JRadioButton");
+						break;
+					case 4:
+						button.setText("JCheckBox");
+						break;
+
+					default:
+						break;
+					}
+				}
+				compositeButtons.setSize(500, 90);
+				break;
+
+			case 1:
+				tabItem.setText("Layouts");
+				tabItem.setImage(imageMap.get("icon_tab_layouts.png"));
+
+				for (int t = 0; t < 3; t++) {
+					Button button = new Button(compositeButtons, SWT.PUSH);
+					button.setAlignment(SWT.CENTER);
+
+					switch (t) {
+					case 0:
+						button.setText("Flow \n Layout");
+						break;
+					case 1:
+						button.setText("Absolute \n Layout");
+						break;
+					case 2:
+						button.setText("Border \n Layout");
+						break;
+
+					default:
+						break;
+					}
+				}
+				compositeButtons.setSize(300, 90);
+				break;
+
+			case 2:
+				tabItem.setText("Containers");
+				tabItem.setImage(imageMap.get("icon_tab_containers.png"));
+
+				Button button = new Button(compositeButtons, SWT.PUSH);
+				button.setAlignment(SWT.CENTER);
+				button.setText("JPanel");
+				compositeButtons.setSize(100, 90);
+				break;
+
+			default:
+				break;
+			}
 		}
-		tabFolder.setSize(400, 10);
 	}
 }

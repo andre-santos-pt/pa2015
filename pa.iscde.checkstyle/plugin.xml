@@ -2,37 +2,25 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         id="CheckStyleTool"
+         name="CheckStyle Tool"
+         point="pt.iscte.pidesco.tool">
+      <tool
+            class="pa.iscde.checkstyle.internal.tool.CheckStyleTool"
+            description="Check code with CheckStyle"
+            hasState="false"
+            icon="cs-icon.png"
+            view="pt.iscte.pidesco.projectbrowser.tree">
+      </tool>
+   </extension>
+   <extension
          id="CheckStyleView"
-         name="CheckStyle Report"
+         name="CheckStyle violations"
          point="pt.iscte.pidesco.view">
       <view
             class="pa.iscde.checkstyle.view.CheckStyleView"
             icon="cs-icon.png">
       </view>
-   </extension>
-   <extension
-         id="MainReport"
-         name="Main Report"
-         point="pt.iscte.pidesco.tool">
-      <tool
-            class="pa.iscde.checkstyle.internal.tool.NavigateToMainReportTool"
-            description="Go back to the main report"
-            hasState="false"
-            icon="nav_main_report.png"
-            view="pa.iscde.codechecker.CheckStyleView">
-      </tool>
-   </extension>
-   <extension
-         id="DetailedReport"
-         name="Detailed Report"
-         point="pt.iscte.pidesco.tool">
-      <tool
-            class="pa.iscde.checkstyle.internal.tool.NavigateToDetailedReportTool"
-            description="List of all violations of this type"
-            hasState="false"
-            icon="nav_detailed_report.png"
-            view="pa.iscde.codechecker.CheckStyleView">
-      </tool>
    </extension>
 
 </plugin>

@@ -23,7 +23,9 @@ public class CheckStyleView implements PidescoView {
 	private static final String[] COLUMN_NAMES = { "Severity", "Violation Type", "Count", "Description" };
 
 	private static final int[] COLUMN_WIDTHS = { 100, 300, 100, 300 };
-	
+
+	private static CheckStyleView INSTANCE;
+
 	private TableViewer viewer;
 
 	private Table table;
@@ -34,17 +36,37 @@ public class CheckStyleView implements PidescoView {
 
 	@Override
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
+		INSTANCE = this;
 		this.viewArea = viewArea;
 		this.imageMap = imageMap;
-		renderView();
+		render();
 	}
 
 	/**
 	 * TODO
+	 * 
+	 * @return
+	 */
+	public static CheckStyleView getInstance() {
+		return INSTANCE;
+	}
+
+	/**
+	 * TODO
+	 */
+	public void updateModel() {
+		if (!viewArea.isDisposed()) {
+			viewer.setInput(ViolationModelProvider.getInstance().getViolations());
+		}
+	}
+
+	/**
+	 * TODO
+	 * 
 	 * @param viewArea
 	 * @return
 	 */
-	private void renderView() {
+	private void render() {
 		viewer = new TableViewer(viewArea, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
 
 		createColumns();
@@ -54,7 +76,6 @@ public class CheckStyleView implements PidescoView {
 		table.setLinesVisible(true);
 
 		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setInput(ViolationModelProvider.getInstance().getViolations());
 
 		final GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
@@ -74,7 +95,7 @@ public class CheckStyleView implements PidescoView {
 			public String getText(Object element) {
 				final Violation violation = (Violation) element;
 				SeverityType severity = violation.getSeverity();
-				
+
 				String text = null;
 				switch (severity) {
 				case BLOCKED:
@@ -106,7 +127,7 @@ public class CheckStyleView implements PidescoView {
 					break;
 				}
 				return image;
-			}			
+			}
 		});
 
 		col = createTableViewerColumn(COLUMN_NAMES[1], COLUMN_WIDTHS[1], 1);
@@ -139,6 +160,7 @@ public class CheckStyleView implements PidescoView {
 
 	/**
 	 * TODO
+	 * 
 	 * @param title
 	 * @param width
 	 * @param colNumber

@@ -10,11 +10,6 @@ public final class ViolationModelProvider {
 
 	private ViolationModelProvider() {
 		violations = new ArrayList<Violation>();
-		violations.add(new Violation(SeverityType.WARNING, "Violation Type 1", 1, "Description 1", null));
-		violations.add(new Violation(SeverityType.CRITICAL, "Violation Type 2", 2, "Description 2", null));
-		violations.add(new Violation(SeverityType.BLOCKED, "Violation Type 3", 3, "Description 3", null));
-		violations.add(new Violation(SeverityType.CRITICAL, "Violation Type 4", 4, "Description 4", null));
-		violations.add(new Violation(SeverityType.WARNING, "Violation Type 5", 5, "Description 5", null));
 	}
 
 	public static synchronized ViolationModelProvider getInstance() {
@@ -26,5 +21,17 @@ public final class ViolationModelProvider {
 
 	public List<Violation> getViolations() {
 		return violations;
+	}
+
+	public void resetViolations() {
+		violations.clear();
+	}
+
+	public void updateViolations() {
+		violations.add(new Violation(SeverityType.WARNING, "Violation Type 1", 1, "Description 1", null));
+		violations.add(new Violation(SeverityType.CRITICAL, "Violation Type 2", 2, "Description 2", null));
+		violations.add(new Violation(SeverityType.BLOCKED, "Violation Type 3", 3, "Description 3", null));
+		violations.add(new Violation(SeverityType.CRITICAL, "Violation Type 4", 4, "Description 4", null));
+		violations.add(new Violation(SeverityType.WARNING, "Violation Type 5", 5, "Description 5", null));
 	}
 }

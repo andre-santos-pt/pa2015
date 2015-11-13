@@ -3,6 +3,7 @@ package pa.iscde.checkstyle.internal.listener;
 import java.io.File;
 
 import pa.iscde.checkstyle.internal.CheckStyleActivator;
+import pt.iscte.pidesco.javaeditor.service.AnnotationType;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 
@@ -15,11 +16,6 @@ import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
  */
 public class SelectedClassListener extends JavaEditorListener.Adapter {
 
-	/**
-	 * Used to enable/disable the console debug info.
-	 */
-	private static final boolean IS_DEBUG_ENABLED = true;
-	
 	/**
 	 * Holds a reference to Java editor services.
 	 */
@@ -37,24 +33,7 @@ public class SelectedClassListener extends JavaEditorListener.Adapter {
 	}
 
 	@Override
-	public void fileSaved(File file) {
-		//System.out.println("SelectedClassListener" + file.getName());
-		// jeServices.addAnnotation(file, AnnotationType.ERROR, "Teste", 179,
-		// 56);
-		//jeServices.insertLine(file, "//Teste", 1);
-	}
-
-	@Override
 	public void selectionChanged(File file, String text, int offset, int length) {
-		/*
-		 * System.out.println("File:" + file.getName());
-		 * System.out.println("Text:" + text); System.out.println("Offset:" +
-		 * offset); System.out.println("Length:" + length);
-		 */
-	}
-
-	@Override
-	public void fileOpened(File file) {
-		// System.out.println("SelectedClassListener" + file.getName());
+		jeServices.addAnnotation(file, AnnotationType.WARNING, "Teste", 179, 0);
 	}
 }

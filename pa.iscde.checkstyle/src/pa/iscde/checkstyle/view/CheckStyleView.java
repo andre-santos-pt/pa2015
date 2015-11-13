@@ -76,7 +76,8 @@ public class CheckStyleView implements PidescoView {
 		table.setLinesVisible(true);
 
 		viewer.setContentProvider(new ArrayContentProvider());
-
+		updateModel();
+		
 		final GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 3;

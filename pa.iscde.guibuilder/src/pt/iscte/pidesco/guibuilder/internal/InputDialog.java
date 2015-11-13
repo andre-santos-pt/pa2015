@@ -19,17 +19,16 @@ public class InputDialog extends Dialog {
 	private int positionY;
 
 	/**
-	
-
-	/**
-	 * InputDialog constructor
+	 * 
+	 * 
+	 * /** InputDialog constructor
 	 * 
 	 * @param parent
 	 *            the parent
 	 * @param style
 	 *            the style
 	 */
-	public InputDialog(int positionX,int positionY,Shell parent, int style) {
+	public InputDialog(int positionX, int positionY, Shell parent, int style) {
 		// Let users override the default styles
 		super(parent, style);
 		this.positionX = positionX;
@@ -106,7 +105,7 @@ public class InputDialog extends Dialog {
 	 */
 	private void createContents(final Shell shell) {
 		shell.setLayout(new GridLayout(2, true));
-		shell.setLocation(400, 400);
+		shell.setLocation(positionX, positionY);
 
 		// Show the message
 		Label label = new Label(shell, SWT.NONE);

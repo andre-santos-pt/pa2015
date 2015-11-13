@@ -1,6 +1,5 @@
 package pt.iscte.pidesco.guibuilder.internal;
 
-import java.awt.Window;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
@@ -10,7 +9,6 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
-
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -244,24 +242,12 @@ public class GuiBuilderView implements PidescoView {
 						System.out.println("entrou4");
 					}
 
-					System.out.println(relativeCursorLocation.x + "," + relativeCursorLocation.y);
+					System.out.println("relativeCursorLocation: "+ relativeCursorLocation.x + "," + relativeCursorLocation.y);
 
+					
 					Menu popupMenu = new Menu(canvas);
-					// MenuItem newItem = new MenuItem(popupMenu, SWT.CASCADE);
-					// newItem.setText("New");
 					final MenuItem renameItem = new MenuItem(popupMenu, SWT.NONE);
 					renameItem.setText("Rename");
-					// MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
-					// deleteItem.setText("Delete");
-
-					// Menu newMenu = new Menu(popupMenu);
-					// newItem.setMenu(newMenu);
-
-					// MenuItem shortcutItem = new MenuItem(newMenu, SWT.NONE);
-					// shortcutItem.setText("Shortcut");
-					// MenuItem iconItem = new MenuItem(newMenu, SWT.NONE);
-					// iconItem.setText("Icon");
-
 					canvas.setMenu(popupMenu);
 
 					renameItem.addSelectionListener(new SelectionListener() {

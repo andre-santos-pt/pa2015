@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Clazznav
-Bundle-SymbolicName: pt.iscde.clazznav;singleton:=true
+Bundle-SymbolicName: pa.iscde.clazznav;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Activator: pt.iscte.pidesco.clazznav.Activator
 Require-Bundle: org.eclipse.core.runtime,

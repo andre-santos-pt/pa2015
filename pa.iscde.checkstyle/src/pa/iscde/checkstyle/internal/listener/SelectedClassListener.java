@@ -1,9 +1,13 @@
 package pa.iscde.checkstyle.internal.listener;
 
 import java.io.File;
+import java.util.List;
 
+import pa.iscde.checkstyle.converter.AnnotationConverter;
 import pa.iscde.checkstyle.internal.CheckStyleActivator;
-import pt.iscte.pidesco.javaeditor.service.AnnotationType;
+import pa.iscde.checkstyle.model.Violation;
+import pa.iscde.checkstyle.model.ViolationDetail;
+import pa.iscde.checkstyle.model.ViolationModelProvider;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 
@@ -15,7 +19,6 @@ import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
  * 
  */
 public class SelectedClassListener extends JavaEditorListener.Adapter {
-
 	/**
 	 * Holds a reference to Java editor services.
 	 */
@@ -34,6 +37,20 @@ public class SelectedClassListener extends JavaEditorListener.Adapter {
 
 	@Override
 	public void selectionChanged(File file, String text, int offset, int length) {
-		jeServices.addAnnotation(file, AnnotationType.WARNING, "Teste", 179, 0);
+		final List<Violation> violations = ViolationModelProvider.getInstance().getViolations();
+
+		if (violations == null || violations.isEmpty()) {
+			return;
+		}
+
+		for (Violation violation : violations) {
+			final List<ViolationDetail> details = violation.getDetails();
+			for (ViolationDetail detail : details) {
+				if (detail.getResource().equals(file.getName())) {
+					jeServices.addAnnotation(file, AnnotationConverter.convert(violation.getSeverity()),
+							detail.getMessage(), detail.getOffset(), 0);
+				}
+			}
+		}
 	}
 }

@@ -2,7 +2,9 @@ package pa.iscde.checkstyle.internal.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import pa.iscde.checkstyle.model.SharedModel;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 
@@ -19,22 +21,9 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 
 	/**
-	 * Used to enable/disable the console debug info.
+	 * Use to initialize a list with only one position.
 	 */
-	private static final boolean IS_DEBUG_ENABLED = true;
-
-	/**
-	 * This collection holds the selected elements from project browser
-	 * component for which the check style could be performed.
-	 */
-	private Collection<SourceElement> selectedElements;
-
-	/**
-	 * Default constructor.s
-	 */
-	public SelectedItemListener() {
-		this.selectedElements = new ArrayList<SourceElement>();
-	}
+	private static final int ONE_ELEMENT = 1;
 
 	/**
 	 * This method will be used to perform some action when a element/elements
@@ -45,10 +34,16 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 	 */
 	@Override
 	public void selectionChanged(Collection<SourceElement> elements) {
-		resetSelectedElements();
-		addElements(elements);
+		SharedModel.getInstance().resetElements();
 
-		debugInfo("SelectedItemListener::selectionChanged:");
+		final List<SourceElement> selectedElements = new ArrayList<SourceElement>(elements.size());
+		for (SourceElement element : elements) {
+			if (element.isClass() && !selectedElements.contains(element)) {
+				selectedElements.add(element);
+			}
+		}
+
+		SharedModel.getInstance().setElements(selectedElements);
 	}
 
 	/**
@@ -60,69 +55,13 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 	 */
 	@Override
 	public void doubleClick(SourceElement element) {
-		resetSelectedElements();
-		addElement(element);
+		SharedModel.getInstance().resetElements();
 
-		debugInfo("SelectedItemListener::doubleClick:");
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		for (SourceElement element : selectedElements) {
-			builder.append(element);
-			builder.append("\n");
+		final List<SourceElement> selectedElements = new ArrayList<SourceElement>(ONE_ELEMENT);
+		if (element.isClass() && !selectedElements.contains(element)) {
+			selectedElements.add(element);
 		}
-		return builder.toString();
-	}
 
-	/**
-	 * This method is used to add one selected element into the collection of
-	 * selected elements.
-	 * 
-	 * @param element
-	 *            The selected element to be added.
-	 */
-	private void addElement(SourceElement element) {
-		if (element.isClass() && !this.selectedElements.contains(element)) {
-			this.selectedElements.add(element);
-		}
-	}
-
-	/**
-	 * This method is used to add several selected element into the collection
-	 * of selected elements.
-	 * 
-	 * @param elements
-	 *            The selected elements to be added.
-	 */
-	private void addElements(Collection<SourceElement> elements) {
-		for (SourceElement element : elements) {
-			if (element.isClass() && !this.selectedElements.contains(element)) {
-				this.selectedElements.add(element);
-			}
-		}
-	}
-
-	/**
-	 * This method is used to reinitialize the collection of selected elements
-	 * in order to avoid to have up-to-date records.
-	 */
-	private void resetSelectedElements() {
-		this.selectedElements.clear();
-	}
-
-	/**
-	 * This method is an auxiliary method used to write in the console some
-	 * debug information.
-	 * 
-	 * @param info
-	 *            The info to be written in the console.
-	 */
-	private void debugInfo(String info) {
-		if (IS_DEBUG_ENABLED) {
-			System.out.println(info);
-			System.out.println(toString());
-		}
+		SharedModel.getInstance().setElements(selectedElements);
 	}
 }

@@ -1,19 +1,9 @@
 package pa.iscde.checkstyle.internal.check.sizes;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import com.google.common.io.Closeables;
 
 import pa.iscde.checkstyle.internal.check.Check;
 import pa.iscde.checkstyle.model.SeverityType;
@@ -26,14 +16,7 @@ import pa.iscde.checkstyle.model.ViolationDetail;
  */
 public class LineLengthCheck extends Check {
 
-	private static final Logger LOGGER = Logger.getLogger(LineLengthCheck.class.getName());
-
 	private static final String CHECK_ID = "LineLengthCheck";
-
-	/**
-	 * The number of characters to read at once.
-	 */
-	private static final int READ_BUFFER_SIZE = 1024;
 
 	/**
 	 * 
@@ -63,33 +46,19 @@ public class LineLengthCheck extends Check {
 	/**
 	 * 
 	 */
-	private File file;
-
-	/**
-	 * 
-	 */
 	private String[] lines;
 
-	public LineLengthCheck(String resource, File file) {
-		super(CHECK_ID, String.format(LOG_CHECK_MESSAGE, MAX_LINE_LENGTH), resource, SeverityType.WARNING);
-		this.file = file;
+	public LineLengthCheck() {
+		super(CHECK_ID, String.format(LOG_CHECK_MESSAGE, MAX_LINE_LENGTH), SeverityType.WARNING);
 	}
 
 	@Override
 	public void process(Map<String, Violation> violations) {
-		String fileContents = null;
-		try {
-			fileContents = readFile();
-		} catch (IOException e) {
-			LOGGER.severe(
-					String.format("It was possible to read file '%s' due to %s.", file.getName(), e.getMessage()));
+		lines = getFileLines();
+		if (lines == null || lines.length == 0) {
+			return;
 		}
-
-		if (fileContents != null) {
-			final List<String> textLines = getFileLines(fileContents);
-			lines = textLines.toArray(new String[textLines.size()]);
-			processLines(violations);
-		}
+		processLines(violations);
 	}
 
 	/**
@@ -127,10 +96,10 @@ public class LineLengthCheck extends Check {
 			}
 		}
 
-		if(count == 0){
+		if (count == 0) {
 			return;
 		}
-		
+
 		Violation violation = violations.get(CHECK_ID);
 
 		if (violation == null) {
@@ -145,56 +114,5 @@ public class LineLengthCheck extends Check {
 			violation.getDetails().addAll(details);
 			violation.setCount(violation.getCount() + count);
 		}
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @param fileContents
-	 * @return
-	 */
-	private List<String> getFileLines(String fileContents) {
-		final List<String> textLines = new ArrayList<>();
-		final BufferedReader reader = new BufferedReader(new StringReader(fileContents));
-
-		try {
-			while (true) {
-				final String line = reader.readLine();
-				if (line == null) {
-					break;
-				}
-				textLines.add(line);
-			}
-		} catch (IOException e) {
-			LOGGER.severe(
-					String.format("It was possible to read file '%s' due to %s.", file.getName(), e.getMessage()));
-		}
-		return textLines;
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private String readFile() throws IOException {
-		final StringBuilder buf = new StringBuilder();
-		final FileInputStream stream = new FileInputStream(file);
-		final Reader reader = new InputStreamReader(stream);
-
-		try {
-			final char[] chars = new char[READ_BUFFER_SIZE];
-			while (true) {
-				final int len = reader.read(chars);
-				if (len < 0) {
-					break;
-				}
-				buf.append(chars, 0, len);
-			}
-		} finally {
-			Closeables.close(reader, false);
-		}
-		return buf.toString();
 	}
 }

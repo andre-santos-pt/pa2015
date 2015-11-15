@@ -19,8 +19,8 @@ import pa.iscde.checkstyle.model.SeverityType;
 import pa.iscde.checkstyle.model.Violation;
 
 /**
- * 
- *
+ * This class defines the abstract concept Check, based on which all the
+ * specific checks, concrete classes, should be implemented.
  */
 public abstract class Check {
 	private static final Logger LOGGER = Logger.getLogger(Check.class.getName());
@@ -29,17 +29,42 @@ public abstract class Check {
 	 * The number of characters to read at once.
 	 */
 	private static final int READ_BUFFER_SIZE = 1024;
-	
+
+	/**
+	 * The unique identification for each check type.
+	 */
 	protected String checkId;
 
+	/**
+	 * The message that should be appear in the main report.
+	 */
 	protected String message;
 
+	/**
+	 * The resource name (class name) on which the check was performed.
+	 */
 	protected String resource;
 
+	/**
+	 * The default severity type associated to each check type.
+	 */
 	protected SeverityType severity;
 
+	/**
+	 * The file on which the check was performed.
+	 */
 	protected File file;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param checkId
+	 *            The identification of the check.
+	 * @param message
+	 *            The message that should be appear in the main report.
+	 * @param severity
+	 *            The default severity type associated to check.
+	 */
 	protected Check(String checkId, String message, SeverityType severity) {
 		this.checkId = checkId;
 		this.message = message;
@@ -78,13 +103,21 @@ public abstract class Check {
 		this.file = file;
 	}
 
+	/**
+	 * This method is implemented for each concrete check in order to detect the
+	 * existing violations based on the rules defined.
+	 * 
+	 * @param violations
+	 *            A violation auxiliary structure to be updated for each
+	 *            concrete check if a validation is detected.
+	 */
 	public abstract void process(Map<String, Violation> violations);
 
 	/**
-	 * TODO
+	 * This method is used to obtain, as an array structure, the lines existing
+	 * within a file.
 	 * 
-	 * @param fileContents
-	 * @return
+	 * @return The lines existing within a file as an array structure.
 	 */
 	public String[] getFileLines() {
 		final List<String> textLines = new ArrayList<>();
@@ -111,10 +144,14 @@ public abstract class Check {
 	}
 
 	/**
-	 * TODO
+	 * This method is used to read the content of a certain file and transform
+	 * it in a single sequence of characters.
 	 * 
-	 * @return
+	 * @return A single sequence of characters representing the contents of a
+	 *         certain file.
 	 * @throws IOException
+	 *             An exception thrown while the content's file is being
+	 *             processed.
 	 */
 	private String readFile() throws IOException {
 		if (file == null) {
@@ -139,5 +176,4 @@ public abstract class Check {
 		}
 		return buf.toString();
 	}
-
 }

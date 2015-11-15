@@ -9,6 +9,9 @@ import pa.iscde.checkstyle.model.SeverityType;
 import pa.iscde.checkstyle.model.Violation;
 import pa.iscde.checkstyle.model.ViolationDetail;
 
+/**
+ * This class implements the FileLengthCheck.
+ */
 public class FileLengthCheck extends Check {
 	/**
 	 * Default maximum number of lines.
@@ -16,25 +19,28 @@ public class FileLengthCheck extends Check {
 	private static final int MAX_LINES = 10;
 
 	/**
-	 * 
+	 * Identifies this kind of check.
 	 */
 	private static final String CHECK_ID = "FileLengthCheck";
 
 	/**
-	 * 
+	 * The message that should appear in the main report.
 	 */
 	private static final String LOG_CHECK_MESSAGE = "File length is grater than max allowed (%d).";
 
 	/**
-	 * 
+	 * The message that should appear in the detailed report.
 	 */
 	private static final String LOG_LINE_MESSAGE = "File length is '%d' lines (max allowed is '%d').";
 
 	/**
-	 * 
+	 * The lines existing in the file in which this check is being performed. 
 	 */
 	private String[] lines;
 
+	/**
+	 * Default construct.
+	 */
 	public FileLengthCheck() {
 		super(CHECK_ID, String.format(LOG_CHECK_MESSAGE, MAX_LINES), SeverityType.WARNING);
 	}

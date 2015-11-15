@@ -4,7 +4,8 @@ import pa.iscde.checkstyle.model.SeverityType;
 import pt.iscte.pidesco.javaeditor.service.AnnotationType;
 
 /**
- * TODO
+ * This utility class is used to perform annotation conversions between the
+ * CheckStyle model and JavaEditor model.
  * 
  */
 public final class AnnotationConverter {
@@ -14,9 +15,11 @@ public final class AnnotationConverter {
 	}
 
 	/**
-	 * TODO
+	 * This method converts a severity type into a annotation type.
+	 * 
 	 * @param severity
-	 * @return
+	 *            The severity type to be converted,
+	 * @return An annotation type.
 	 */
 	public static AnnotationType convert(SeverityType severity) {
 		AnnotationType annotationType = null;
@@ -24,6 +27,10 @@ public final class AnnotationConverter {
 		switch (severity) {
 		case WARNING:
 			annotationType = AnnotationType.WARNING;
+			break;
+		case BLOCKED:
+		case CRITICAL:
+			annotationType = AnnotationType.ERROR;
 			break;
 		default:
 			annotationType = AnnotationType.WARNING;

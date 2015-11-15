@@ -10,7 +10,7 @@ public final class SharedModel {
 	/**
 	 * Used to enable/disable the console debug info.
 	 */
-	private static final boolean IS_DEBUG_ENABLED = false;
+	private static final boolean IS_DEBUG_ENABLED = true;
 
 	private static final SharedModel INSTANCE = new SharedModel();
 

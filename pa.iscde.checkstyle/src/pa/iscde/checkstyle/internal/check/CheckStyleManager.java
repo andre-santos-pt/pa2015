@@ -2,6 +2,7 @@ package pa.iscde.checkstyle.internal.check;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +29,6 @@ public final class CheckStyleManager {
 	/**
 	 * 
 	 */
-	private Collection<SourceElement> elements = SharedModel.getInstance().getElements();
-
-	/**
-	 * 
-	 */
 	private final List<Check> registeredChecks = new ArrayList<Check>(NUMBER_REGISTERED_CHECKS);
 
 	/**
@@ -53,6 +49,13 @@ public final class CheckStyleManager {
 	 * TODO
 	 */
 	public void process() {
+		resetViolations();
+		recalculateViolations();
+
+	}
+
+	private void recalculateViolations() {
+		final Collection<SourceElement> elements = SharedModel.getInstance().getElements();
 		for (SourceElement element : elements) {
 			for (Check check : registeredChecks) {
 				check.setResource(element.getName());
@@ -62,11 +65,15 @@ public final class CheckStyleManager {
 		}
 	}
 
+	private void resetViolations() {
+		violations.clear();
+	}
+
 	/**
 	 * 
 	 * @return
 	 */
 	public Map<String, Violation> getViolations() {
-		return violations;
+		return Collections.unmodifiableMap(violations);
 	}
 }

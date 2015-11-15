@@ -13,15 +13,16 @@ import pa.iscde.checkstyle.model.ViolationDetail;
  * This class implements the FileLengthCheck.
  */
 public class FileLengthCheck extends Check {
-	/**
-	 * Default maximum number of lines.
-	 */
-	private static final int MAX_LINES = 10;
 
 	/**
 	 * Identifies this kind of check.
 	 */
 	private static final String CHECK_ID = "FileLengthCheck";
+
+	/**
+	 * Default maximum number of lines.
+	 */
+	private static final int MAX_LINES = 10;
 
 	/**
 	 * The message that should appear in the main report.
@@ -32,11 +33,6 @@ public class FileLengthCheck extends Check {
 	 * The message that should appear in the detailed report.
 	 */
 	private static final String LOG_LINE_MESSAGE = "File length is '%d' lines (max allowed is '%d').";
-
-	/**
-	 * The lines existing in the file in which this check is being performed. 
-	 */
-	private String[] lines;
 
 	/**
 	 * Default construct.

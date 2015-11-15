@@ -11,43 +11,44 @@ import pa.iscde.checkstyle.model.Violation;
 import pa.iscde.checkstyle.model.ViolationDetail;
 
 /**
- * 
- *
+ * This class implements the LineLengthCheck.
  */
 public class LineLengthCheck extends Check {
 
+	/**
+	 * Identifies this kind of check.
+	 */
 	private static final String CHECK_ID = "LineLengthCheck";
 
 	/**
-	 * 
+	 * The message that should appear in the main report.
 	 */
 	private static final String LOG_CHECK_MESSAGE = "Line is longer than '%s' characters.";
 
 	/**
-	 * 
+	 * The message that should appear in the detailed report.
 	 */
 	private static final String LOG_LINE_MESSAGE = "Line is longer than '%s' characters (found '%s').";
 
 	/**
-	 * 
+	 * The maximum line length allowed by this check.
 	 */
 	private static final int MAX_LINE_LENGTH = 80;
 
 	/**
-	 * 
+	 * The pattern that should be ignored when this check is being performed.
 	 */
 	private static final String IGNORE_PATTERN = "^ *\\* *[^ ]+$";
 
 	/**
-	 * 
+	 * The import pattern that should be ignored when this check is being
+	 * performed.
 	 */
 	private static final String IMPORT_PATTERN = "^import .*";
 
 	/**
-	 * 
+	 * Default construct.
 	 */
-	private String[] lines;
-
 	public LineLengthCheck() {
 		super(CHECK_ID, String.format(LOG_CHECK_MESSAGE, MAX_LINE_LENGTH), SeverityType.WARNING);
 	}
@@ -62,9 +63,14 @@ public class LineLengthCheck extends Check {
 	}
 
 	/**
-	 * TODO
+	 * This method is used to apply this check for each line existing within the
+	 * file.
 	 * 
 	 * @param violations
+	 *            A violation auxiliary structure to be updated if a violation
+	 *            of this check is detected. If a check of this type is already
+	 *            defined in this structure, it is updated regarding to its
+	 *            count and the corresponding details.
 	 */
 	private void processLines(Map<String, Violation> violations) {
 		int count = 0;

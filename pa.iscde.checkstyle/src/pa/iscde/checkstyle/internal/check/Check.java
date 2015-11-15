@@ -56,6 +56,11 @@ public abstract class Check {
 	protected File file;
 
 	/**
+	 * The lines existing in the file in which this check is being performed.
+	 */
+	protected String[] lines;
+
+	/**
 	 * Constructor.
 	 * 
 	 * @param checkId
@@ -140,7 +145,8 @@ public abstract class Check {
 			LOGGER.severe(
 					String.format("It was possible to read file '%s' due to %s.", file.getName(), e.getMessage()));
 		}
-		return textLines.toArray(new String[textLines.size()]);
+		lines = textLines.toArray(new String[textLines.size()]);
+		return lines.clone();
 	}
 
 	/**

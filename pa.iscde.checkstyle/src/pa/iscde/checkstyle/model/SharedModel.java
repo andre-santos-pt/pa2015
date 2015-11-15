@@ -1,43 +1,44 @@
 package pa.iscde.checkstyle.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 
 public final class SharedModel {
-	
+
 	/**
 	 * Used to enable/disable the console debug info.
 	 */
-	private static final boolean IS_DEBUG_ENABLED = true;
+	private static final boolean IS_DEBUG_ENABLED = false;
 
 	private static final SharedModel INSTANCE = new SharedModel();
 
-	private Collection<SourceElement> elements;
+	private List<SourceElement> elements;
 
-	private SharedModel(){
+	private SharedModel() {
 		elements = new ArrayList<SourceElement>();
 	}
-	
+
 	public static SharedModel getInstance() {
 		return INSTANCE;
 	}
 
-	public Collection<SourceElement> getElements() {
-		return elements;
+	public List<SourceElement> getElements() {
+		return Collections.unmodifiableList(elements);
 	}
 
-	public void setElements(Collection<SourceElement> elements) {		
+	public void setElements(List<SourceElement> elements) {
 		this.elements = elements;
 		debugInfo();
 	}
 
-	public void resetElements() {		
+	public void resetElements() {
 		this.elements.clear();
 		debugInfo();
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();

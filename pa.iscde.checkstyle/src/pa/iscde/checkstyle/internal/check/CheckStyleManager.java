@@ -19,7 +19,7 @@ import pt.iscte.pidesco.projectbrowser.model.SourceElement;
  */
 public final class CheckStyleManager {
 
-	private static final int NUMBER_REGISTERED_CHECKS = 1;
+	private static final int NUMBER_REGISTERED_CHECKS = 2;
 
 	/**
 	 * Eager instantiation of this Singletion.

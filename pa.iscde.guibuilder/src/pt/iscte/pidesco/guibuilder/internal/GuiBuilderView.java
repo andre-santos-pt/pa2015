@@ -261,12 +261,16 @@ public class GuiBuilderView implements PidescoView {
 
 					break;
 				case "JLabel":
+					final Point cursorLocation2 = Display.getCurrent().getCursorLocation();
+					final Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
+							.toControl(cursorLocation2);
+					
 					final String text = "new label";
 
 					composite.setLayout(new FillLayout());
 					final Label label = new Label(canvas, SWT.BORDER);
 					label.setText(text);
-					label.setLocation(100, 100);
+					label.setLocation(relativeCursorLocation2.x, relativeCursorLocation2.y);
 					label.setSize(70, 20);
 
 					// if (composite != null) {
@@ -285,28 +289,40 @@ public class GuiBuilderView implements PidescoView {
 					break;
 
 				case "JTextField":
+					final Point cursorLocation3 = Display.getCurrent().getCursorLocation();
+					final Point relativeCursorLocation3 = Display.getCurrent().getFocusControl()
+							.toControl(cursorLocation3);
+					
 					Text textField = new Text(canvas, SWT.BORDER);
-					textField.setSize(100, 100);
+					textField.setSize(100, 20);
 					textField.setText("new textField");
-					textField.setLocation(200, 300);
+					textField.setLocation(relativeCursorLocation3.x, relativeCursorLocation3.y);
 
 					break;
 
 				case "JRadioButton":
 
+					final Point cursorLocation4 = Display.getCurrent().getCursorLocation();
+					final Point relativeCursorLocation4 = Display.getCurrent().getFocusControl()
+							.toControl(cursorLocation4);
+					
 					Button radioButton = new Button(canvas, SWT.RADIO);
 					radioButton.setSelection(true);
 					radioButton.setText("Choice 1");
-					radioButton.setLocation(100, 0);
-					radioButton.setSize(100, 100);
+					radioButton.setLocation(relativeCursorLocation4.x, relativeCursorLocation4.y);
+					radioButton.setSize(100, 20);
 
 					break;
 
 				case "JCheckBox":
+					final Point cursorLocation5 = Display.getCurrent().getCursorLocation();
+					final Point relativeCursorLocation5 = Display.getCurrent().getFocusControl()
+							.toControl(cursorLocation5);
+					
 					Button checkBox = new Button(canvas, SWT.CHECK);
 					checkBox.setText("Checkbox 1");
-					checkBox.setLocation(100, 300);
-					checkBox.setSize(100, 100);
+					checkBox.setLocation(relativeCursorLocation5.x, relativeCursorLocation5.y);
+					checkBox.setSize(100, 20);
 
 					break;
 				default:

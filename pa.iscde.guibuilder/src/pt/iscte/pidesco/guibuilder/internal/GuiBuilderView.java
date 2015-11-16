@@ -261,8 +261,8 @@ public class GuiBuilderView implements PidescoView {
 
 					break;
 				case "JLabel":
-					final Point cursorLocation2 = Display.getCurrent().getCursorLocation();
-					final Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
+					 Point cursorLocation2 = Display.getCurrent().getCursorLocation();
+					 Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation2);
 					
 					final String text = "new label";
@@ -485,6 +485,7 @@ public class GuiBuilderView implements PidescoView {
 					}
 				}
 				// fazer aqui o double click para depois entrar no codigo
+				
 			}
 		});
 	}

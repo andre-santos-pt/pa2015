@@ -23,6 +23,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -261,13 +262,12 @@ public class GuiBuilderView implements PidescoView {
 
 					break;
 				case "JLabel":
-					 Point cursorLocation2 = Display.getCurrent().getCursorLocation();
-					 Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
+					final Point cursorLocation2 = Display.getCurrent().getCursorLocation();
+					final Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation2);
-					
+
 					final String text = "new label";
 
-					composite.setLayout(new FillLayout());
 					final Label label = new Label(canvas, SWT.BORDER);
 					label.setText(text);
 					label.setLocation(relativeCursorLocation2.x, relativeCursorLocation2.y);
@@ -292,7 +292,7 @@ public class GuiBuilderView implements PidescoView {
 					final Point cursorLocation3 = Display.getCurrent().getCursorLocation();
 					final Point relativeCursorLocation3 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation3);
-					
+
 					Text textField = new Text(canvas, SWT.BORDER);
 					textField.setSize(100, 20);
 					textField.setText("new textField");
@@ -305,7 +305,7 @@ public class GuiBuilderView implements PidescoView {
 					final Point cursorLocation4 = Display.getCurrent().getCursorLocation();
 					final Point relativeCursorLocation4 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation4);
-					
+
 					Button radioButton = new Button(canvas, SWT.RADIO);
 					radioButton.setSelection(true);
 					radioButton.setText("Choice 1");
@@ -318,7 +318,7 @@ public class GuiBuilderView implements PidescoView {
 					final Point cursorLocation5 = Display.getCurrent().getCursorLocation();
 					final Point relativeCursorLocation5 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation5);
-					
+
 					Button checkBox = new Button(canvas, SWT.CHECK);
 					checkBox.setText("Checkbox 1");
 					checkBox.setLocation(relativeCursorLocation5.x, relativeCursorLocation5.y);
@@ -359,58 +359,31 @@ public class GuiBuilderView implements PidescoView {
 					final Button button = new Button(compositeButtons, SWT.PUSH);
 					button.setAlignment(SWT.CENTER);
 
-					// Create the drag source on the composite
-					DragSource ds = new DragSource(button, DND.DROP_MOVE);
-					ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-
 					switch (t) {
 					case 0:
 						button.setText("JButton");
+						addDragListener(button);
 
-						ds.addDragListener(new DragSourceAdapter() {
-							public void dragSetData(DragSourceEvent event) {
-								event.data = button.getText();
-							}
-						});
 						break;
 					case 1:
 						button.setText("JLabel");
-
-						ds.addDragListener(new DragSourceAdapter() {
-							public void dragSetData(DragSourceEvent event) {
-								event.data = button.getText();
-							}
-						});
+						addDragListener(button);
 
 						break;
 					case 2:
 						button.setText("JTextField");
-
-						ds.addDragListener(new DragSourceAdapter() {
-							public void dragSetData(DragSourceEvent event) {
-								event.data = button.getText();
-							}
-						});
+						addDragListener(button);
 
 						break;
 					case 3:
 						button.setText("JRadioButton");
-
-						ds.addDragListener(new DragSourceAdapter() {
-							public void dragSetData(DragSourceEvent event) {
-								event.data = button.getText();
-							}
-						});
+						addDragListener(button);
 
 						break;
 					case 4:
 						button.setText("JCheckBox");
+						addDragListener(button);
 
-						ds.addDragListener(new DragSourceAdapter() {
-							public void dragSetData(DragSourceEvent event) {
-								event.data = button.getText();
-							}
-						});
 						break;
 
 					default:
@@ -462,11 +435,25 @@ public class GuiBuilderView implements PidescoView {
 		}
 	}
 
+	private void addDragListener(final Button button) {
+
+		DragSource ds = new DragSource(button, DND.DROP_MOVE);
+		ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
+
+		ds.addDragListener(new DragSourceAdapter() {
+			public void dragSetData(DragSourceEvent event) {
+				event.data = button.getText();
+			}
+		});
+
+	}
+
 	private void mouseEventTopComposite(final Canvas canvas) {
 
-		canvas.addMouseListener(new MouseAdapter() {
+		canvas.addMouseListener(new MouseListener() {
 
-			public void mouseDown(MouseEvent event) {
+			@Override
+			public void mouseUp(MouseEvent event) {
 				if (event.button == 3) { // Right click
 					if (componentsInTopComposite.containsKey("JButton")) {
 						RoundedRectangle jButton = ((RoundedRectangle) componentsInTopComposite.get("JButton"));
@@ -484,10 +471,23 @@ public class GuiBuilderView implements PidescoView {
 
 					}
 				}
-				// fazer aqui o double click para depois entrar no codigo
-				
+
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				System.out.println("Double click");
+				// fazer aqui o double click para depois entrar no codigo count
+
 			}
 		});
+
 	}
 
 	private void openMenuDialog(final Canvas canvas, final FigureMoverResizer fmr, final int x, final int y) {
@@ -523,129 +523,21 @@ public class GuiBuilderView implements PidescoView {
 
 		popupMenu.setVisible(true);
 
-		renameItem.addSelectionListener(new SelectionListener() {
+		addSelectionListener(renameItem, canvas, fmr, x, y);
+		addSelectionListener(colorBlack, canvas, fmr, x, y);
+		addSelectionListener(colorWhite, canvas, fmr, x, y);
+		addSelectionListener(colorYellow, canvas, fmr, x, y);
+		addSelectionListener(colorBlue, canvas, fmr, x, y);
+		addSelectionListener(colorGray, canvas, fmr, x, y);
+		addSelectionListener(colorGreen, canvas, fmr, x, y);
+		addSelectionListener(colorRed, canvas, fmr, x, y);
+		addSelectionListener(colorOther, canvas, fmr, x, y);
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
+	}
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("entrou menu rename");
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-				String inputText = new InputDialog(x, y, topComposite.getShell(), SWT.BAR).open();
-
-				fmr.setText(inputText);
-
-			}
-		});
-		colorBlack.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorWhite.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorYellow.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorBlue.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_BLUE));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorGray.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorGreen.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GREEN));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-		colorRed.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
-
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
-			}
-		});
-
-		colorOther.addSelectionListener(new SelectionListener() {
+	private void addSelectionListener(final MenuItem item, final Canvas canvas, final FigureMoverResizer fmr,
+			final int x, final int y) {
+		item.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -654,23 +546,56 @@ public class GuiBuilderView implements PidescoView {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				ColorDialog dlg = new ColorDialog(canvas.getShell());
+				switch (item.getText()) {
 
-				dlg.setRGB(fmr.getFigure().getBackgroundColor().getRGB());
+				case "Rename":
+					String inputText = new InputDialog(x, y, topComposite.getShell(), SWT.BAR).open();
+					fmr.setText(inputText);
+					break;
+				case "Black":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+					// MessageBox messageBox = new MessageBox(canvas.getShell(),
+					// SWT.ICON_INFORMATION);
+					// messageBox.setMessage("Color changed!");
+					// messageBox.open();
+					break;
+				case "White":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+					break;
+				case "Yellow":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+					break;
+				case "Blue":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+					break;
+				case "Gray":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+					break;
+				case "Green":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_GREEN));
+					break;
+				case "Red":
+					fmr.getFigure().setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_RED));
+					break;
+				case "Other..":
+					ColorDialog dlg = new ColorDialog(canvas.getShell());
 
-				// Change the title bar text
-				dlg.setText("Choose a Color");
+					dlg.setRGB(fmr.getFigure().getBackgroundColor().getRGB());
 
-				// Open the dialog and retrieve the selected color
-				RGB rgb = dlg.open();
+					// Change the title bar text
+					dlg.setText("Choose a Color");
 
-				fmr.getFigure().setBackgroundColor(new Color(canvas.getDisplay(), rgb));
+					// Open the dialog and retrieve the selected color
+					RGB rgb = dlg.open();
 
-				MessageBox messageBox = new MessageBox(canvas.getShell(), SWT.ICON_INFORMATION);
-				messageBox.setMessage("Color changed!");
-				messageBox.open();
+					fmr.getFigure().setBackgroundColor(new Color(canvas.getDisplay(), rgb));
+					break;
+
+				default:
+					break;
+				}
+
 			}
 		});
-
 	}
 }

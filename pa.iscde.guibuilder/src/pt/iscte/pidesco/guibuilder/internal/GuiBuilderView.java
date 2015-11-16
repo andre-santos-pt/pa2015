@@ -23,8 +23,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -44,6 +43,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.guibuilder.ui.FigureMoverResizer;
@@ -263,18 +263,51 @@ public class GuiBuilderView implements PidescoView {
 				case "JLabel":
 					final String text = "new label";
 
-					if (canvas != null) {
-						canvas.addPaintListener(new PaintListener() {
+					composite.setLayout(new FillLayout());
+					final Label label = new Label(canvas, SWT.BORDER);
+					label.setText(text);
+					label.setLocation(100, 100);
+					label.setSize(70, 20);
 
-							@Override
-							public void paintControl(PaintEvent e) {
+					// if (composite != null) {
+					// composite.addPaintListener(new PaintListener() {
+					//
+					// @Override
+					// public void paintControl(PaintEvent e) {
+					//
+					// e.gc.drawText(text, 100 - (text.length() * 3), 100);
+					// composite.redraw();
+					// composite.update();
+					// }
+					// });
+					// }
 
-								e.gc.drawText(text, 100 - (text.length() * 3), 100);
-								canvas.redraw();
-								canvas.update();
-							}
-						});
-					}
+					break;
+
+				case "JTextField":
+					Text textField = new Text(canvas, SWT.BORDER);
+					textField.setSize(100, 100);
+					textField.setText("new textField");
+					textField.setLocation(200, 300);
+
+					break;
+
+				case "JRadioButton":
+
+					Button radioButton = new Button(canvas, SWT.RADIO);
+					radioButton.setSelection(true);
+					radioButton.setText("Choice 1");
+					radioButton.setLocation(100, 0);
+					radioButton.setSize(100, 100);
+
+					break;
+
+				case "JCheckBox":
+					Button checkBox = new Button(canvas, SWT.CHECK);
+					checkBox.setText("Checkbox 1");
+					checkBox.setLocation(100, 300);
+					checkBox.setSize(100, 100);
+
 					break;
 				default:
 					break;
@@ -336,12 +369,32 @@ public class GuiBuilderView implements PidescoView {
 						break;
 					case 2:
 						button.setText("JTextField");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
+
 						break;
 					case 3:
 						button.setText("JRadioButton");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
+
 						break;
 					case 4:
 						button.setText("JCheckBox");
+
+						ds.addDragListener(new DragSourceAdapter() {
+							public void dragSetData(DragSourceEvent event) {
+								event.data = button.getText();
+							}
+						});
 						break;
 
 					default:
@@ -415,6 +468,7 @@ public class GuiBuilderView implements PidescoView {
 
 					}
 				}
+				// fazer aqui o double click para depois entrar no codigo
 			}
 		});
 	}

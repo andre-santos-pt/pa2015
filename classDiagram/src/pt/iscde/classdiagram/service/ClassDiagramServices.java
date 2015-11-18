@@ -1,4 +1,4 @@
-package classdiagram.service;
+package pt.iscde.classdiagram.service;
 
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 

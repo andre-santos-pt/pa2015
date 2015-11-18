@@ -6,7 +6,7 @@
          name="Diagrama de Classes"
          point="pt.iscte.pidesco.view">
       <view
-            class="classdiagram.internal.ClassDiagramView"
+            class="pt.iscde.classdiagram.internal.ClassDiagramView"
             icon="sitemap.png">
       </view>
    </extension>

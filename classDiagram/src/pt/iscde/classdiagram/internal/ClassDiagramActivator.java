@@ -1,4 +1,4 @@
-package classdiagram.internal;
+package pt.iscde.classdiagram.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

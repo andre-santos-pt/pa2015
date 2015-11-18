@@ -1,4 +1,4 @@
-package classdiagram.internal;
+package pt.iscde.classdiagram.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphNode;
 
-import classdiagram.service.ClassDiagramServices;
+import pt.iscde.classdiagram.service.ClassDiagramServices;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
@@ -57,9 +57,9 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	@Override
 	public void update(SourceElement sourceElement) {
-		for (GraphNode node : (List<GraphNode>)graph.getNodes()) {
-			node.dispose();
-		}
+//		for (GraphNode node : (List<GraphNode>)graph.getNodes()) {
+//			node.dispose();
+//		}
 		
 		GraphNode node = new GraphNode(graph, SWT.NONE);
 		node.setText(sourceElement.getName());

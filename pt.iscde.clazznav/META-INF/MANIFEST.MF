@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Clazznav
+Bundle-SymbolicName: pa.iscde.clazznav;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: pt.iscte.pidesco.clazznav.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ pt.iscte.pidesco;bundle-version="0.1.0",
+ org.eclipse.swt;bundle-version="3.104.1",
+ pt.iscte.pidesco.javaeditor;bundle-version="1.1.0",
+ org.eclipse.zest.core;bundle-version="1.5.201",
+ org.eclipse.zest.layouts;bundle-version="1.1.200"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

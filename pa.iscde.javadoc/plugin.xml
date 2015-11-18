@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+>
+   <extension
+         id="javadoc"
+         name="JavaDoc"
+         point="pt.iscte.pidesco.view">
+      <view
+            class="pa.iscde.javadoc.internal.JavaDocView">
+      </view>
+   </extension>
+</plugin>

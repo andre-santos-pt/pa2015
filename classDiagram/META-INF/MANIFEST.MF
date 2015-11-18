@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Pidesco Class Diagram
-Bundle-SymbolicName: pt.iscte.pidesco.classDiagram;singleton:=true
+Bundle-SymbolicName: pt.iscte.pidesco.classdiagram;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: pt.iscde.classdiagram.internal.ClassDiagramActivator
 Require-Bundle: org.eclipse.core.runtime,

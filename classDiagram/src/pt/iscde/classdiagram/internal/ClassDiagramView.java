@@ -7,18 +7,21 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphNode;
 
+import pt.iscde.classdiagram.model.ClassMethod;
+import pt.iscde.classdiagram.model.ClassRepresentation;
+import pt.iscde.classdiagram.model.EVisibility;
 import pt.iscde.classdiagram.service.ClassDiagramServices;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
@@ -28,11 +31,14 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
 public class ClassDiagramView implements PidescoView, ClassDiagramServices, ProjectBrowserListener {
-	private static final String VIEW_ID = "pt.iscte.pidesco.classDiagram";
+	private static final String VIEW_ID = "pt.iscte.pidesco.classdiagram";
 	private static ClassDiagramView instance;
 	private static PidescoServices pidescoServices;
 	private static ProjectBrowserServices browserServices;
 	private static JavaEditorServices javaEditorServices;
+	
+	
+	private ClassRepresentation selClass;
 
 	private Graph graph;
 
@@ -61,48 +67,68 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 //			node.dispose();
 //		}
 		
-		GraphNode node = new GraphNode(graph, SWT.NONE);
-		node.setText(sourceElement.getName());
+//		GraphNode node = new GraphNode(graph, SWT.NONE);
+//		node.setText(sourceElement.getName());
 	}
 
 	List<String> metodos = new ArrayList<String>();
 
 	@Override
 	public void doubleClick(SourceElement element) {
+		selClass = new ClassRepresentation();
 		IProblem[] parseFile = javaEditorServices.parseFile(element.getFile(), new ASTVisitor() {
 
 			@Override
-			public boolean visit(FieldDeclaration node) {
-				System.out.println(node.toString());
-
-//				for (Object dec : node.fragments()) {
-//					System.out.println(dec.toString());
-//					System.out.println(dec.getClass());
-//					if (dec instanceof VariableDeclarationFragment) {
-//						VariableDeclarationFragment fd = (VariableDeclarationFragment) dec;
-//						System.out.println(fd.toString());
-//						System.out.println(fd.getParent().properties());
-//					}
-//				}
+			public boolean visit(TypeDeclaration node) {
+				selClass.setName(node.getName().getIdentifier());
 				return super.visit(node);
 			}
 			
-			
-
 			@Override
 			public boolean visit(MethodDeclaration node) {
-				System.out.print(node.toString());
+
+				final ClassMethod method = new ClassMethod();
+				method.setName(node.getName().getIdentifier());
+				
+				// parâmetros
+				for (Object object : node.parameters()) {
+					if (object instanceof SingleVariableDeclaration) {
+						SingleVariableDeclaration svd = (SingleVariableDeclaration) object;
+						method.getParameterTypes().add(svd.getType().toString());
+					}
+				}
+				
+				method.setReturnType(node.getReturnType2().toString());
+				
+				// modifier
+				node.accept(new ASTVisitor() {
+					@Override
+					public boolean visit(Modifier node) {
+						if(node.isPublic())
+							method.setVisibility(EVisibility.PUBLIC);
+						else if(node.isPrivate())
+							method.setVisibility(EVisibility.PRIVATE);
+						else if(node.isProtected())
+							method.setVisibility(EVisibility.PROTECTED);
+						else
+							method.setVisibility(EVisibility.PACKAGE);
+						return super.visit(node);
+					}
+
+				});
+				
+				if(method.getVisibility() == null){
+					method.setVisibility(EVisibility.PACKAGE);
+				}
+				selClass.getMethods().add(method);
 				return super.visit(node);
 			}
-
-			@Override
-			public boolean visit(Modifier node) {
-				System.out.print(node.toString());
-				return super.visit(node);
-			}
-
 		});
-
+		
+		
+		GraphNode node = new GraphNode(graph, SWT.NONE);
+		node.setText(selClass.toString());
+		
 	}
 
 	@Override

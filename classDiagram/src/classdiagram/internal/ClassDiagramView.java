@@ -8,7 +8,10 @@ import java.util.Map;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -30,11 +33,9 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	private static PidescoServices pidescoServices;
 	private static ProjectBrowserServices browserServices;
 	private static JavaEditorServices javaEditorServices;
-	
-	
+
 	private Graph graph;
-	
-	
+
 	public ClassDiagramView() {
 		pidescoServices = ClassDiagramActivator.getInstance().getPidescoServices();
 		browserServices = ClassDiagramActivator.getInstance().getBrowserServices();
@@ -43,9 +44,9 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	}
 
 	public static ClassDiagramView getInstance() {
-		if(instance == null)
+		if (instance == null)
 			pidescoServices.openView(VIEW_ID);
-			
+
 		return instance;
 	}
 
@@ -56,38 +57,53 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	@Override
 	public void update(SourceElement sourceElement) {
-		graph.getNodes().clear();
+		for (GraphNode node : (List<GraphNode>)graph.getNodes()) {
+			node.dispose();
+		}
+		
 		GraphNode node = new GraphNode(graph, SWT.NONE);
 		node.setText(sourceElement.getName());
 	}
+
 	List<String> metodos = new ArrayList<String>();
 
 	@Override
 	public void doubleClick(SourceElement element) {
-		IProblem[] parseFile = javaEditorServices.parseFile(element.getFile(), new ASTVisitor(){
+		IProblem[] parseFile = javaEditorServices.parseFile(element.getFile(), new ASTVisitor() {
+
 			@Override
 			public boolean visit(FieldDeclaration node) {
-				
-				for (Object dec : node.fragments()) {
-					System.out.println(dec.toString());
-					System.out.println(dec.getClass());
-					if (dec instanceof VariableDeclarationFragment) {
-						VariableDeclarationFragment fd = (VariableDeclarationFragment) dec;
-						System.out.println(fd.toString());
-						System.out.println(fd.getParent().properties());
-						
-					}
-				}
-				
+				System.out.println(node.toString());
+
+//				for (Object dec : node.fragments()) {
+//					System.out.println(dec.toString());
+//					System.out.println(dec.getClass());
+//					if (dec instanceof VariableDeclarationFragment) {
+//						VariableDeclarationFragment fd = (VariableDeclarationFragment) dec;
+//						System.out.println(fd.toString());
+//						System.out.println(fd.getParent().properties());
+//					}
+//				}
 				return super.visit(node);
-				
 			}
 			
+			
+
+			@Override
+			public boolean visit(MethodDeclaration node) {
+				System.out.print(node.toString());
+				return super.visit(node);
+			}
+
+			@Override
+			public boolean visit(Modifier node) {
+				System.out.print(node.toString());
+				return super.visit(node);
+			}
+
 		});
-		
-		
+
 	}
-	
 
 	@Override
 	public void selectionChanged(Collection<SourceElement> selection) {
@@ -99,7 +115,7 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 				}
 			}
 		}
-		
+
 	}
 
 }

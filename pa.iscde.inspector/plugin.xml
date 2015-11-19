@@ -6,7 +6,7 @@
          name="List of Services"
          point="pt.iscte.pidesco.view">
       <view
-            class="pa.iscde.inspector.PidescoView4">
+            class="pa.iscde.inspector.gui.Display">
       </view>
    </extension>
 

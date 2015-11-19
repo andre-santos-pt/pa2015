@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.framework.BundleActivator;
 
 public class Component {
 
@@ -92,4 +91,5 @@ public class Component {
 			System.out.println("\n");
 		}
 	}
+
 }

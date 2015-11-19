@@ -1,6 +1,6 @@
 package pt.iscte.pidesco.guibuilder.internal;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
@@ -21,10 +21,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -41,7 +39,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -52,8 +49,7 @@ import pt.iscte.pidesco.guibuilder.ui.FigureMoverResizer;
 public class GuiBuilderView implements PidescoView {
 	private Composite topComposite;
 	private Composite bottomComposite;
-	private HashMap<String, Object> componentsInTopComposite = new HashMap<String, Object>();
-	private HashMap<String, FigureMoverResizer> figureMoverResizerComponentsInTopComposite = new HashMap<String, FigureMoverResizer>();
+	private ArrayList<ComponentInComposite> components = new ArrayList<ComponentInComposite>();
 
 	public GuiBuilderView() {
 		// TODO Auto-generated constructor stub
@@ -257,8 +253,7 @@ public class GuiBuilderView implements PidescoView {
 					System.out.println(
 							"relativeCursorLocation: " + relativeCursorLocation.x + "," + relativeCursorLocation.y);
 
-					componentsInTopComposite.put("JButton", jButton);
-					figureMoverResizerComponentsInTopComposite.put("JButton", fmr);
+					components.add(new ComponentInComposite("JButton " + System.currentTimeMillis(), jButton, fmr));
 
 					break;
 				case "JLabel":
@@ -266,25 +261,14 @@ public class GuiBuilderView implements PidescoView {
 					final Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation2);
 
-					final String text = "new label";
+					final String text = "New label";
 
 					final Label label = new Label(canvas, SWT.BORDER);
 					label.setText(text);
 					label.setLocation(relativeCursorLocation2.x, relativeCursorLocation2.y);
 					label.setSize(70, 20);
 
-					// if (composite != null) {
-					// composite.addPaintListener(new PaintListener() {
-					//
-					// @Override
-					// public void paintControl(PaintEvent e) {
-					//
-					// e.gc.drawText(text, 100 - (text.length() * 3), 100);
-					// composite.redraw();
-					// composite.update();
-					// }
-					// });
-					// }
+					components.add(new ComponentInComposite("JLabel " + System.currentTimeMillis(), label, null));
 
 					break;
 
@@ -295,9 +279,11 @@ public class GuiBuilderView implements PidescoView {
 
 					Text textField = new Text(canvas, SWT.BORDER);
 					textField.setSize(100, 20);
-					textField.setText("new textField");
+					textField.setText("New textfield");
 					textField.setLocation(relativeCursorLocation3.x, relativeCursorLocation3.y);
 
+					components
+							.add(new ComponentInComposite("JTextField " + System.currentTimeMillis(), textField, null));
 					break;
 
 				case "JRadioButton":
@@ -308,9 +294,12 @@ public class GuiBuilderView implements PidescoView {
 
 					Button radioButton = new Button(canvas, SWT.RADIO);
 					radioButton.setSelection(true);
-					radioButton.setText("Choice 1");
+					radioButton.setText("New choice");
 					radioButton.setLocation(relativeCursorLocation4.x, relativeCursorLocation4.y);
 					radioButton.setSize(100, 20);
+
+					components.add(
+							new ComponentInComposite("JRadioButton " + System.currentTimeMillis(), radioButton, null));
 
 					break;
 
@@ -320,9 +309,11 @@ public class GuiBuilderView implements PidescoView {
 							.toControl(cursorLocation5);
 
 					Button checkBox = new Button(canvas, SWT.CHECK);
-					checkBox.setText("Checkbox 1");
+					checkBox.setText("New checkbox");
 					checkBox.setLocation(relativeCursorLocation5.x, relativeCursorLocation5.y);
 					checkBox.setSize(100, 20);
+
+					components.add(new ComponentInComposite("JCheckBox " + System.currentTimeMillis(), checkBox, null));
 
 					break;
 				default:
@@ -455,20 +446,31 @@ public class GuiBuilderView implements PidescoView {
 			@Override
 			public void mouseUp(MouseEvent event) {
 				if (event.button == 3) { // Right click
-					if (componentsInTopComposite.containsKey("JButton")) {
-						RoundedRectangle jButton = ((RoundedRectangle) componentsInTopComposite.get("JButton"));
-						if (event.x > jButton.getLocation().x
-								&& event.x < jButton.getLocation().x + jButton.getBounds().width
-								&& event.y > jButton.getLocation().y
-								&& event.y < jButton.getLocation().y + jButton.getBounds().height) {
-							System.out.println("Right click !");
+					for (ComponentInComposite componentInComposite : components) {
+						if (componentInComposite.getId().contains("JButton")) {
+							RoundedRectangle jButton = ((RoundedRectangle) componentInComposite.getObject());
 
-							if (figureMoverResizerComponentsInTopComposite.containsKey("JButton"))
-								openMenuDialog(canvas, figureMoverResizerComponentsInTopComposite.get("JButton"),
-										event.x, event.y);
+							if (event.x > jButton.getLocation().x
+									&& event.x < jButton.getLocation().x + jButton.getBounds().width
+									&& event.y > jButton.getLocation().y
+									&& event.y < jButton.getLocation().y + jButton.getBounds().height) {
+								System.out.println("Right click !");
+
+								openMenuDialog(canvas, componentInComposite.getFmr(), event.x, event.y);
+							}
+						}
+						if (componentInComposite.getId().contains("JLabel")) {
 
 						}
+						if (componentInComposite.getId().contains("JTextField")) {
 
+						}
+						if (componentInComposite.getId().contains("JRadioButton")) {
+
+						}
+						if (componentInComposite.getId().contains("JCheckBox")) {
+
+						}
 					}
 				}
 

@@ -7,17 +7,18 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
+import org.eclipse.zest.core.widgets.ZestStyles;
 
 import pt.iscde.classdiagram.model.ClassMethod;
 import pt.iscde.classdiagram.model.ClassRepresentation;
@@ -75,12 +76,35 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	@Override
 	public void doubleClick(SourceElement element) {
+		
+		limparGraph();
+		
 		selClass = new ClassRepresentation();
 		IProblem[] parseFile = javaEditorServices.parseFile(element.getFile(), new ASTVisitor() {
 
 			@Override
 			public boolean visit(TypeDeclaration node) {
 				selClass.setName(node.getName().getIdentifier());
+
+				ITypeBinding typeBind = node.resolveBinding();
+				ITypeBinding superTypeBind = typeBind.getSuperclass();
+				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
+
+				if(superTypeBind!=null){					
+					ClassRepresentation superClass = new ClassRepresentation();
+					superClass.setName(superTypeBind.getName());
+					selClass.setSuperClass(superClass);
+				}
+				
+				if(interfaceBinds!=null){
+					for (ITypeBinding interfaceBind : interfaceBinds) {
+						ClassRepresentation interfaceImplemented = new ClassRepresentation();
+						interfaceImplemented.setName(interfaceBind.getName());
+						selClass.getImplementedInterfaces().add(interfaceImplemented);
+					}
+				}
+				
+				
 				return super.visit(node);
 			}
 			
@@ -123,11 +147,26 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 				selClass.getMethods().add(method);
 				return super.visit(node);
 			}
+			
+			
 		});
 		
 		
-		GraphNode node = new GraphNode(graph, SWT.NONE);
-		node.setText(selClass.toString());
+		GraphNode mainNode = new GraphNode(graph, SWT.NONE);
+		mainNode.setText(selClass.toString());
+		
+		for (ClassRepresentation interfaceRep : selClass.getImplementedInterfaces()) {
+			GraphNode aNode = new GraphNode(graph, SWT.NONE);
+			aNode.setText(interfaceRep.toString());
+			GraphConnection connection = new GraphConnection(graph, ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
+		}
+		
+	}
+
+	private void limparGraph() {
+		List<GraphNode> nodes = new ArrayList<>(graph.getNodes());
+		  for(GraphNode n : nodes)
+		     n.dispose();
 		
 	}
 

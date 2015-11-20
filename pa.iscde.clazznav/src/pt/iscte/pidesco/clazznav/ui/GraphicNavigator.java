@@ -1,5 +1,6 @@
 package pt.iscte.pidesco.clazznav.ui;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.draw2d.GridData;
@@ -12,6 +13,8 @@ import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
+
+import pt.iscte.pidesco.clazznav.Activator;
 
 /**
  * 
@@ -63,7 +66,8 @@ public class GraphicNavigator extends AbstractNavigator{
 		graph.addSelectionListener(new SelectionAdapter() {
 
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
+				   File f = Activator.editor.getOpenedFile();
+	               System.out.println(f.getName());
 			}
 		});
 	}

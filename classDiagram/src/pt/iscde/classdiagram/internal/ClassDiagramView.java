@@ -1,5 +1,6 @@
 package pt.iscde.classdiagram.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,12 +27,13 @@ import pt.iscde.classdiagram.model.EVisibility;
 import pt.iscde.classdiagram.service.ClassDiagramServices;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
-public class ClassDiagramView implements PidescoView, ClassDiagramServices, ProjectBrowserListener {
+public class ClassDiagramView implements PidescoView, ClassDiagramServices, ProjectBrowserListener, JavaEditorListener {
 	private static final String VIEW_ID = "pt.iscte.pidesco.classdiagram";
 	private static ClassDiagramView instance;
 	private static PidescoServices pidescoServices;
@@ -48,6 +50,7 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 		browserServices = ClassDiagramActivator.getInstance().getBrowserServices();
 		javaEditorServices = ClassDiagramActivator.getInstance().getJavaEditorServices();
 		browserServices.addListener(this);
+		javaEditorServices.addListener(this);
 	}
 
 	public static ClassDiagramView getInstance() {
@@ -77,10 +80,15 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	@Override
 	public void doubleClick(SourceElement element) {
 		
-		limparGraph();
+		actualizaDiagrama(element.getFile());
 		
+	}
+
+	private void actualizaDiagrama(File file) {
+		limparGraph();
+				
 		selClass = new ClassRepresentation();
-		IProblem[] parseFile = javaEditorServices.parseFile(element.getFile(), new ASTVisitor() {
+		IProblem[] parseFile = javaEditorServices.parseFile(file, new ASTVisitor() {
 
 			@Override
 			public boolean visit(TypeDeclaration node) {
@@ -122,7 +130,9 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 					}
 				}
 				
-				method.setReturnType(node.getReturnType2().toString());
+				if(node.getReturnType2()!=null){
+					method.setReturnType(node.getReturnType2().toString());
+				}
 				
 				// modifier
 				node.accept(new ASTVisitor() {
@@ -159,15 +169,22 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 			GraphNode aNode = new GraphNode(graph, SWT.NONE);
 			aNode.setText(interfaceRep.toString());
 			GraphConnection connection = new GraphConnection(graph, ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
+			connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
 		}
 		
+		
+			GraphNode aNode = new GraphNode(graph, SWT.NONE);
+			aNode.setText(selClass.getSuperClass().toString());
+			GraphConnection connection = new GraphConnection(graph, ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
+			connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
 	}
 
 	private void limparGraph() {
+		if(graph.getNodes()!=null){
 		List<GraphNode> nodes = new ArrayList<>(graph.getNodes());
 		  for(GraphNode n : nodes)
 		     n.dispose();
-		
+		}
 	}
 
 	@Override
@@ -181,6 +198,30 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 			}
 		}
 
+	}
+
+	@Override
+	public void fileOpened(File file) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileSaved(File file) {
+		actualizaDiagrama(file);
+		
+	}
+
+	@Override
+	public void fileClosed(File file) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void selectionChanged(File file, String text, int offset, int length) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

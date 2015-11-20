@@ -12,11 +12,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import pa.iscde.inspector.component.Component;
+import pa.iscde.inspector.internal.InspectorAtivator;
+import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
 
 public class Display implements PidescoView {
 
 	private List<ComponentDisign> componentDisigns;
+	private PidescoServices service;
+	
+	public Display() {
+//		service = InspectorAtivator.getInstance().getService();
+	}
 
 	public void init() {
 		componentDisigns = new ArrayList<ComponentDisign>();

@@ -1,5 +1,6 @@
 package pt.iscte.pidesco.clazznav.ui;
 
+import java.rmi.activation.Activator;
 import java.util.ArrayList;
 
 import org.eclipse.draw2d.GridData;
@@ -9,6 +10,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
@@ -34,7 +36,9 @@ public class GraphicNavigator extends AbstractNavigator{
 		graph = new Graph(composite, style);
 		graph.setLayoutAlgorithm(new SpringLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 		
-		nodes.add(new CustomNode(graph));
+		CustomNode test = new CustomNode(graph);
+		test.dummyTester(Activator.class);
+		nodes.add(test);
 
 		graphLisener();
 
@@ -63,7 +67,13 @@ public class GraphicNavigator extends AbstractNavigator{
 		graph.addSelectionListener(new SelectionAdapter() {
 
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
+				CustomNode n = new CustomNode(graph);
+				n.dummyTester(GraphConnection.class);
+
+				GraphConnection c = new GraphConnection(graph, SWT.NONE, nodes.get(nodes.size() -1 ), n	);
+				nodes.add(n);
+				graph.redraw();
+				graph.update();
 			}
 		});
 	}

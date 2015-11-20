@@ -84,8 +84,7 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 	public void setLayoutData(GridData data) {
 		previousButton.setLayoutData(data);
 		afterButton.setLayoutData(data);
-		graphicModeButton.setLayoutData(data);
-		
+		graphicModeButton.setLayoutData(data);	
 	}
 
 

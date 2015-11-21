@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -16,14 +17,27 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.zest.core.viewers.GraphViewer;
+import org.eclipse.zest.core.viewers.ZoomContributionViewItem;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
+import org.eclipse.zest.layouts.LayoutAlgorithm;
+import org.eclipse.zest.layouts.LayoutStyles;
+import org.eclipse.zest.layouts.algorithms.CompositeLayoutAlgorithm;
+import org.eclipse.zest.layouts.algorithms.HorizontalShift;
+import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
 
 import pt.iscde.classdiagram.model.ClassMethod;
 import pt.iscde.classdiagram.model.ClassRepresentation;
 import pt.iscde.classdiagram.model.EVisibility;
+import pt.iscde.classdiagram.model.zest.ClassDiagramContentProvider;
+import pt.iscde.classdiagram.model.zest.ClassDiagramLabelProvider;
+import pt.iscde.classdiagram.model.zest.MyConnection;
+import pt.iscde.classdiagram.model.zest.MyNode;
+import pt.iscde.classdiagram.model.zest.NodeModelContentProvider;
 import pt.iscde.classdiagram.service.ClassDiagramServices;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
@@ -39,11 +53,11 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	private static PidescoServices pidescoServices;
 	private static ProjectBrowserServices browserServices;
 	private static JavaEditorServices javaEditorServices;
-	
-	
+
 	private ClassRepresentation selClass;
 
-	private Graph graph;
+	private GraphViewer viewer;
+	private NodeModelContentProvider model;
 
 	public ClassDiagramView() {
 		pidescoServices = ClassDiagramActivator.getInstance().getPidescoServices();
@@ -62,130 +76,169 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	@Override
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
-		graph = new Graph(viewArea, SWT.BORDER);
+		viewer = new GraphViewer(viewArea, SWT.BORDER);
+		viewer.setContentProvider(new ClassDiagramContentProvider());
+		viewer.setLabelProvider(new ClassDiagramLabelProvider());
+		model = new NodeModelContentProvider();
+		viewer.setInput(model.getNodes());
+		LayoutAlgorithm layout = setLayout();
+		viewer.setLayoutAlgorithm(layout, true);
+		viewer.applyLayout();
+	}
+
+
+	private LayoutAlgorithm setLayout() {
+		SpringLayoutAlgorithm treeLayoutAlgorithm = new SpringLayoutAlgorithm(LayoutStyles.ENFORCE_BOUNDS);
+		HorizontalShift horizontalShift = new HorizontalShift(LayoutStyles.NO_LAYOUT_NODE_RESIZING);
+		return new CompositeLayoutAlgorithm(new LayoutAlgorithm[] { horizontalShift, treeLayoutAlgorithm });
 	}
 
 	@Override
 	public void update(SourceElement sourceElement) {
-//		for (GraphNode node : (List<GraphNode>)graph.getNodes()) {
-//			node.dispose();
-//		}
-		
-//		GraphNode node = new GraphNode(graph, SWT.NONE);
-//		node.setText(sourceElement.getName());
+		// for (GraphNode node : (List<GraphNode>)graph.getNodes()) {
+		// node.dispose();
+		// }
+
+		// GraphNode node = new GraphNode(graph, SWT.NONE);
+		// node.setText(sourceElement.getName());
 	}
 
 	List<String> metodos = new ArrayList<String>();
 
 	@Override
 	public void doubleClick(SourceElement element) {
-		
+
 		actualizaDiagrama(element.getFile());
-		
+
 	}
 
 	private void actualizaDiagrama(File file) {
-		limparGraph();
-				
-		selClass = new ClassRepresentation();
+//		limparGraph();
+
+		//selClass = new ClassRepresentation();
+		
+		model = new NodeModelContentProvider();
+		
 		IProblem[] parseFile = javaEditorServices.parseFile(file, new ASTVisitor() {
 
+			MyNode mainNode = null;
+			
+			public boolean visit(EnumDeclaration node) {
+				//selClass.setName(node.getName().getIdentifier());
+				mainNode = new MyNode(node.getName().getFullyQualifiedName(), node.getName().getIdentifier());				
+				model.getNodes().add(mainNode);
+				return super.visit(node);
+			}
+			
+			
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				selClass.setName(node.getName().getIdentifier());
-
+				//selClass.setName(node.getName().getIdentifier());
+				mainNode = new MyNode(node.getName().getFullyQualifiedName(), node.getName().getIdentifier());				
+				model.getNodes().add(mainNode);
+				
+				
 				ITypeBinding typeBind = node.resolveBinding();
 				ITypeBinding superTypeBind = typeBind.getSuperclass();
 				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
 
-				if(superTypeBind!=null){					
-					ClassRepresentation superClass = new ClassRepresentation();
-					superClass.setName(superTypeBind.getName());
-					selClass.setSuperClass(superClass);
+				if (superTypeBind != null) {
+//					ClassRepresentation superClass = new ClassRepresentation();
+//					superClass.setName(superTypeBind.getName());
+//					selClass.setSuperClass(superClass);
+					MyNode superNode = new MyNode(superTypeBind.getQualifiedName(), superTypeBind.getName());
+					model.getNodes().add(superNode);
+					model.addConnection(new MyConnection(superTypeBind.getQualifiedName()+"::"+node.getName().getFullyQualifiedName(), "Extends", mainNode, superNode));
 				}
-				
-				if(interfaceBinds!=null){
+
+				if (interfaceBinds != null) {
 					for (ITypeBinding interfaceBind : interfaceBinds) {
-						ClassRepresentation interfaceImplemented = new ClassRepresentation();
-						interfaceImplemented.setName(interfaceBind.getName());
-						selClass.getImplementedInterfaces().add(interfaceImplemented);
+//						ClassRepresentation interfaceImplemented = new ClassRepresentation();
+//						interfaceImplemented.setName(interfaceBind.getName());
+//						selClass.getImplementedInterfaces().add(interfaceImplemented);
+						MyNode interfaceNode = new MyNode(interfaceBind.getQualifiedName(), interfaceBind.getName());
+						model.getNodes().add(interfaceNode);
+						model.addConnection(new MyConnection(interfaceBind.getQualifiedName()+"::"+node.getName().getFullyQualifiedName(), "Implements", mainNode, interfaceNode));
 					}
 				}
-				
-				
+
 				return super.visit(node);
 			}
-			
-			@Override
-			public boolean visit(MethodDeclaration node) {
 
-				final ClassMethod method = new ClassMethod();
-				method.setName(node.getName().getIdentifier());
-				
-				// parâmetros
-				for (Object object : node.parameters()) {
-					if (object instanceof SingleVariableDeclaration) {
-						SingleVariableDeclaration svd = (SingleVariableDeclaration) object;
-						method.getParameterTypes().add(svd.getType().toString());
-					}
-				}
-				
-				if(node.getReturnType2()!=null){
-					method.setReturnType(node.getReturnType2().toString());
-				}
-				
-				// modifier
-				node.accept(new ASTVisitor() {
-					@Override
-					public boolean visit(Modifier node) {
-						if(node.isPublic())
-							method.setVisibility(EVisibility.PUBLIC);
-						else if(node.isPrivate())
-							method.setVisibility(EVisibility.PRIVATE);
-						else if(node.isProtected())
-							method.setVisibility(EVisibility.PROTECTED);
-						else
-							method.setVisibility(EVisibility.PACKAGE);
-						return super.visit(node);
-					}
+			
+			
+//			@Override
+//			public boolean visit(MethodDeclaration node) {
+//
+//				final ClassMethod method = new ClassMethod();
+//				method.setName(node.getName().getIdentifier());
+//
+//				// parâmetros
+//				for (Object object : node.parameters()) {
+//					if (object instanceof SingleVariableDeclaration) {
+//						SingleVariableDeclaration svd = (SingleVariableDeclaration) object;
+//						method.getParameterTypes().add(svd.getType().toString());
+//					}
+//				}
+//
+//				if (node.getReturnType2() != null) {
+//					method.setReturnType(node.getReturnType2().toString());
+//				}
+//
+//				// modifier
+//				node.accept(new ASTVisitor() {
+//					@Override
+//					public boolean visit(Modifier node) {
+//						if (node.isPublic())
+//							method.setVisibility(EVisibility.PUBLIC);
+//						else if (node.isPrivate())
+//							method.setVisibility(EVisibility.PRIVATE);
+//						else if (node.isProtected())
+//							method.setVisibility(EVisibility.PROTECTED);
+//						else
+//							method.setVisibility(EVisibility.PACKAGE);
+//						return super.visit(node);
+//					}
+//
+//				});
+//
+//				if (method.getVisibility() == null) {
+//					method.setVisibility(EVisibility.PACKAGE);
+//				}
+//				selClass.getMethods().add(method);
+//				return super.visit(node);
+//			}
 
-				});
-				
-				if(method.getVisibility() == null){
-					method.setVisibility(EVisibility.PACKAGE);
-				}
-				selClass.getMethods().add(method);
-				return super.visit(node);
-			}
-			
-			
 		});
+
+		viewer.setInput(model.getNodes());
 		
 		
-		GraphNode mainNode = new GraphNode(graph, SWT.NONE);
-		mainNode.setText(selClass.toString());
-		
-		for (ClassRepresentation interfaceRep : selClass.getImplementedInterfaces()) {
-			GraphNode aNode = new GraphNode(graph, SWT.NONE);
-			aNode.setText(interfaceRep.toString());
-			GraphConnection connection = new GraphConnection(graph, ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
-			connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
-		}
-		
-		
-			GraphNode aNode = new GraphNode(graph, SWT.NONE);
-			aNode.setText(selClass.getSuperClass().toString());
-			GraphConnection connection = new GraphConnection(graph, ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
-			connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
+//		GraphNode mainNode = new GraphNode(graph, SWT.NONE);
+//		mainNode.setText(selClass.toString());
+//
+//		for (ClassRepresentation interfaceRep : selClass.getImplementedInterfaces()) {
+//			GraphNode aNode = new GraphNode(graph, SWT.NONE);
+//			aNode.setText(interfaceRep.toString());
+//			GraphConnection connection = new GraphConnection(graph,
+//					ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
+//			connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
+//		}
+//
+//		GraphNode aNode = new GraphNode(graph, SWT.NONE);
+//		aNode.setText(selClass.getSuperClass().toString());
+//		GraphConnection connection = new GraphConnection(graph,
+//				ZestStyles.CONNECTIONS_DIRECTED | ZestStyles.CONNECTIONS_DASH, mainNode, aNode);
+//		connection.setConnectionStyle(ZestStyles.CONNECTIONS_DASH);
 	}
 
-	private void limparGraph() {
-		if(graph.getNodes()!=null){
-		List<GraphNode> nodes = new ArrayList<>(graph.getNodes());
-		  for(GraphNode n : nodes)
-		     n.dispose();
-		}
-	}
+//	private void limparGraph() {
+//		if (graph.getNodes() != null) {
+//			List<GraphNode> nodes = new ArrayList<>(graph.getNodes());
+//			for (GraphNode n : nodes)
+//				n.dispose();
+//		}
+//	}
 
 	@Override
 	public void selectionChanged(Collection<SourceElement> selection) {
@@ -203,25 +256,25 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	@Override
 	public void fileOpened(File file) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileSaved(File file) {
 		actualizaDiagrama(file);
-		
+
 	}
 
 	@Override
 	public void fileClosed(File file) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void selectionChanged(File file, String text, int offset, int length) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

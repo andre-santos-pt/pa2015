@@ -1,16 +1,23 @@
 package pt.iscte.pidesco.clazznav.ui;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
+import pt.iscte.pidesco.clazznav.Activator;
 
 public class SimpleNavigator extends AbstractNavigator implements NavigatorInterface {
 
 	private Button previousButton;
 	private Button afterButton;
 	private Button graphicModeButton;
+	private int index = -2;
 
 	public SimpleNavigator(Composite composite){
 		super(composite);
@@ -26,10 +33,43 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 		graphicModeButton.setImage(image);
 
 		afterButton = new Button(getComposite(),  SWT.ARROW | SWT.RIGHT);
+		
+		buttonListeners();
 
 	}
 
 
+	
+	private void buttonListeners(){
+		previousButton.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				System.out.println(AbstractNavigator.files.size());
+				if(AbstractNavigator.files.size()>=2){
+					File x =	AbstractNavigator.files.get(AbstractNavigator.files.size() + index);
+					if(!AbstractNavigator.files.isEmpty()){
+						if(!(AbstractNavigator.files.get(AbstractNavigator.files.size() + index + 1 ).getName().equals(x.getName()))){
+								Activator.editor.openFile(x);
+						}
+					}
+					index--;
+				}
+				System.out.println(index);
+			}
+		});
+		
+		afterButton.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
+	
 
 	@Override
 	public void dispose() {
@@ -84,7 +124,8 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 	public void setLayoutData(GridData data) {
 		previousButton.setLayoutData(data);
 		afterButton.setLayoutData(data);
-		graphicModeButton.setLayoutData(data);	
+		graphicModeButton.setLayoutData(data);
+		
 	}
 
 

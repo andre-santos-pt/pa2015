@@ -1,5 +1,7 @@
 package pt.iscte.pidesco.clazznav.ui;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -13,6 +15,8 @@ import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
+
+import pt.iscte.pidesco.clazznav.Activator;
 
 /**
  * 
@@ -36,16 +40,32 @@ public class GraphBuilder {
 		node = new GraphNode(graph, SWT.None, "TESTTTTT4");
 		node = new GraphNode(graph, SWT.None, "TESTTTTT5");
 		graph.setLayoutAlgorithm(new SpringLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+		
+		 GraphViewer a = new GraphViewer(graph, SWT.NONE);
+		 
 
-		GraphViewer a = new GraphViewer(graph, SWT.NONE);
-
+				
 		a.getGraphControl().addMouseWheelListener(new MouseWheelListener() {
-
+			
 			@Override
 			public void mouseScrolled(MouseEvent e) {
-				// TODO implementar o zoom
+				// TODO Auto-generated method stub
+				System.out.println("PUM");
+				if (e.count == 1)
+				System.out.println("TESTE");
 			}
 		});
+		
+		a.getGraphControl().addMouseListener(new MouseAdapter() {
+
+	          @Override
+	          public void mouseDoubleClick(MouseEvent e) {
+	              
+	          }
+	  });
+	
+		
+		
 	}
 
 	/**
@@ -57,7 +77,7 @@ public class GraphBuilder {
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println(((Graph) e.widget).getSelection());
 			}
-		});
+			});
 	}
 
 

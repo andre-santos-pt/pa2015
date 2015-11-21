@@ -2,11 +2,11 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="clazznavViewID"
-         name="ClazzNav"
+         id="design"
+         name="List of Services"
          point="pt.iscte.pidesco.view">
       <view
-            class="pt.iscte.pidesco.clazznav.ui.clazznavView">
+            class="pa.iscde.inspector.gui.Display">
       </view>
    </extension>
 

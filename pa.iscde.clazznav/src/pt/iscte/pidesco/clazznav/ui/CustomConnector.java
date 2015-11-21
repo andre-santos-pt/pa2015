@@ -7,4 +7,6 @@ package pt.iscte.pidesco.clazznav.ui;
  */
 public class CustomConnector {
 	//TODO
+	
+	
 }

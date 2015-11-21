@@ -89,6 +89,7 @@ public class LineLengthCheck extends Check {
 				final String detailmessage = String.format(LOG_LINE_MESSAGE, MAX_LINE_LENGTH, length);
 
 				final ViolationDetail violationDetail = new ViolationDetail();
+				violationDetail.setSeverity(severity);
 				violationDetail.setResource(resource);
 				violationDetail.setLocation(file.getAbsolutePath());
 				violationDetail.setLine(i + 1);

@@ -1,6 +1,8 @@
 package pa.iscde.checkstyle.model;
 
 public class ViolationDetail {
+	private SeverityType severity;
+	
 	private String resource;
 
 	private String location;
@@ -13,6 +15,14 @@ public class ViolationDetail {
 
 	private String message;
 
+	public SeverityType getSeverity() {
+		return severity;
+	}
+
+	public void setSeverity(SeverityType severity) {
+		this.severity = severity;
+	}
+	
 	public String getResource() {
 		return resource;
 	}

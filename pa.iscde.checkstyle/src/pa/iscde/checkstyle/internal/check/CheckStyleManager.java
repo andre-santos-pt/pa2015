@@ -22,7 +22,7 @@ public final class CheckStyleManager {
 	private static final int NUMBER_REGISTERED_CHECKS = 2;
 
 	/**
-	 * Eager instantiation of this Singletion.
+	 * Eager instantiation of this Singleton.
 	 */
 	private static final CheckStyleManager INSTANCE = new CheckStyleManager();
 

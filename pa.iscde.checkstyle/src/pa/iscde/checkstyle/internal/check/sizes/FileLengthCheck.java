@@ -55,6 +55,7 @@ public class FileLengthCheck extends Check {
 			final String detailmessage = String.format(LOG_LINE_MESSAGE, lines.length, MAX_LINES);
 
 			final ViolationDetail violationDetail = new ViolationDetail();
+			violationDetail.setSeverity(severity);
 			violationDetail.setResource(resource);
 			violationDetail.setLocation(file.getAbsolutePath());
 			violationDetail.setMessage(detailmessage);

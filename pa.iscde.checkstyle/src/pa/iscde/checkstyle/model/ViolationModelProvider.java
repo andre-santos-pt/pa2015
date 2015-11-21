@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class ViolationModelProvider {
+
 	private static ViolationModelProvider INSTANCE;
 
 	private List<Violation> violations;

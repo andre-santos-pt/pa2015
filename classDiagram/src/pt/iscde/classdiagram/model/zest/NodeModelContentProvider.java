@@ -3,7 +3,7 @@ package pt.iscde.classdiagram.model.zest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NodeModelContentProvider {
+public class NodeModelContentProvider{
 	private List<MyConnection> connections;
 	private List<MyNode> nodes;
 
@@ -26,5 +26,4 @@ public class NodeModelContentProvider {
 			conn.getSource().getConnectedTo().add(connection.getDestination());
 		}
 	}
-
 }

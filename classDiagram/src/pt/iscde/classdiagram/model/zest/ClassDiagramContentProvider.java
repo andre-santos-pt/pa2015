@@ -3,7 +3,7 @@ package pt.iscde.classdiagram.model.zest;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.zest.core.viewers.IGraphEntityContentProvider;
 
-public class ClassDiagramContentProvider extends ArrayContentProvider implements IGraphEntityContentProvider {
+public class ClassDiagramContentProvider extends ArrayContentProvider implements IGraphEntityContentProvider{
 
 	@Override
 	public Object[] getConnectedTo(Object entity) {
@@ -13,5 +13,4 @@ public class ClassDiagramContentProvider extends ArrayContentProvider implements
 		    }
 		    throw new RuntimeException("Type not supported");
 	}
-
 }

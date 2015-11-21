@@ -1,23 +1,14 @@
 	package pt.iscte.pidesco.clazznav;
 
-import java.io.File;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 import pt.iscte.pidesco.clazznav.core.OpenFileListener;
-import pt.iscte.pidesco.clazznav.service.ClazzNavServices;
-import pt.iscte.pidesco.javaeditor.internal.JavaEditorServicesImpl;
-import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 //import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
-
-
-
+import pt.iscte.pidesco.clazznav.utils.Logger;
 /**
  * 
  * @author tiagocms
@@ -26,6 +17,8 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 public class Activator implements BundleActivator {
 
 	private static Activator instance;
+	
+	private Logger log = new Logger();
 	
 	private static BundleContext context;
 	public static JavaEditorServices editor;
@@ -43,21 +36,21 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext bundleContext) throws Exception {
-		System.out.println("Starting bundle.");
+		log.log(0, "Starting bundle");
 		
 		ServiceReference<JavaEditorServices> reference = bundleContext.getServiceReference(JavaEditorServices.class);
-//		System.out.println("Reference:" + reference.toString());
+		log.log(reference, 0, "Starting...");
 		editor = bundleContext.getService(reference);
 		
+				
 		ServiceReference<ProjectBrowserServices> reference2 = bundleContext.getServiceReference(ProjectBrowserServices.class);
+		log.log(reference2, 0, "Starting...");
 		browser = bundleContext.getService(reference2);
 		
 		listener = new OpenFileListener(editor);
 		
 		
 		editor.addListener(listener);
-//		System.out.println("Service:" + editor.toString());
-//		System.out.println("File opened " + editor.getOpenedFile());
 	}
 
 	/*

@@ -29,7 +29,6 @@ public class ClazznavView implements PidescoView{
 	@Override
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
 
-
 		Composite child = new Composite(viewArea, SWT.NONE);
 
 		viewManager = new ViewManager( child );

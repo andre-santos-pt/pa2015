@@ -36,32 +36,16 @@ public class GraphBuilder {
 		node = new GraphNode(graph, SWT.None, "TESTTTTT4");
 		node = new GraphNode(graph, SWT.None, "TESTTTTT5");
 		graph.setLayoutAlgorithm(new SpringLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-		
-		 GraphViewer a = new GraphViewer(graph, SWT.NONE);
-		 
 
-				
+		GraphViewer a = new GraphViewer(graph, SWT.NONE);
+
 		a.getGraphControl().addMouseWheelListener(new MouseWheelListener() {
-			
+
 			@Override
 			public void mouseScrolled(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("PUM");
-				if (e.count == 1)
-				System.out.println("TESTE");
+				// TODO implementar o zoom
 			}
 		});
-		
-		a.getGraphControl().addMouseListener(new MouseAdapter() {
-
-	          @Override
-	          public void mouseDoubleClick(MouseEvent e) {
-	                 System.out.println("FODASE");
-	          }
-	  });
-	
-		
-		
 	}
 
 	/**
@@ -73,7 +57,7 @@ public class GraphBuilder {
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println(((Graph) e.widget).getSelection());
 			}
-			});
+		});
 	}
 
 

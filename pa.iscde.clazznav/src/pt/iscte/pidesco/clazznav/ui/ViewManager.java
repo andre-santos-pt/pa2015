@@ -57,7 +57,6 @@ public class ViewManager {
 				else{
 					graphNavigator.enable();
 				}
-
 			}
 		});
 	}

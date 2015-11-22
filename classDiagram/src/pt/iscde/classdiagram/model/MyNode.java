@@ -1,8 +1,10 @@
 package pt.iscde.classdiagram.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -10,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 
+import pt.iscde.classdiagram.model.types.EModifierType;
 import pt.iscde.classdiagram.model.types.ETopElementType;
 import pt.iscde.classdiagram.ui.UMLClassFigure;
 
@@ -20,6 +23,7 @@ public class MyNode implements TopLevelElement{
 	private List<TopLevelElement> connections;
 	private List<ChildElementTemplate> attrinutes;
 	private List<ChildElementTemplate> methods;
+	private Set<EModifierType> modifiers;
 	
 	private Map<String, Image> imageMap;
 
@@ -32,6 +36,7 @@ public class MyNode implements TopLevelElement{
 		this.connections = new ArrayList<TopLevelElement>();
 		this.attrinutes = new ArrayList<>();
 		this.methods = new ArrayList<>();
+		this.modifiers = new HashSet<EModifierType>();
 	}
 
 	public String getId() {
@@ -107,7 +112,19 @@ public class MyNode implements TopLevelElement{
 		}
 		
 		//Add modifier overlays
+		if(modifiers!=null){
+			int mergedOverlays = 0;
+			for (EModifierType modifierType : modifiers) {
+				Image overlayImg = EModifierType.getModifierIcon(modifierType, imageMap);
+				image = ChildElementTemplate.getDecoratedImage(image, overlayImg, mergedOverlays++);
+			}
+		}
 		return image;
+	}
+
+	@Override
+	public void addMmodifier(EModifierType modifierType) {
+		modifiers.add(modifierType);
 	}
 
 	

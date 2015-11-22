@@ -85,9 +85,9 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	}
 
 	private LayoutAlgorithm setLayout() {
-		SpringLayoutAlgorithm treeLayoutAlgorithm = new SpringLayoutAlgorithm(LayoutStyles.ENFORCE_BOUNDS);
+		SpringLayoutAlgorithm springLayoutAlgorithm = new SpringLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING);
 		HorizontalShift horizontalShift = new HorizontalShift(LayoutStyles.NO_LAYOUT_NODE_RESIZING);
-		return new CompositeLayoutAlgorithm(new LayoutAlgorithm[] { horizontalShift, treeLayoutAlgorithm });
+		return new CompositeLayoutAlgorithm(new LayoutAlgorithm[] { horizontalShift, springLayoutAlgorithm });
 	}
 
 	@Override

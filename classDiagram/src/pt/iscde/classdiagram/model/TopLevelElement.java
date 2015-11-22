@@ -1,9 +1,11 @@
 package pt.iscde.classdiagram.model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.draw2d.IFigure;
 
+import pt.iscde.classdiagram.model.types.EModifierType;
 import pt.iscde.classdiagram.model.types.ETopElementType;
 
 /**
@@ -46,5 +48,7 @@ public interface TopLevelElement {
 	public void addMethod(ChildElementTemplate childElement);
 	
 	public IFigure getFigure();
+	
+	public void addMmodifier(EModifierType modifierType);
 	
 }

@@ -1,4 +1,4 @@
-package pt.iscde.classdiagram.model.zest;
+package pt.iscde.classdiagram.model;
 
 public class MyConnection {
 	final String id;

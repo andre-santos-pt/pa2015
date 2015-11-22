@@ -3,6 +3,9 @@ package pt.iscde.classdiagram.model.zest;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.iscde.classdiagram.model.MyConnection;
+import pt.iscde.classdiagram.model.MyNode;
+
 public class NodeModelContentProvider{
 	private List<MyConnection> connections;
 	private List<MyNode> nodes;

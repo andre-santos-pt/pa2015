@@ -3,6 +3,8 @@ package pt.iscde.classdiagram.model.zest;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.zest.core.viewers.IGraphEntityContentProvider;
 
+import pt.iscde.classdiagram.model.MyNode;
+
 public class ClassDiagramContentProvider extends ArrayContentProvider implements IGraphEntityContentProvider{
 
 	@Override

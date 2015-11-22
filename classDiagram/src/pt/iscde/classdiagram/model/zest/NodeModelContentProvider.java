@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.iscde.classdiagram.model.MyConnection;
-import pt.iscde.classdiagram.model.MyNode;
+import pt.iscde.classdiagram.model.MyTopLevelElement;
 
 public class NodeModelContentProvider{
 	private List<MyConnection> connections;
-	private List<MyNode> nodes;
+	private List<MyTopLevelElement> nodes;
 
 	public NodeModelContentProvider() {
-		nodes = new ArrayList<MyNode>();
+		nodes = new ArrayList<MyTopLevelElement>();
 		connections = new ArrayList<MyConnection>();
 
 		for (MyConnection connection : connections) {
@@ -19,7 +19,7 @@ public class NodeModelContentProvider{
 		}
 	}
 
-	public List<MyNode> getNodes() {
+	public List<MyTopLevelElement> getNodes() {
 		return nodes;
 	}
 

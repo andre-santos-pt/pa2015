@@ -29,7 +29,7 @@ import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
 import pt.iscde.classdiagram.model.AttributeElement;
 import pt.iscde.classdiagram.model.MethodElement;
 import pt.iscde.classdiagram.model.MyConnection;
-import pt.iscde.classdiagram.model.MyNode;
+import pt.iscde.classdiagram.model.MyTopLevelElement;
 import pt.iscde.classdiagram.model.types.EModifierType;
 import pt.iscde.classdiagram.model.types.ETopElementType;
 import pt.iscde.classdiagram.model.zest.ClassDiagramContentProvider;
@@ -107,10 +107,10 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 		javaEditorServices.parseFile(file, new ASTVisitor() {
 
-			MyNode mainNode = null;
+			MyTopLevelElement mainNode = null;
 
 			public boolean visit(EnumDeclaration node) {
-				mainNode = new MyNode(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
+				mainNode = new MyTopLevelElement(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
 						ETopElementType.ENUM, imageMap);
 				model.getNodes().add(mainNode);
 				return super.visit(node);
@@ -118,7 +118,7 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				mainNode = new MyNode(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
+				mainNode = new MyTopLevelElement(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
 						node.isInterface() ? ETopElementType.INTERFACE : ETopElementType.CLASS, imageMap);
 				model.getNodes().add(mainNode);
 
@@ -127,39 +127,48 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
 
 				if (superTypeBind != null) {
-					MyNode superNode = new MyNode(superTypeBind.getQualifiedName(), superTypeBind.getName(),
-							ETopElementType.CLASS, imageMap);
+					MyTopLevelElement superNode = new MyTopLevelElement(superTypeBind.getQualifiedName(),
+							superTypeBind.getName(), ETopElementType.CLASS, imageMap);
 					model.getNodes().add(superNode);
-					model.addConnection(new MyConnection(
-							superTypeBind.getQualifiedName() + "::" + node.getName().getFullyQualifiedName(), "Extends",
-							mainNode, superNode));
+					MyConnection connection = new MyConnection(null, "Extends", mainNode, superNode);
+					model.addConnection(connection);
 				}
 
 				if (interfaceBinds != null) {
 					for (ITypeBinding interfaceBind : interfaceBinds) {
-						MyNode interfaceNode = new MyNode(interfaceBind.getQualifiedName(), interfaceBind.getName(),
-								ETopElementType.INTERFACE, imageMap);
+						MyTopLevelElement interfaceNode = new MyTopLevelElement(interfaceBind.getQualifiedName(),
+								interfaceBind.getName(), ETopElementType.INTERFACE, imageMap);
 						model.getNodes().add(interfaceNode);
-						model.addConnection(new MyConnection(
-								interfaceBind.getQualifiedName() + "::" + node.getName().getFullyQualifiedName(),
-								"Implements", mainNode, interfaceNode));
+
+						MyConnection connection = new MyConnection(null, "Implements", mainNode, interfaceNode);
+						model.addConnection(connection);
 					}
 				}
 
+				// modifiers
+				node.accept(new ASTVisitor() {
+					@Override
+					public boolean visit(Modifier node) {
+						mainNode.addModifier(node);
+						return super.visit(node);
+					}
+
+				});
+				
 				return super.visit(node);
 			}
 
-			//METHODS
+			// METHODS
 			@Override
 			public boolean visit(MethodDeclaration node) {
 
 				final MethodElement method = new MethodElement(imageMap);
 				method.setName(node.getName().getIdentifier());
 
-				if(node.isConstructor()){
+				if (node.isConstructor()) {
 					method.addModifier(EModifierType.CONSTRUCTOR);
 				}
-				
+
 				// parâmetros
 				for (Object object : node.parameters()) {
 					if (object instanceof SingleVariableDeclaration) {
@@ -182,18 +191,17 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 				});
 
-				
 				mainNode.addMethod(method);
 				return super.visit(node);
 			}
-			
-			//ATTRIBUTES
+
+			// ATTRIBUTES
 			@Override
 			public boolean visit(FieldDeclaration node) {
 				final AttributeElement attribute = new AttributeElement(imageMap);
-				
+
 				attribute.setReturnType(node.getType().toString());
-				
+
 				// internals
 				node.accept(new ASTVisitor() {
 					// modifiers
@@ -202,7 +210,7 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 						attribute.addModifier(node);
 						return super.visit(node);
 					}
-					
+
 					// name
 					@Override
 					public boolean visit(VariableDeclarationFragment node) {
@@ -210,7 +218,7 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 						return super.visit(node);
 					}
 				});
-				
+
 				mainNode.addAttribute(attribute);
 				return super.visit(node);
 			}
@@ -220,7 +228,6 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 		viewer.setInput(model.getNodes());
 
 	}
-
 
 	@Override
 	public void selectionChanged(Collection<SourceElement> selection) {

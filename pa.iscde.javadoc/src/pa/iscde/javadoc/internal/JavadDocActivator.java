@@ -33,7 +33,7 @@ public class JavadDocActivator implements BundleActivator {
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
-
+		
 		instance = this;
 
 		logService = getServiceReference(LogService.class, context);
@@ -67,7 +67,7 @@ public class JavadDocActivator implements BundleActivator {
 			javaEditorServices.removeListener(javaEditorListener);
 		}
 
-		if (projectBrowserListener != null && null != projectBrowserListener) {
+		if (projectBrowserServices != null && null != projectBrowserListener) {
 			projectBrowserServices.removeListener(projectBrowserListener);
 		}
 

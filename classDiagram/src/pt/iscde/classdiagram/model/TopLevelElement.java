@@ -1,7 +1,6 @@
 package pt.iscde.classdiagram.model;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.draw2d.IFigure;
 

@@ -6,15 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -27,12 +18,6 @@ import org.eclipse.zest.layouts.algorithms.HorizontalShift;
 //import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
 import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
 
-import pt.iscde.classdiagram.model.AttributeElement;
-import pt.iscde.classdiagram.model.MethodElement;
-import pt.iscde.classdiagram.model.MyConnection;
-import pt.iscde.classdiagram.model.MyTopLevelElement;
-import pt.iscde.classdiagram.model.types.EModifierType;
-import pt.iscde.classdiagram.model.types.ETopElementType;
 import pt.iscde.classdiagram.model.zest.ClassDiagramContentProvider;
 import pt.iscde.classdiagram.model.zest.ClassDiagramLabelProvider;
 import pt.iscde.classdiagram.model.zest.NodeModelContentProvider;
@@ -105,136 +90,11 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	private void actualizaDiagrama(File file) {
 		model = new NodeModelContentProvider();
-
-		javaEditorServices.parseFile(file, createASTVisitor());
-
-		viewer.setInput(model.getNodes());
-
+		ClassDiagramElementVisitor classDiagramElementVisitor = new ClassDiagramElementVisitor(imageMap, model);
+		javaEditorServices.parseFile(file, classDiagramElementVisitor);
+		viewer.setInput(classDiagramElementVisitor.getModel().getNodes());
 	}
 	
-	private ASTVisitor createASTVisitor(){
-	
-	ASTVisitor astvisitor = new ASTVisitor() {
-
-		MyTopLevelElement mainNode = null;
-
-		public boolean visit(EnumDeclaration node) {
-			mainNode = new MyTopLevelElement(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
-					ETopElementType.ENUM, imageMap);
-			model.getNodes().add(mainNode);
-			return super.visit(node);
-		}
-
-		@Override
-		public boolean visit(TypeDeclaration node) {
-			mainNode = new MyTopLevelElement(node.getName().getFullyQualifiedName(), node.getName().getIdentifier(),
-					node.isInterface() ? ETopElementType.INTERFACE : ETopElementType.CLASS, imageMap);
-			model.getNodes().add(mainNode);
-
-			ITypeBinding typeBind = node.resolveBinding();
-			ITypeBinding superTypeBind = typeBind.getSuperclass();
-			ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
-
-			if (superTypeBind != null && !(superTypeBind.getName().equals("Object"))) {
-				MyTopLevelElement superNode = new MyTopLevelElement(superTypeBind.getQualifiedName(),
-						superTypeBind.getName(), ETopElementType.CLASS, imageMap);
-				model.getNodes().add(superNode);
-				MyConnection connection = new MyConnection(null, "Extends", mainNode, superNode);
-				model.addConnection(connection);
-			}
-
-			if (interfaceBinds != null) {
-				for (ITypeBinding interfaceBind : interfaceBinds) {
-					MyTopLevelElement interfaceNode = new MyTopLevelElement(interfaceBind.getQualifiedName(),
-							interfaceBind.getName(), ETopElementType.INTERFACE, imageMap);
-					model.getNodes().add(interfaceNode);
-
-					MyConnection connection = new MyConnection(null, "Implements", mainNode, interfaceNode);
-					model.addConnection(connection);
-				}
-			}
-
-			// modifiers
-			node.accept(new ASTVisitor() {
-				@Override
-				public boolean visit(Modifier node) {
-					mainNode.addModifier(node);
-					return super.visit(node);
-				}
-
-			});
-			
-			return super.visit(node);
-		}
-
-		// METHODS
-		@Override
-		public boolean visit(MethodDeclaration node) {
-
-			final MethodElement method = new MethodElement(imageMap);
-			method.setName(node.getName().getIdentifier());
-
-			if (node.isConstructor()) {
-				method.addModifier(EModifierType.CONSTRUCTOR);
-			}
-
-			// parâmetros
-			for (Object object : node.parameters()) {
-				if (object instanceof SingleVariableDeclaration) {
-					SingleVariableDeclaration svd = (SingleVariableDeclaration) object;
-					method.addParameter(svd.getType().toString());
-				}
-			}
-
-			if (node.getReturnType2() != null) {
-				method.setReturnType(node.getReturnType2().toString());
-			}
-
-			// modifiers
-			node.accept(new ASTVisitor() {
-				@Override
-				public boolean visit(Modifier node) {
-					method.addModifier(node);
-					return super.visit(node);
-				}
-
-			});
-
-			mainNode.addMethod(method);
-			return super.visit(node);
-		}
-
-		// ATTRIBUTES
-		@Override
-		public boolean visit(FieldDeclaration node) {
-			final AttributeElement attribute = new AttributeElement(imageMap);
-
-			attribute.setReturnType(node.getType().toString());
-
-			// internals
-			node.accept(new ASTVisitor() {
-				// modifiers
-				@Override
-				public boolean visit(Modifier node) {
-					attribute.addModifier(node);
-					return super.visit(node);
-				}
-
-				// name
-				@Override
-				public boolean visit(VariableDeclarationFragment node) {
-					attribute.setName(node.getName().getIdentifier());
-					return super.visit(node);
-				}
-			});
-
-			mainNode.addAttribute(attribute);
-			return super.visit(node);
-		}
-
-	};
-	 return astvisitor;
-	}
 
 	@Override
 	public void selectionChanged(Collection<SourceElement> selection) {

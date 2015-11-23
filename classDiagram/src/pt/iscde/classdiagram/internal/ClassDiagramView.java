@@ -24,7 +24,7 @@ import org.eclipse.zest.layouts.LayoutAlgorithm;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.CompositeLayoutAlgorithm;
 import org.eclipse.zest.layouts.algorithms.HorizontalShift;
-import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
+//import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
 import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
 
 import pt.iscde.classdiagram.model.AttributeElement;

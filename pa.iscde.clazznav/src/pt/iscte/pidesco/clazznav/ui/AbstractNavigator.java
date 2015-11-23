@@ -14,11 +14,6 @@ public class AbstractNavigator {
 		this.composite = composite;
 	}
 
-	@SuppressWarnings(value = { "unchecked" })
-	public void dispose(){
-		composite.dispose();
-	}
-	
 	public Composite getComposite() {
 		return composite;
 	}
@@ -26,8 +21,7 @@ public class AbstractNavigator {
 	public void addFile(File file){
 		files.add(file);
 	}
-	
-	
+		
 	public void removeFile(File file){
 		files.remove(file);
 	}

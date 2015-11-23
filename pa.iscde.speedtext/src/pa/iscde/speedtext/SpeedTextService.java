@@ -198,6 +198,4 @@ public class SpeedTextService implements PidescoView {
 		System.out.println("filtro: "+filter);
 		return s;
 	}
-
 }
-

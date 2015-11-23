@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="id1"
+         name="Outline"
+         point="pt.iscte.pidesco.view">
+      <view
+            class="pa.iscde.outlaw.PidescoView1"
+            icon="smiley.png">
+      </view>
+   </extension>
+
+</plugin>

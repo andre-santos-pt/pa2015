@@ -18,9 +18,8 @@ public class ClazznavView implements PidescoView{
 
 	ViewManager viewManager;
 
-	private JavaEditorServices jEditorServices;
-
 	public ClazznavView() {
+		//TODO Maybe later
 	}
 
 	/**
@@ -29,20 +28,15 @@ public class ClazznavView implements PidescoView{
 	@Override
 	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
 
-
 		Composite child = new Composite(viewArea, SWT.NONE);
 
 		viewManager = new ViewManager( child );
 		viewManager.setup();
 	}
 
-
-	/**
-	 * 
-	 */
-	private void dispose(){
-		viewManager.disposeAll();
-	}
-
-
+//	@Override
+//	protected void finalize() throws Throwable {
+//		super.finalize();
+//		viewManager.disposeAll();
+//	}
 }

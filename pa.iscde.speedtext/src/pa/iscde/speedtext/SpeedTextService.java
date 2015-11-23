@@ -27,6 +27,8 @@ public class SpeedTextService implements PidescoView {
 	private JavaEditorServices jeServices;
 	private ProjectBrowserServices pbservices;
 	private File file;
+	private boolean findpoint;
+	private String filter="";
 
 	//	public SpeedTextService() {
 	//	}
@@ -64,16 +66,18 @@ public class SpeedTextService implements PidescoView {
 				sugestionList.removeAll();
 
 				final String temp= findVarible();
+
 				// Encontrar a Class da Variavel			
 				jeServices.parseFile(file, new ASTVisitor() {
 					@Override
 					public boolean visit(final VariableDeclarationStatement node) {
-						if (temp.equals(node.fragments().get(0).toString().split("=")[0])) {
+
+						//Sugere metodos
+						if (temp.equals(node.fragments().get(0).toString().split("=")[0]) && findpoint) {
 							pbservices.getRootPackage().traverse(new Visitor(){
 								@Override
 								public boolean visitPackage(
 										pt.iscte.pidesco.projectbrowser.model.PackageElement packageElement) {
-
 									return true;
 								}
 								@Override
@@ -82,18 +86,19 @@ public class SpeedTextService implements PidescoView {
 										File tempfile=classElement.getFile();
 										jeServices.parseFile(tempfile, new ASTVisitor() {
 											public boolean visit(MethodDeclaration node) {
-												if(!node.isConstructor() && (node.modifiers().get(0).toString()).equals("public")){
+												if(!node.isConstructor() && (node.modifiers().get(0).toString()).equals("public") && node.getName().toString().substring(0,filter.length()).equals(filter)){
+													
 													if(node.parameters().size()!=0){
-														String p="";
+														String parameters="";
 														int i=0;
-														for(Object u:node.parameters()){
+														for(Object p:node.parameters()){
 															if(i>0 && i<node.parameters().size())
-																p += ", "+u.toString();
+																parameters += ", "+p.toString();
 															else
-																p += u.toString();
+																parameters += p.toString();
 															i++;
 														}
-														sugestionList.add(node.getName().toString()+"("+p+")");
+														sugestionList.add(node.getName().toString()+"("+parameters+")");
 													}else
 														sugestionList.add(node.getName().toString()+"()");
 
@@ -104,48 +109,93 @@ public class SpeedTextService implements PidescoView {
 									}
 								}
 							});
-							//
+
+							//Sugere variaveis
+						}else if((node.fragments().get(0).toString().split("=")[0]).contains(temp)){
+							sugestionList.add((node.fragments().get(0).toString().split("=")[0]));
 						}
 						return true;
+
 					}
 				});
 			}
 		});
 
-		//Adiciona metodo
+		//Selecciona opçao da gridList
 		sugestionList.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				final int d = jeServices.getCursorPosition();
-				jeServices.insertText(file, sugestionList.getItem(sugestionList.getSelectionIndex()), d, 0);
+
+				final int cursorpoint = jeServices.getCursorPosition();
+				jeServices.insertText(file, sugestionList.getItem(sugestionList.getSelectionIndex()), cursorpoint-filter.length(), filter.length());
 				sugestionList.removeAll();
+				filter="";
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
-				//
 			}
 		});
 	}
 
-	// Selectionar a Variavel antes do '.'
+
+	// Encontra a variavel antes do '.'
 	private String findVarible() {
-		final int d = jeServices.getCursorPosition();
-		jeServices.selectText(file, 0, d);
+		final int cursorpoint = jeServices.getCursorPosition();
+		jeServices.selectText(file, 0, cursorpoint);
 		String s = jeServices.getTextSelected(file).getText();
 		char[] charSa = s.toCharArray();
-		for (int finChar = charSa.length - 1; finChar > 0; finChar--) {
-			if (charSa[finChar] == '.') {
-				int inichar = finChar;
-				do {
-					inichar--;
-				} while (charSa[inichar] != ' ' && charSa[inichar] != ';' && charSa[inichar] != '{'
-						&& charSa[inichar] != ',' && charSa[inichar] != '\t' && charSa[inichar] != '\n');
-				jeServices.selectText(file, inichar + 1, finChar - inichar - 1);
-				s = jeServices.getTextSelected(file).getText();
-				jeServices.selectText(file, finChar+1, 0); //deixa cursor a seguir ao '.'
-				break;
+		findpoint = false;
+		
+
+		//Selecciona só a linha
+		if(charSa.length>0){
+			for (int i = charSa.length - 1; i>0 ; i--) {
+				if(charSa[i] == '\n'){
+					jeServices.selectText(file, i + 1, cursorpoint-i-1);
+					s = jeServices.getTextSelected(file).getText();
+					if(s.contains("."))
+						findpoint=true;
+					charSa = s.toCharArray();
+					break;
+				}
+			}
+			
+			for (int finChar = charSa.length - 1; finChar > 0; finChar--) {
+
+				//Selecciona a Variavel antes do ponto
+				if (findpoint){
+					if (charSa[finChar] == '.') {
+						int inichar = finChar;
+						while (charSa[inichar] != ' ' && charSa[inichar] != ';' && charSa[inichar] != '{'
+								&& charSa[inichar] != ',' && charSa[inichar] != '\t' && charSa[inichar] != '\n'){
+							inichar--;
+						}
+						jeServices.selectText(file, cursorpoint-charSa.length+inichar+1 , finChar - inichar - 1); 
+						s = jeServices.getTextSelected(file).getText();
+						jeServices.selectText(file, cursorpoint, 0); //deixa cursor a seguir ao '.'
+						if(!filter.isEmpty())
+							filter = new StringBuffer(filter).reverse().toString();
+						break;
+					}else{
+						filter += charSa[finChar];						
+					}
+					
+				//Selecciona linha sem o ponto
+				}else{
+					int inichar = finChar;
+					while (charSa[inichar] != ' ' && charSa[inichar] != ';' && charSa[inichar] != '{'
+							&& charSa[inichar] != ',' && charSa[inichar] != '\t' && charSa[inichar] != '\n'){
+						inichar--;
+					}
+					jeServices.selectText(file, cursorpoint-finChar+inichar , finChar - inichar );
+					s = jeServices.getTextSelected(file).getText();
+					filter=s;
+					jeServices.selectText(file, cursorpoint, 0); //desseleciona
+					break;
+				}
 			}
 		}
+		System.out.println("filtro: "+filter);
 		return s;
 	}
 

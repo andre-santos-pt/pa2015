@@ -25,24 +25,24 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 
 	@Override
 	public void build() {
-	
+
 		previousButton = new Button(getComposite(),  SWT.ARROW | SWT.LEFT);
-	
+
 		graphicModeButton = new Button(getComposite(), SWT.ARROW_UP);
 		Image image = new Image(getComposite().getDisplay(), this.getClass().getResourceAsStream("/images/navigator_icon2.png"));
 		graphicModeButton.setImage(image);
 
 		afterButton = new Button(getComposite(),  SWT.ARROW | SWT.RIGHT);
-		
+
 		buttonListeners();
 
 	}
 
 
-	
+
 	private void buttonListeners(){
 		previousButton.addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
 			public void handleEvent(Event event) {
 				System.out.println(AbstractNavigator.files.size());
@@ -50,7 +50,7 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 					File x =	AbstractNavigator.files.get(AbstractNavigator.files.size() + index);
 					if(!AbstractNavigator.files.isEmpty()){
 						if(!(AbstractNavigator.files.get(AbstractNavigator.files.size() + index + 1 ).getName().equals(x.getName()))){
-								Activator.editor.openFile(x);
+							Activator.javaEditorService.openFile(x);
 						}
 					}
 					index--;
@@ -58,22 +58,21 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 				System.out.println(index);
 			}
 		});
-		
+
 		afterButton.addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
 			public void handleEvent(Event event) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
-	
-	
+
+
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		previousButton.dispose();
 		afterButton.dispose();
 		graphicModeButton.dispose();
@@ -125,7 +124,7 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 		previousButton.setLayoutData(data);
 		afterButton.setLayoutData(data);
 		graphicModeButton.setLayoutData(data);
-		
+
 	}
 
 

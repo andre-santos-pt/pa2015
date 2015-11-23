@@ -261,14 +261,29 @@ public class GuiBuilderView implements PidescoView {
 					final Point relativeCursorLocation2 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation2);
 
+					final int backgroundLabelWidth = 70;
+					final int backgroundLabelHeight = 30;
+
+					final int labelWidth = 55;
+					final int labelHeight = 15;
+
 					final String text = "New label";
 
 					final Label label = new Label(canvas, SWT.BORDER);
 					label.setText(text);
 					label.setLocation(relativeCursorLocation2.x, relativeCursorLocation2.y);
-					label.setSize(70, 20);
+					label.setSize(labelWidth, labelHeight);
 
-					components.add(new ComponentInComposite("JLabel " + System.currentTimeMillis(), label, null));
+					final RoundedRectangle backgroundLabel = new RoundedRectangle();
+
+					backgroundLabel.setCornerDimensions(new Dimension(10, 10));
+					final FigureMoverResizer fmrLabel = new FigureMoverResizer(backgroundLabel, canvas, label,
+							labelWidth, labelHeight);
+
+					backgroundLabel.setBounds(new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation2.x,
+							relativeCursorLocation2.y, backgroundLabelWidth, backgroundLabelHeight));
+
+					contents.add(backgroundLabel);
 
 					break;
 
@@ -277,13 +292,31 @@ public class GuiBuilderView implements PidescoView {
 					final Point relativeCursorLocation3 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation3);
 
+					final int backgroundTextFieldWidth = 150;
+					final int backgroundTextFieldHeight = 40;
+
+					final int textFieldWidth = 100;
+					final int textFieldHeight = 20;
+
 					Text textField = new Text(canvas, SWT.BORDER);
-					textField.setSize(100, 20);
+					textField.setSize(textFieldWidth, textFieldHeight);
 					textField.setText("New textfield");
 					textField.setLocation(relativeCursorLocation3.x, relativeCursorLocation3.y);
 
+					final RoundedRectangle backgroundTextField = new RoundedRectangle();
+
+					backgroundTextField.setCornerDimensions(new Dimension(10, 10));
+					final FigureMoverResizer fmrTextField = new FigureMoverResizer(backgroundTextField, canvas,
+							textField, textFieldWidth, textFieldHeight);
+
+					backgroundTextField.setBounds(new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation3.x,
+							relativeCursorLocation3.y, backgroundTextFieldWidth, backgroundTextFieldHeight));
+
+					contents.add(backgroundTextField);
+
 					components
 							.add(new ComponentInComposite("JTextField " + System.currentTimeMillis(), textField, null));
+
 					break;
 
 				case "JRadioButton":
@@ -292,11 +325,28 @@ public class GuiBuilderView implements PidescoView {
 					final Point relativeCursorLocation4 = Display.getCurrent().getFocusControl()
 							.toControl(cursorLocation4);
 
+					final int backgroundRadioButtonWidth = 150;
+					final int backgroundRadioButtonHeight = 40;
+
+					final int radioButtonWidth = 100;
+					final int radioButtonHeight = 20;
+
 					Button radioButton = new Button(canvas, SWT.RADIO);
 					radioButton.setSelection(true);
 					radioButton.setText("New choice");
 					radioButton.setLocation(relativeCursorLocation4.x, relativeCursorLocation4.y);
 					radioButton.setSize(100, 20);
+
+					final RoundedRectangle backgroundRadioButton = new RoundedRectangle();
+
+					backgroundRadioButton.setCornerDimensions(new Dimension(10, 10));
+					final FigureMoverResizer fmrRadioButton = new FigureMoverResizer(backgroundRadioButton, canvas,
+							radioButton, radioButtonWidth, radioButtonHeight);
+
+					backgroundRadioButton.setBounds(new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation4.x,
+							relativeCursorLocation4.y, backgroundRadioButtonWidth, backgroundRadioButtonHeight));
+
+					contents.add(backgroundRadioButton);
 
 					components.add(
 							new ComponentInComposite("JRadioButton " + System.currentTimeMillis(), radioButton, null));
@@ -312,6 +362,23 @@ public class GuiBuilderView implements PidescoView {
 					checkBox.setText("New checkbox");
 					checkBox.setLocation(relativeCursorLocation5.x, relativeCursorLocation5.y);
 					checkBox.setSize(100, 20);
+
+					final int backgroundCheckBoxWidth = 150;
+					final int backgroundCheckBoxHeight = 40;
+
+					final int checkBoxWidth = 100;
+					final int checkBoxHeight = 20;
+
+					final RoundedRectangle backgroundCheckBox = new RoundedRectangle();
+
+					backgroundCheckBox.setCornerDimensions(new Dimension(10, 10));
+					final FigureMoverResizer fmrCheckBox = new FigureMoverResizer(backgroundCheckBox, canvas, checkBox,
+							checkBoxWidth, checkBoxHeight);
+
+					backgroundCheckBox.setBounds(new org.eclipse.draw2d.geometry.Rectangle(relativeCursorLocation5.x,
+							relativeCursorLocation5.y, backgroundCheckBoxWidth, backgroundCheckBoxHeight));
+
+					contents.add(backgroundCheckBox);
 
 					components.add(new ComponentInComposite("JCheckBox " + System.currentTimeMillis(), checkBox, null));
 

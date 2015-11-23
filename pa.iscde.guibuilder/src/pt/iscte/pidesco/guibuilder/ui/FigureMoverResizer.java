@@ -1,5 +1,8 @@
 package pt.iscte.pidesco.guibuilder.ui;
 
+import java.awt.Color;
+import java.awt.Component;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.MouseEvent;
@@ -9,16 +12,21 @@ import org.eclipse.draw2d.UpdateManager;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.internal.theme.DrawData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 public class FigureMoverResizer implements MouseListener, MouseMotionListener {
 	private static final int CORNER = 10;
 	private Canvas canvas;
 	private String text;
+	private Control component;
+	private int componentWidth;
+	private int componentHeight;
 
 	private enum Handle {
 		TOP_LEFT {
@@ -93,26 +101,56 @@ public class FigureMoverResizer implements MouseListener, MouseMotionListener {
 		this.figure = figure;
 		this.canvas = canvas;
 		this.text = text;
+
 		figure.addMouseListener(this);
 		figure.addMouseMotionListener(this);
 
 		updateText(figure, canvas, text);
+
+	}
+
+	public FigureMoverResizer(final IFigure figure, Canvas canvas, Control component, int componentWidth,
+			int componentHeight) {
+		if (figure == null)
+			throw new NullPointerException();
+
+		this.figure = figure;
+		this.canvas = canvas;
+
+		this.component = component;
+		this.componentWidth = componentWidth;
+		this.componentHeight = componentHeight;
+
+		figure.addMouseListener(this);
+		figure.addMouseMotionListener(this);
+
 	}
 
 	public void updateText(final IFigure figure, Canvas canvas, final String text) {
-		
-		if (canvas != null) {
+
+		if (text != null && canvas != null) {
 			canvas.addPaintListener(new PaintListener() {
 
 				@Override
 				public void paintControl(PaintEvent e) {
-				
-					e.gc.drawText(text, figure.getClientArea().getCenter().x - (text.length()*3),
+
+					e.gc.drawText(text, figure.getClientArea().getCenter().x - (text.length() * 3),
 							figure.getClientArea().getCenter().y);
-					
 
 				}
 			});
+		}
+	}
+
+	public void updateComponent() {
+
+		if (component != null) {
+
+			component.setLocation(figure.getClientArea().getCenter().x - (componentWidth / 2),
+					figure.getClientArea().getCenter().y - (componentHeight / 2));
+			// figure.setBackgroundColor(canvas.getDisplay().getSystemColor(SWT.COLOR_TRANSPARENT));
+			// figure.setVisible(false);
+
 		}
 	}
 
@@ -156,28 +194,27 @@ public class FigureMoverResizer implements MouseListener, MouseMotionListener {
 			updateMgr.addDirtyRegion(figure.getParent(), bounds);
 		}
 
-		updateText(figure, canvas, text);
+		// updateText(figure, canvas, text);
+		updateComponent();
 
 		event.consume();
 	}
-	
-	
-	
+
 	public IFigure getFigure() {
 		return figure;
 	}
 
 	public void setText(String text) {
 		this.text = text;
-		
-		//o texto está a ficar por cima do outro texto
-		//necessario resolver este bug
-		
-		updateText(figure,canvas,text);
-		
+
+		// o texto está a ficar por cima do outro texto
+		// necessario resolver este bug
+
+		updateText(figure, canvas, text);
+
 		canvas.redraw();
 		canvas.update();
-		
+
 	}
 
 	@Override

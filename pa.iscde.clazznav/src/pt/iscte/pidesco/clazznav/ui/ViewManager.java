@@ -17,7 +17,10 @@ public class ViewManager {
 	public ViewManager(Composite composite){
 		this.setComposite(composite);
 
-		graphNavigator  = new GraphicNavigator(composite);
+//		graphNavigator  = new GraphicNavigator(composite);
+		graphNavigator = GraphicNavigator.getInstance(composite);
+		graphNavigator.build();
+		
 		simpleNavigator = new SimpleNavigator(composite);
 		simpleNavigator.build();
 	}

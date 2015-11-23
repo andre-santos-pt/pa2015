@@ -78,6 +78,16 @@ public class CheckStyleActivator implements BundleActivator {
 	}
 
 	/**
+	 * This method is used to return the reference to Java Editor component
+	 * services.
+	 * 
+	 * @return The reference to Java Editor component services.
+	 */
+	public JavaEditorServices getJavaEditorServices() {
+		return this.jeServices;
+	}
+	
+	/**
 	 * This method is used to obtain the references for services exposed by
 	 * project browser component and Java editor component.
 	 */

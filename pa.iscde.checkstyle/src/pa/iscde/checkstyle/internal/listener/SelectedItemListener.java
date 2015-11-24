@@ -43,7 +43,7 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 			}
 		}
 
-		SharedModel.getInstance().setElements(selectedElements);
+		SharedModel.getInstance().addElements(selectedElements);
 	}
 
 	/**
@@ -62,6 +62,6 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 			selectedElements.add(element);
 		}
 
-		SharedModel.getInstance().setElements(selectedElements);
+		SharedModel.getInstance().addElements(selectedElements);
 	}
 }

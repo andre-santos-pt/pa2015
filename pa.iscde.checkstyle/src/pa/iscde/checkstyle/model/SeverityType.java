@@ -1,5 +1,9 @@
 package pa.iscde.checkstyle.model;
 
+/**
+ * This enumeration defines the severity associated to violations, indicating
+ * also its text and image.
+ */
 public enum SeverityType {
 	BLOCKED("Blocked", "blocked.png"), CRITICAL("Critical", "critical.png"), WARNING("Warning", "warning.png");
 

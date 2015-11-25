@@ -2,16 +2,34 @@ package pa.iscde.checkstyle.model;
 
 import java.util.List;
 
+/**
+ * This class represents the concept of code violation.
+ */
 public class Violation {
 
+	/**
+	 * The violation severity.
+	 */
 	private SeverityType severity;
 
+	/**
+	 * The violation type.
+	 */
 	private String type;
 
+	/**
+	 * Number of occurrences of this violation type. 
+	 */
 	private int count;
 
+	/**
+	 * The violation main description.
+	 */
 	private String description;
 
+	/**
+	 * The list of violation details associated to this violation type.
+	 */
 	private List<ViolationDetail> details;
 
 	public String getType() {

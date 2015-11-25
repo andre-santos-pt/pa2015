@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -132,6 +133,12 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 	public void selectionChanged(File file, String text, int offset, int length) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public IFigure getClassImage(SourceElement sourceElement) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

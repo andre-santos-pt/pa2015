@@ -15,12 +15,13 @@ import org.eclipse.swt.graphics.Image;
 
 import pt.iscde.classdiagram.model.types.EModifierType;
 import pt.iscde.classdiagram.model.types.ETopElementType;
+import pt.iscde.classdiagram.ui.ToolTipFigure;
 import pt.iscde.classdiagram.ui.UMLClassFigure;
 
 public class MyTopLevelElement implements TopLevelElement {
-	private final String id;
-	private final String name;
-	private final ETopElementType classType;
+	private String id;
+	private String name;
+	private ETopElementType classType;
 	private EModifierType accessControlType;
 	private List<TopLevelElement> connections;
 	private List<ChildElementTemplate> attrinutes;
@@ -35,6 +36,13 @@ public class MyTopLevelElement implements TopLevelElement {
 		this.classType = classType;
 		this.imageMap = imageMap;
 
+		this.connections = new ArrayList<TopLevelElement>();
+		this.attrinutes = new ArrayList<>();
+		this.methods = new ArrayList<>();
+		this.modifiers = new HashSet<EModifierType>();
+	}
+
+	public MyTopLevelElement() {
 		this.connections = new ArrayList<TopLevelElement>();
 		this.attrinutes = new ArrayList<>();
 		this.methods = new ArrayList<>();
@@ -72,7 +80,7 @@ public class MyTopLevelElement implements TopLevelElement {
 	public IFigure getFigure() {
 		Label classLabel = new Label(getName(), getClassIcon());
 		classLabel.setFont(new Font(null, "Arial", 12, SWT.BOLD));
-
+		classLabel.setToolTip(new ToolTipFigure(getId()));
 		UMLClassFigure classFigure = new UMLClassFigure(classLabel);
 
 		if (attrinutes != null && attrinutes.size() > 0) {
@@ -101,6 +109,7 @@ public class MyTopLevelElement implements TopLevelElement {
 
 		switch (getClassType()) {
 		case CLASS:
+		case SUPERCLASS:
 			image = imageMap.get("class_obj.png");
 			break;
 		case INTERFACE:
@@ -115,14 +124,14 @@ public class MyTopLevelElement implements TopLevelElement {
 
 		// Add modifier overlays
 		int mergedOverlays = 0;
-		
-		if(accessControlType!=null){
+
+		if (accessControlType != null) {
 			Image overlayImg = EModifierType.getModifierIcon(accessControlType, imageMap);
-			if(overlayImg!=null){
+			if (overlayImg != null) {
 				image = ChildElementTemplate.getDecoratedImage(image, overlayImg, mergedOverlays++);
 			}
 		}
-		
+
 		if (modifiers != null) {
 			for (EModifierType modifierType : modifiers) {
 				Image overlayImg = EModifierType.getModifierIcon(modifierType, imageMap);
@@ -169,4 +178,9 @@ public class MyTopLevelElement implements TopLevelElement {
 		}
 	}
 
+	@Override
+	public void setSelected() {
+		// TODO Auto-generated method stub
+
+	}
 }

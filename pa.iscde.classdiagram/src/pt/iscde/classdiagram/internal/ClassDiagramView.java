@@ -90,10 +90,11 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	private void actualizaDiagrama(File file) {
 		model = new NodeModelContentProvider();
-		ClassDiagramElementVisitor classDiagramElementVisitor = new ClassDiagramElementVisitor(imageMap, model);
-		javaEditorServices.parseFile(file, classDiagramElementVisitor);
-		viewer.setInput(classDiagramElementVisitor.getModel().getNodes());
+		ClassDiagramElementVisitor elementVisitor = new ClassDiagramElementVisitor(imageMap, model);
+		javaEditorServices.parseFile(file, elementVisitor);
+		viewer.setInput(model.getNodes());
 	}
+
 	
 
 	@Override

@@ -49,5 +49,7 @@ public interface TopLevelElement {
 	public IFigure getFigure();
 	
 	public void addMmodifier(EModifierType modifierType);
+
+	public void setSelected();
 	
 }

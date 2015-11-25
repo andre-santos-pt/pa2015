@@ -21,25 +21,30 @@ public class ClassDiagramLabelProvider extends LabelProvider implements ISelfSty
 
 			if (data.dest instanceof TopLevelElement) {
 				TopLevelElement destNode = (TopLevelElement) data.dest;
-
-				switch (destNode.getClassType()) {
-				case CLASS:
-					return "Extends";
-				case INTERFACE:
-					return "Implements";
-				default:
-					return "";
-				}
+				return getConnectionText(destNode);
 			}
 
 			return "SAY WHAT?!!";
-		} 
+		}
 		return "";
 	}
-	
+
+	private String getConnectionText(TopLevelElement destNode) {
+		switch (destNode.getClassType()) {
+		case CLASS:
+			return "Uses";
+		case SUPERCLASS:
+			return "Extends";
+		case INTERFACE:
+			return "Implements";
+		default:
+			return "";
+		}
+	}
+
 	@Override
 	public void selfStyleNode(Object element, GraphNode node) {
-		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -56,9 +61,14 @@ public class ClassDiagramLabelProvider extends LabelProvider implements ISelfSty
 					connection.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 					connection.setLineStyle(Graphics.LINE_DASH);
 					break;
+					
+				case SUPERCLASS:
+					connection.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+					connection.setLineStyle(Graphics.LINE_SOLID);
+					break;
 
 				default:
-					connection.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+					connection.setConnectionStyle(ZestStyles.CONNECTIONS_SOLID);
 					connection.setLineStyle(Graphics.LINE_SOLID);
 					break;
 				}
@@ -75,4 +85,6 @@ public class ClassDiagramLabelProvider extends LabelProvider implements ISelfSty
 
 		return null;
 	}
+
+
 }

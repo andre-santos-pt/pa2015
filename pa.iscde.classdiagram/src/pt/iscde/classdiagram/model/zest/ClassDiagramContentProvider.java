@@ -10,9 +10,9 @@ public class ClassDiagramContentProvider extends ArrayContentProvider implements
 	@Override
 	public Object[] getConnectedTo(Object entity) {
 		if (entity instanceof MyTopLevelElement) {
-		      MyTopLevelElement node = (MyTopLevelElement) entity;
-		      return node.getConnectedTo().toArray();
-		    }
-		    throw new RuntimeException("Type not supported");
+			MyTopLevelElement node = (MyTopLevelElement) entity;
+			return node.getConnectedTo().toArray();
+		}
+		throw new RuntimeException("Type not supported");
 	}
 }

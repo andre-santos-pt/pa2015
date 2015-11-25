@@ -22,11 +22,13 @@ import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
 import pt.iscde.classdiagram.model.zest.ClassDiagramContentProvider;
 import pt.iscde.classdiagram.model.zest.ClassDiagramLabelProvider;
 import pt.iscde.classdiagram.model.zest.NodeModelContentProvider;
+import pt.iscde.classdiagram.model.zest.SourceElementVisitor;
 import pt.iscde.classdiagram.service.ClassDiagramServices;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
+import pt.iscte.pidesco.projectbrowser.model.ClassElement;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
@@ -137,7 +139,12 @@ public class ClassDiagramView implements PidescoView, ClassDiagramServices, Proj
 
 	@Override
 	public IFigure getClassImage(SourceElement sourceElement) {
-		// TODO Auto-generated method stub
+		if(sourceElement.isClass()){
+			ClassElement element = (ClassElement)sourceElement;
+			SourceElementVisitor visitor = new SourceElementVisitor(imageMap);
+			javaEditorServices.parseFile(element.getFile(), visitor);
+			return visitor.getTopLevelNode().getFigure();
+		}
 		return null;
 	}
 

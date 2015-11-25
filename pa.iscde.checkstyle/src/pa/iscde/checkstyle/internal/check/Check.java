@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Closeables;
+import com.google.common.io.Files;
 
 import pa.iscde.checkstyle.model.SeverityType;
 import pa.iscde.checkstyle.model.Violation;
@@ -59,6 +60,16 @@ public abstract class Check {
 	 * The lines existing in the file in which this check is being performed.
 	 */
 	protected String[] lines;
+	
+	/**
+	 * The files on which the check was performed.
+	 */
+	protected List<String> listFileNames = new ArrayList<String>();
+	
+	/**
+	 * The file extension on which the check was performed.
+	 */
+	private static final String FILE_EXTENSION = "java";
 
 	/**
 	 * Constructor.
@@ -182,4 +193,34 @@ public abstract class Check {
 		}
 		return buf.toString();
 	}
+	
+	/**
+	 * This method is used to obtain the list of files 
+	 * on which the check is to be performed
+	 * 
+	 * @return The files as a list structure.
+	 */
+	public List<String> getFilesrecursively(File file) {
+		
+		File[] list = file.listFiles();
+		
+		if (list == null) return listFileNames;
+
+        for ( File f : list ) {
+            if ( f.isDirectory() ) {
+            	getFilesrecursively( f );
+            }
+            else {
+ 
+                String fileExtension = (String) Files.getFileExtension(f.getAbsolutePath());
+                if (fileExtension.equals(FILE_EXTENSION)){
+                	listFileNames.add(f.getAbsolutePath());
+                }
+            }
+        }
+		
+		return listFileNames;
+	
+	}
+	
 }

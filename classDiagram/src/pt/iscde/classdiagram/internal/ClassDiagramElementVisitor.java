@@ -1,5 +1,6 @@
 package pt.iscde.classdiagram.internal;
 
+import java.io.File;
 import java.util.Map;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -20,6 +21,8 @@ import pt.iscde.classdiagram.model.MyTopLevelElement;
 import pt.iscde.classdiagram.model.types.EModifierType;
 import pt.iscde.classdiagram.model.types.ETopElementType;
 import pt.iscde.classdiagram.model.zest.NodeModelContentProvider;
+import pt.iscte.pidesco.extensibility.PidescoServices;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 
 public class ClassDiagramElementVisitor extends ASTVisitor {
 
@@ -27,8 +30,9 @@ public class ClassDiagramElementVisitor extends ASTVisitor {
 	private MyTopLevelElement mainNode = null;
 	private Map<String, Image> imageMap;
 	private NodeModelContentProvider model;
-	
-	
+	private static PidescoServices pidescoServices;
+	private static JavaEditorServices javaEditorServices;
+	private File foundFile;
 
 	
 	public MyTopLevelElement getMainNode() {
@@ -60,6 +64,8 @@ public class ClassDiagramElementVisitor extends ASTVisitor {
 		super();
 		this.imageMap = imageMap;
 		this.model = model;
+		pidescoServices = ClassDiagramActivator.getInstance().getPidescoServices();
+		javaEditorServices = ClassDiagramActivator.getInstance().getJavaEditorServices();
 	}
 
 	public boolean visit(EnumDeclaration node) {
@@ -80,21 +86,42 @@ public class ClassDiagramElementVisitor extends ASTVisitor {
 		ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
 
 		if (superTypeBind != null && !(superTypeBind.getName().equals("Object"))) {
-			MyTopLevelElement superNode = new MyTopLevelElement(superTypeBind.getQualifiedName(),
-					superTypeBind.getName(), ETopElementType.CLASS, imageMap);
-			model.getNodes().add(superNode);
-			MyConnection connection = new MyConnection(null, "Extends", mainNode, superNode);
-			model.addConnection(connection);
+			MyTopLevelElement superNode = new MyTopLevelElement(superTypeBind.getQualifiedName(),superTypeBind.getName(), ETopElementType.CLASS, imageMap);
+			//model.getNodes().add(superNode);
+			
+
+			findClassFile(pidescoServices.getWorkspaceRoot().getParentFile().getParentFile(), superTypeBind.getQualifiedName());
+			if(foundFile != null){
+				ClassDiagramElementVisitor classDiagramElementVisitor = new ClassDiagramElementVisitor(imageMap, model);
+				javaEditorServices.parseFile(foundFile, classDiagramElementVisitor);
+				//MyConnection connection = new MyConnection(null, "Extends", mainNode, classDiagramElementVisitor.getMainNode());
+				//model.addConnection(connection);
+				mainNode.getConnectedTo().add(classDiagramElementVisitor.getMainNode());
+				
+			}
+			else{
+				MyConnection connection = new MyConnection(null, "Extends", mainNode, superNode);
+				model.addConnection(connection);
+			}
 		}
 
 		if (interfaceBinds != null) {
 			for (ITypeBinding interfaceBind : interfaceBinds) {
-				MyTopLevelElement interfaceNode = new MyTopLevelElement(interfaceBind.getQualifiedName(),
-						interfaceBind.getName(), ETopElementType.INTERFACE, imageMap);
-				model.getNodes().add(interfaceNode);
+				MyTopLevelElement interfaceNode = new MyTopLevelElement(interfaceBind.getQualifiedName(), interfaceBind.getName(), ETopElementType.INTERFACE, imageMap);
+				//model.getNodes().add(interfaceNode);
 
-				MyConnection connection = new MyConnection(null, "Implements", mainNode, interfaceNode);
-				model.addConnection(connection);
+				findClassFile(pidescoServices.getWorkspaceRoot().getParentFile().getParentFile(), interfaceBind.getQualifiedName());
+				if(foundFile != null){
+					ClassDiagramElementVisitor classDiagramElementVisitor = new ClassDiagramElementVisitor(imageMap, model);
+					javaEditorServices.parseFile(foundFile, classDiagramElementVisitor);
+					//MyConnection connection = new MyConnection(null, "Implements", mainNode, classDiagramElementVisitor.getMainNode());
+					//model.addConnection(connection);
+					mainNode.getConnectedTo().add(classDiagramElementVisitor.getMainNode());
+				}
+				else{
+					MyConnection connection = new MyConnection(null, "Implements", mainNode, interfaceNode);
+					model.addConnection(connection);
+				}
 			}
 		}
 
@@ -176,5 +203,26 @@ public class ClassDiagramElementVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
-
+	
+	public void findClassFile(File file, String name){
+		String findName = name.replace(".", "/");
+		findName = "/" + findName + ".java";
+		File[] fileList = file.listFiles();
+		for (File f : fileList) {
+			if(f.isFile()){
+				if(f.getAbsolutePath().contains(findName)){ 
+					foundFile = f;
+					}
+			}
+			else{
+				if(f.isDirectory()){
+					findClassFile(f, name);
+				}
+			}
+		}
+	}
+	
+	
+	
+	
 }

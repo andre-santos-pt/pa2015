@@ -15,7 +15,6 @@ public class ClassDiagramActivator extends ProjectBrowserListener.Adapter implem
 	private PidescoServices pidescoServices;
 	private ProjectBrowserServices browserServices;
 	private JavaEditorServices javaEditorServices;
-	
 
 	public static ClassDiagramActivator getInstance() {
 		return instance;
@@ -25,11 +24,10 @@ public class ClassDiagramActivator extends ProjectBrowserListener.Adapter implem
 		return pidescoServices;
 	}
 
-
 	public ProjectBrowserServices getBrowserServices() {
 		return browserServices;
 	}
-	
+
 	public JavaEditorServices getJavaEditorServices() {
 		return javaEditorServices;
 	}
@@ -45,15 +43,15 @@ public class ClassDiagramActivator extends ProjectBrowserListener.Adapter implem
 		ServiceReference<PidescoServices> ref = context.getServiceReference(PidescoServices.class);
 		pidescoServices = context.getService(ref);
 
-		ServiceReference<ProjectBrowserServices> refProjectBrowserServices = context.getServiceReference(ProjectBrowserServices.class);
+		ServiceReference<ProjectBrowserServices> refProjectBrowserServices = context
+				.getServiceReference(ProjectBrowserServices.class);
 		browserServices = context.getService(refProjectBrowserServices);
-		
-		ServiceReference<JavaEditorServices> refJavaEditorServices = context.getServiceReference(JavaEditorServices.class);
+
+		ServiceReference<JavaEditorServices> refJavaEditorServices = context
+				.getServiceReference(JavaEditorServices.class);
 		javaEditorServices = context.getService(refJavaEditorServices);
 	}
 
-	
-	
 	/*
 	 * (non-Javadoc)
 	 * 

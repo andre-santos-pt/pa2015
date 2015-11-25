@@ -6,7 +6,7 @@
          name="GUI Builder"
          point="pt.iscte.pidesco.view">
       <view
-            class="pt.iscte.pidesco.guibuilder.internal.GuiBuilderView"
+            class="pt.iscte.pidesco.guibuilder.ui.GuiBuilderView"
             icon="icon_gui.png">
       </view>
    </extension>

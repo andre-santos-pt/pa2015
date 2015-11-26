@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.io.File;
 
 import pa.iscde.checkstyle.internal.check.Check;
 import pa.iscde.checkstyle.model.SeverityType;
@@ -55,11 +56,25 @@ public class LineLengthCheck extends Check {
 
 	@Override
 	public void process(Map<String, Violation> violations) {
-		lines = getFileLines();
-		if (lines == null || lines.length == 0) {
-			return;
+		if (file.isDirectory()){
+			
+			listFileNames = new ArrayList<String>();
+			List<String> listFiles = new ArrayList<String>();
+			listFiles = getFilesrecursively(file);
+			
+			for ( String s : listFiles ) {
+				File file = new File( s );
+				setFile(file);
+				process(violations);
+			}
+		} else if (file.isFile()){
+		
+			lines = getFileLines();
+			if (lines == null || lines.length == 0) {
+				return;
+			}
+			processLines(violations);
 		}
-		processLines(violations);
 	}
 
 	/**

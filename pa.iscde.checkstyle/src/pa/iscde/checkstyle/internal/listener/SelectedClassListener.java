@@ -1,19 +1,25 @@
 package pa.iscde.checkstyle.internal.listener;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import pa.iscde.checkstyle.converter.AnnotationConverter;
 import pa.iscde.checkstyle.internal.CheckStyleActivator;
+import pa.iscde.checkstyle.model.SharedModel;
 import pa.iscde.checkstyle.model.Violation;
 import pa.iscde.checkstyle.model.ViolationDetail;
 import pa.iscde.checkstyle.model.ViolationModelProvider;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
+import pt.iscte.pidesco.projectbrowser.model.ClassElement;
+import pt.iscte.pidesco.projectbrowser.model.PackageElement;
+import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 
 /**
  * This class is used as a listener in order to perform some actions when a
- * class is, for instance, opened, closed, saved from Java editor component.
+ * class is selected, for instance, opened, closed, saved from Java editor
+ * component.
  * 
  * For that end, we need to use the class {@link JavaEditorListener.Adapter}
  * 
@@ -40,7 +46,12 @@ public class SelectedClassListener extends JavaEditorListener.Adapter {
 		final List<Violation> violations = ViolationModelProvider.getInstance().getViolations();
 
 		if (violations == null || violations.isEmpty()) {
-			return;
+			SharedModel.getInstance().resetElements();
+
+			final PackageElement packageElement = new PackageElement(null, file.getName(), file);
+			final ClassElement sourceElement = new ClassElement(packageElement, file);
+
+			SharedModel.getInstance().addElement(sourceElement);
 		}
 
 		for (Violation violation : violations) {
@@ -50,6 +61,24 @@ public class SelectedClassListener extends JavaEditorListener.Adapter {
 					jeServices.addAnnotation(file, AnnotationConverter.convert(violation.getSeverity()),
 							detail.getMessage(), detail.getOffset(), 0);
 				}
+			}
+		}
+	}
+
+	@Override
+	public void fileClosed(File file) {
+		final List<SourceElement> elements = SharedModel.getInstance().getElements();
+
+		if (elements == null || elements.size() == 0) {
+			return;
+		}
+
+		final Iterator<SourceElement> iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			final SourceElement element = iterator.next();
+			if (element.getFile().equals(file)) {
+				iterator.remove();
+				break;
 			}
 		}
 	}

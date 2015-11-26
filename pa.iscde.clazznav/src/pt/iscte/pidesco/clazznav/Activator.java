@@ -16,17 +16,16 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
  */
 public class Activator implements BundleActivator {
 
-//	private static Activator instance;
 
 	private Logger log = new Logger();
 
 	private static BundleContext context;
 
-	public static ServiceReference<JavaEditorServices> javaEditorReference;
-	public static JavaEditorServices javaEditorService;
+	private static ServiceReference<JavaEditorServices> javaEditorReference;
+	private static JavaEditorServices javaEditorService;
 
-	public static ServiceReference<ProjectBrowserServices> projectBrowserReference;
-	public static ProjectBrowserServices projectBrowserService;
+	private static ServiceReference<ProjectBrowserServices> projectBrowserReference;
+	private static ProjectBrowserServices projectBrowserService;
 
 	public static OpenFileListener listener;
 
@@ -63,8 +62,69 @@ public class Activator implements BundleActivator {
 		
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	static BundleContext getContext() {
 		return context;
+	}
+	
+
+	/**
+	 * @return the javaEditorReference
+	 */
+	public static ServiceReference<JavaEditorServices> getJavaEditorReference() {
+		return javaEditorReference;
+	}
+
+	/**
+	 * @param javaEditorReference the javaEditorReference to set
+	 */
+	public void setJavaEditorReference(ServiceReference<JavaEditorServices> javaEditorReference) {
+		this.javaEditorReference = javaEditorReference;
+	}
+
+	/**
+	 * @return the javaEditorService
+	 */
+	public JavaEditorServices getJavaEditorService() {
+		return javaEditorService;
+	}
+
+	/**
+	 * @param javaEditorService the javaEditorService to set
+	 */
+	public void setJavaEditorService(JavaEditorServices javaEditorService) {
+		this.javaEditorService = javaEditorService;
+	}
+
+	/**
+	 * @return the projectBrowserReference
+	 */
+	public ServiceReference<ProjectBrowserServices> getProjectBrowserReference() {
+		return projectBrowserReference;
+	}
+
+	/**
+	 * @param projectBrowserReference the projectBrowserReference to set
+	 */
+	public void setProjectBrowserReference(ServiceReference<ProjectBrowserServices> projectBrowserReference) {
+		this.projectBrowserReference = projectBrowserReference;
+	}
+
+	/**
+	 * @return the projectBrowserService
+	 */
+	public ProjectBrowserServices getProjectBrowserService() {
+		return projectBrowserService;
+	}
+
+	/**
+	 * @param projectBrowserService the projectBrowserService to set
+	 */
+	public void setProjectBrowserService(ProjectBrowserServices projectBrowserService) {
+		this.projectBrowserService = projectBrowserService;
 	}
 
 

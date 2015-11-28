@@ -16,7 +16,7 @@ public class JavaEditorListenerImpl implements pt.iscte.pidesco.javaeditor.servi
 
 	@Override
 	public void fileOpened(final File file) {
-		JavadDocActivator.getInstance().getJavaEditorServices().parseFile(file, new ASTVisitor() {
+		JavaDocActivator.getInstance().getJavaEditorServices().parseFile(file, new ASTVisitor() {
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				System.out.println("Method: " + node.getName());

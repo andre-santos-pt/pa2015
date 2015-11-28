@@ -13,9 +13,9 @@ import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
-public class JavadDocActivator implements BundleActivator {
+public class JavaDocActivator implements BundleActivator {
 
-	public static JavadDocActivator instance;
+	public static JavaDocActivator instance;
 
 	// External Services
 	private PidescoServices pidescoServices;
@@ -73,7 +73,7 @@ public class JavadDocActivator implements BundleActivator {
 		this.service.unregister();
 	}
 
-	public static JavadDocActivator getInstance() {
+	public static JavaDocActivator getInstance() {
 		return instance;
 	}
 

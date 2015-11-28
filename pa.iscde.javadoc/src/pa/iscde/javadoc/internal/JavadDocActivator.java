@@ -33,10 +33,7 @@ public class JavadDocActivator implements BundleActivator {
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
-<<<<<<< HEAD
-		
-=======
->>>>>>> upstream/master
+
 		instance = this;
 
 		logService = getServiceReference(LogService.class, context);

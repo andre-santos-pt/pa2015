@@ -7,7 +7,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.swt,
  pt.iscte.pidesco.projectbrowser
-Import-Package: org.eclipse.swt.widgets,
+Import-Package: org.eclipse.jdt.core.dom,
+ org.eclipse.swt.widgets,
  pt.iscte.pidesco.extensibility,
  pt.iscte.pidesco.javaeditor.service
 Bundle-ActivationPolicy: lazy

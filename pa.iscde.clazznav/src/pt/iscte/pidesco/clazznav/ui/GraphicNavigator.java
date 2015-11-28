@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.viewers.internal.ZoomManager;
 import org.eclipse.zest.core.widgets.Graph;
@@ -68,24 +69,19 @@ public class GraphicNavigator extends AbstractNavigator implements NavigatorInte
 
 		graph.setVisible(enabled);
 	}
-
+	
 	/**
 	 * 
 	 */
-	public void enable(){
-		setEnabled(true);
-		graph.setVisible(true);
-		getComposite().redraw(); //need it??
+	@Override
+	public void layout() {
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data.grabExcessHorizontalSpace = true;
+		data.horizontalSpan = 3;
+		data.heightHint = 150;
+		graph.setLayoutData(data);
 	}
-
-	/**
-	 * 
-	 */
-	public void disable(){
-		setEnabled(false);
-		graph.setVisible(false);
-	}
-
+	
 	/**
 	 * 
 	 */
@@ -111,6 +107,23 @@ public class GraphicNavigator extends AbstractNavigator implements NavigatorInte
 		graph.redraw();
 		graph.update();
 	}
+
+	/**
+	 * 
+	 */
+	public void enable(){
+		setEnabled(true);
+		graph.setVisible(true);
+	}
+
+	/**
+	 * 
+	 */
+	public void disable(){
+		setEnabled(false);
+		graph.setVisible(false);
+	}
+
 
 	/**
 	 * 

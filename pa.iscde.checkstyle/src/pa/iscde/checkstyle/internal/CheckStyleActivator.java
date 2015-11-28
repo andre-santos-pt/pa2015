@@ -14,7 +14,6 @@ import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 /**
  * This class is responsible to register the service associated to CheckStyle
  * component and to initialize the external services and listeners needed by it.
- *
  */
 public class CheckStyleActivator implements BundleActivator {
 
@@ -86,7 +85,7 @@ public class CheckStyleActivator implements BundleActivator {
 	public JavaEditorServices getJavaEditorServices() {
 		return this.jeServices;
 	}
-	
+
 	/**
 	 * This method is used to obtain the references for services exposed by
 	 * project browser component and Java editor component.

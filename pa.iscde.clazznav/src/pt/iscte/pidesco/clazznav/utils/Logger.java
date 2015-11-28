@@ -2,13 +2,22 @@ package pt.iscte.pidesco.clazznav.utils;
 
 import org.osgi.framework.ServiceReference;
 
+/**
+ * 
+ * @author santostc
+ *
+ */
 public class Logger implements org.eclipse.equinox.log.Logger {
 
+	/**
+	 * 
+	 */
 	private static Logger instance = null;
 
-	public Logger() {
-		//instance = new Logger();
-	}
+	/**
+	 * 
+	 */
+	public Logger() {}
 
 
 	@Override

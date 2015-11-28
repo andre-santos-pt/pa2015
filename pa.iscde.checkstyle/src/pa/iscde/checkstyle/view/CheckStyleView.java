@@ -39,8 +39,7 @@ public class CheckStyleView implements PidescoView {
 	/**
 	 * The columns' names for detailed report.
 	 */
-	private static final String[] COLUMN_NAMES_DETAILED_REPORT = { "Severity", "Resource", "Location", "Line",
-			"Description" };
+	private static final String[] COLUMN_NAMES_DETAILED_REPORT = { "Severity", "Resource", "Location", "Line", "Description" };
 
 	/**
 	 * The columns' widths for detailed report.
@@ -50,8 +49,7 @@ public class CheckStyleView implements PidescoView {
 	/**
 	 * The columns' names for main report.
 	 */
-	private static final String[] COLUMN_NAMES_MAIN_REPORT = { "Severity", "Violation Type", "Count", "Description",
-			"" };
+	private static final String[] COLUMN_NAMES_MAIN_REPORT = { "Severity", "Violation Type", "Count", "Description", "" };
 
 	/**
 	 * The columns' widths for main report.
@@ -85,16 +83,21 @@ public class CheckStyleView implements PidescoView {
 	private Map<String, Image> imageMap;
 
 	/**
-	 * The navigation button use to navigate from detailed report to main
+	 * The navigation button used to navigate from detailed report to main
 	 * report.
 	 */
 	private Button btMainReport;
 
 	/**
-	 * The navigation button use to navigate from main report to detailed
+	 * The navigation button used to navigate from main report to detailed
 	 * report.
 	 */
 	private Button btDetailReport;
+	
+	/**
+	 * The delete button used to clean the violations existing in the data model.
+	 */
+	private Button btDeleteViolations;
 
 	/**
 	 * Holds the violation object associated to the row selected in the main
@@ -131,11 +134,11 @@ public class CheckStyleView implements PidescoView {
 	}
 
 	/**
-	 * This method is used to update the data model used by main report. If the
+	 * This method is used to refresh the data model used by main report. If the
 	 * detailed report is being used, the data model for main report will not be
 	 * updated.
 	 */
-	public void updateModel() {
+	public void refreshModel() {
 		if (isDetailedReportOpened) {
 			return;
 		}
@@ -146,9 +149,9 @@ public class CheckStyleView implements PidescoView {
 	}
 
 	/**
-	 * This method is used to update the data model used by detailed report.
+	 * This method is used to refresh the data model used by detailed report.
 	 */
-	private void updateDetailedReportModel() {
+	private void refreshDetailedReportModel() {
 		if (!viewArea.isDisposed()) {
 			viewer.setInput(selectedViolation.getDetails());
 		}
@@ -162,8 +165,8 @@ public class CheckStyleView implements PidescoView {
 	private void render() {
 		isDetailedReportOpened = false;
 
-		addNavigationButtons();
-		addNavigationButtonsListeners();
+		addButtons();
+		addButtonsListeners();
 
 		viewer = new TableViewer(viewArea, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
 		addViewerListener();
@@ -176,7 +179,7 @@ public class CheckStyleView implements PidescoView {
 		addTableListener();
 
 		viewer.setContentProvider(new ArrayContentProvider());
-		updateModel();
+		refreshModel();
 
 		viewer.getControl().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 3, 0));
 	}
@@ -184,38 +187,44 @@ public class CheckStyleView implements PidescoView {
 	/**
 	 * This method is used to create the navigation buttons used to navigate
 	 * between the main report to detailed report and vice-versa.
+	 * And also the violations delete button.
 	 */
-	private void addNavigationButtons() {
-		final GridLayout layout = new GridLayout(2, false);
+	private void addButtons() {
+		final GridLayout layout = new GridLayout(3, false);
 		viewArea.setLayout(layout);
 
 		btMainReport = new Button(viewArea, SWT.PUSH);
 		btMainReport.setBounds(40, 40, 40, 40);
 		btMainReport.setImage(imageMap.get("nav_main_report.png"));
 		btMainReport.setEnabled(false);
-		btMainReport.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false, 0, 0));
 		btMainReport.setToolTipText("Go back to the master view");
 
 		btDetailReport = new Button(viewArea, SWT.PUSH);
 		btDetailReport.setBounds(40, 40, 40, 40);
 		btDetailReport.setImage(imageMap.get("nav_detailed_report.png"));
 		btDetailReport.setEnabled(false);
-		btDetailReport.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false, 1, 1));
 		btDetailReport.setToolTipText("List all the violations of this type");
+		
+		btDeleteViolations = new Button(viewArea, SWT.PUSH);
+		btDeleteViolations.setBounds(40, 40, 40, 40);
+		btDeleteViolations.setImage(imageMap.get("delete_violations.png"));
+		btDeleteViolations.setEnabled(false);
+		btDeleteViolations.setToolTipText("Clear Checkstyle violations");
 	}
 
 	/**
 	 * This method is used to add the listeners to handle the actions performed
-	 * on the navigation buttons.
+	 * on the navigation buttons and delete button
 	 */
-	private void addNavigationButtonsListeners() {
+	private void addButtonsListeners() {
 		btMainReport.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				isDetailedReportOpened = false;
-				updateModel();
+				refreshModel();
 				btDetailReport.setEnabled(selectedViolation != null);
 				btMainReport.setEnabled(false);
+				updateColumns(true);
 			}
 
 			@Override
@@ -228,10 +237,11 @@ public class CheckStyleView implements PidescoView {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				isDetailedReportOpened = true;
-				updateDetailedReportModel();
+				refreshDetailedReportModel();
 				btDetailReport.setEnabled(false);
 				btMainReport.setEnabled(true);
 				selectedViolation = null;
+				updateColumns(false);
 			}
 
 			@Override
@@ -255,8 +265,8 @@ public class CheckStyleView implements PidescoView {
 			}
 		} else {
 			for (int i = 0; i < columns.length; ++i) {
-				columns[i].setText(COLUMN_NAMES_DETAILED_REPORT[i]);
-				columns[i].setWidth(COLUMN_WIDTHS_DETAILED_REPORT[i]);
+				columns[i].setText(COLUMN_NAMES_MAIN_REPORT[i]);
+				columns[i].setWidth(COLUMN_WIDTHS_MAIN_REPORT[i]);
 			}
 		}
 	}
@@ -279,7 +289,7 @@ public class CheckStyleView implements PidescoView {
 			public void doubleClick(DoubleClickEvent e) {
 				if (!isDetailedReportOpened) {
 					updateColumns(false);
-					updateDetailedReportModel();
+					refreshDetailedReportModel();
 					btDetailReport.setEnabled(false);
 					btMainReport.setEnabled(true);
 					isDetailedReportOpened = true;

@@ -1,7 +1,5 @@
 package pt.iscte.pidesco.clazznav.ui;
 
-import java.io.File;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -10,19 +8,33 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import pt.iscte.pidesco.clazznav.Activator;
-
 public class SimpleNavigator extends AbstractNavigator implements NavigatorInterface {
+
+	private static SimpleNavigator instance;
 
 	private Button previousButton;
 	private Button afterButton;
 	private Button graphicModeButton;
-	private int index = -2;
 
-	public SimpleNavigator(Composite composite){
+	private SimpleNavigator(Composite composite){
 		super(composite);
 	}
 
+
+	public static  SimpleNavigator getInstance(Composite composite) {
+		if( instance == null)
+			return instance = new SimpleNavigator(composite);
+		return instance;
+	} 
+
+	public static  SimpleNavigator getInstance() {
+		return instance;
+	} 
+
+
+	/**
+	 * 
+	 */
 	@Override
 	public void build() {
 
@@ -34,30 +46,51 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 
 		afterButton = new Button(getComposite(),  SWT.ARROW | SWT.RIGHT);
 
+		layout();
 		buttonListeners();
-
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public void layout() {
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data.grabExcessHorizontalSpace = true;
+		data.heightHint = 50;
 
+		previousButton.setLayoutData(data);
+		afterButton.setLayoutData(data);
+		graphicModeButton.setLayoutData(data);;
+	}
 
+	/**
+	 * 
+	 */
 	private void buttonListeners(){
+
 		previousButton.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
-				System.out.println(AbstractNavigator.files.size());
-				if(AbstractNavigator.files.size()>=2){
-					File x =	AbstractNavigator.files.get(AbstractNavigator.files.size() + index);
-					if(!AbstractNavigator.files.isEmpty()){
-						if(!(AbstractNavigator.files.get(AbstractNavigator.files.size() + index + 1 ).getName().equals(x.getName()))){
-							Activator.javaEditorService.openFile(x);
-						}
-					}
-					index--;
-				}
-				System.out.println(index);
+				//TODO
 			}
 		});
+
+
+		graphicModeButton.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				if(GraphicNavigator.getInstance().isEnabled()){
+					GraphicNavigator.getInstance().disable();
+				}
+				else{
+					GraphicNavigator.getInstance().enable();
+				}
+			}
+		});
+
 
 		afterButton.addListener(SWT.Selection, new Listener() {
 
@@ -69,15 +102,13 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 		});
 	}
 
-
-
 	@Override
 	public void dispose() {
 		previousButton.dispose();
 		afterButton.dispose();
 		graphicModeButton.dispose();
-
 	}
+
 	/**
 	 * @return the previousButton
 	 */
@@ -119,13 +150,5 @@ public class SimpleNavigator extends AbstractNavigator implements NavigatorInter
 	public void setGraphicModeButton(Button graphicModeButton) {
 		this.graphicModeButton = graphicModeButton;
 	}
-
-	public void setLayoutData(GridData data) {
-		previousButton.setLayoutData(data);
-		afterButton.setLayoutData(data);
-		graphicModeButton.setLayoutData(data);
-
-	}
-
 
 }

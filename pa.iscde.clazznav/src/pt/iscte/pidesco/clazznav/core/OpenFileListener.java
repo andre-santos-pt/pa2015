@@ -29,7 +29,7 @@ public class OpenFileListener extends JavaEditorListener.Adapter{
 		}
 		else {
 			AbstractNavigator.files.add(file);
-			GraphicNavigator.getInstance().refresh();
+//			GraphicNavigator.getInstance().refresh();
 			System.out.println(AbstractNavigator.files.get(AbstractNavigator.files.size()-1).getName());
 		}
 

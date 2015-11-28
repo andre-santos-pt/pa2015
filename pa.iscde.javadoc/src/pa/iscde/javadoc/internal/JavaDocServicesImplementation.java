@@ -11,5 +11,4 @@ public class JavaDocServicesImplementation implements JavaDocServices {
 	public JavaDocServicesImplementation(final LogService logService) {
 		this.logService = logService;
 	}
-
 }

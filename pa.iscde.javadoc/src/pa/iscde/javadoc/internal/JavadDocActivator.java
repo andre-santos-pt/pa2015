@@ -33,7 +33,6 @@ public class JavadDocActivator implements BundleActivator {
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
-
 		instance = this;
 
 		logService = getServiceReference(LogService.class, context);
@@ -54,8 +53,7 @@ public class JavadDocActivator implements BundleActivator {
 			projectBrowserServices.addListener(projectBrowserListener = new ProjectBrowserListenerImpl(logService));
 		}
 
-		this.service = context.registerService(JavaDocServices.class, new JavaDocServicesImplementation(logService),
-				null);
+		this.service = context.registerService(JavaDocServices.class, new JavaDocServicesImplementation(logService), null);
 	}
 
 	@Override
@@ -79,15 +77,15 @@ public class JavadDocActivator implements BundleActivator {
 	}
 
 	public PidescoServices getPidescoServices() {
-		return pidescoServices;
+		return this.pidescoServices;
 	}
 
 	public JavaEditorServices getJavaEditorServices() {
-		return javaEditorServices;
+		return this.javaEditorServices;
 	}
 
 	public ProjectBrowserServices getProjectBrowserServices() {
-		return projectBrowserServices;
+		return this.projectBrowserServices;
 	}
 
 	private <T> T getServiceReference(final Class<T> clazz, final BundleContext context) {

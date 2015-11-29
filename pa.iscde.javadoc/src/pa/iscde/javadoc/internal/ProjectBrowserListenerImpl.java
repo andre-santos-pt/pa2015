@@ -10,8 +10,8 @@ public class ProjectBrowserListenerImpl implements pt.iscte.pidesco.projectbrows
 
 	private final LogService logService;
 
-	public ProjectBrowserListenerImpl(final LogService logService) {
-		this.logService = logService;
+	public ProjectBrowserListenerImpl() {
+		this.logService = JavaDocServiceLocator.getLogService();
 	}
 
 	@Override

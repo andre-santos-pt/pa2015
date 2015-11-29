@@ -2,8 +2,6 @@ package pa.iscde.javadoc.internal;
 
 import java.io.File;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.osgi.service.log.LogService;
 
 public class JavaEditorListenerImpl implements pt.iscte.pidesco.javaeditor.service.JavaEditorListener {
@@ -16,15 +14,6 @@ public class JavaEditorListenerImpl implements pt.iscte.pidesco.javaeditor.servi
 
 	@Override
 	public void fileOpened(final File file) {
-		JavaDocActivator.getInstance().getJavaEditorServices().parseFile(file, new ASTVisitor() {
-			@Override
-			public boolean visit(MethodDeclaration node) {
-				System.out.println("Method: " + node.getName());
-				System.out.println("JavaDoc: " + node.getJavadoc() + "\n");
-				return false;
-			}
-		});
-		
 		logService.log(LogService.LOG_DEBUG, ">fileOpened(" + file + ")");
 	}
 
@@ -36,6 +25,7 @@ public class JavaEditorListenerImpl implements pt.iscte.pidesco.javaeditor.servi
 	@Override
 	public void fileClosed(final File file) {
 		logService.log(LogService.LOG_DEBUG, ">fileClosed(" + file + ")");
+		JavaDocView.closeView();
 	}
 
 	@Override

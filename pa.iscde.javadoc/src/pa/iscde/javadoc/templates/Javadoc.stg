@@ -1,1 +1,2 @@
 import "MethodDeclaration.stg"
+import "FieldDeclaration.stg"

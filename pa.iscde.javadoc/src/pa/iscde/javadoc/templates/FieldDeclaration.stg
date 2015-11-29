@@ -1,0 +1,21 @@
+preVisit_FieldDeclaration(FieldDeclaration) ::= <<
+\<hr> 
+>>
+
+postVisit_FieldDeclaration(FieldDeclaration) ::= <<
+\<ul>
+	\<ul>
+		\<ul>Field Name:
+			\<ul>\<b>\<a href="#<FieldDeclaration.startPosition>-<FieldDeclaration.length>"><first(FieldDeclaration)>\</a>\</b>\</ul>
+		\</ul>
+		\<ul>Type:
+			\<ul><FieldDeclaration.type>\</ul>
+		\</ul>		
+		\<ul>Javadoc:
+			\<ul>
+				\<ul>\<span><FieldDeclaration.javadoc>\</span>\</ul> 			
+ 			\</ul>
+		\</ul>		
+	\</ul>
+\</ul>		
+>>

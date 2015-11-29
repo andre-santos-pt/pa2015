@@ -8,7 +8,7 @@ public class JavaDocServicesImplementation implements JavaDocServices {
 
 	private final LogService logService;
 
-	public JavaDocServicesImplementation(final LogService logService) {
-		this.logService = logService;
+	public JavaDocServicesImplementation() {
+		this.logService = JavaDocServiceLocator.getLogService();
 	}
 }

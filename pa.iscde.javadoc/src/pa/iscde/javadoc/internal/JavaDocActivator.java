@@ -3,11 +3,8 @@ package pa.iscde.javadoc.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.log.LogService;
 
 import pa.iscde.javadoc.service.JavaDocServices;
-import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
-import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
 import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
@@ -15,15 +12,7 @@ public class JavaDocActivator implements BundleActivator {
 
 	public static JavaDocActivator instance;
 
-	private JavaEditorListener javaEditorListener;
-
-	private ProjectBrowserListener projectBrowserListener;
-
 	private ServiceRegistration<JavaDocServices> service;
-
-	private JavaEditorServices javaEditorServices;
-
-	private ProjectBrowserServices projectBrowserServices;
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
@@ -31,16 +20,6 @@ public class JavaDocActivator implements BundleActivator {
 		instance = this;
 
 		JavaDocServiceLocator.initialize(context);
-
-		this.javaEditorServices = JavaDocServiceLocator.getJavaEditorService();
-		if (null != javaEditorServices) {
-			javaEditorServices.addListener(javaEditorListener = new JavaEditorListenerImpl());
-		}
-
-		this.projectBrowserServices = JavaDocServiceLocator.getProjectBrowserService();
-		if (null != projectBrowserServices) {
-			projectBrowserServices.addListener(projectBrowserListener = new ProjectBrowserListenerImpl());
-		}
 
 		JavaDocServicesImplementation jDocServiceImpl = new JavaDocServicesImplementation();
 		this.service = context.registerService(JavaDocServices.class, jDocServiceImpl, null);
@@ -53,16 +32,7 @@ public class JavaDocActivator implements BundleActivator {
 
 		instance = null;
 
-		if (javaEditorServices != null && null != javaEditorListener) {
-			javaEditorServices.removeListener(javaEditorListener);
-		}
-
-		if (projectBrowserServices != null && null != projectBrowserListener) {
-			projectBrowserServices.removeListener(projectBrowserListener);
-		}
-
 		this.service.unregister();
-
 		JavaDocServiceLocator.deinitialize();
 	}
 

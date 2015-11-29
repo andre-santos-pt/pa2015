@@ -2,42 +2,43 @@ package pa.iscde.javadoc.generator;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
 
 public class StringTemplateVisitor extends ASTVisitor {
 
-	private StringBuilder sb = new StringBuilder();
+	private static final STGroup group;
 
-	public StringTemplateVisitor() {
-		super(true);
+	private StringBuilder stringBuilder;
+
+	static {
+		group = new STGroupFile("/pa/iscde/javadoc/templates/javadoc.stg");
 	}
 
-	private void renderNode(ASTNode node) {
-		STGroup group = new STGroupDir("/pa/iscde/javadoc/templates");				
-		ST template = group.getInstanceOf(node.getClass().getSimpleName() );
+	public StringTemplateVisitor(final StringBuilder stringBuilder) {
+		super(true);
+		this.stringBuilder = stringBuilder;
+	}
+
+	private void renderNode(final ASTNode node, final String operation) {
+		final ST template = group.getInstanceOf(operation + "_" + node.getClass().getSimpleName());
 		if (null != template) {
 			template.add(node.getClass().getSimpleName(), node);
+			stringBuilder.append(template.render());
 		}
-		sb.append(template.render());
 	}
 
 	@Override
-	public boolean visit(MethodDeclaration node) {
-		renderNode(node);
-		return super.visit(node);
+	public void preVisit(ASTNode node) {
+		renderNode(node, "preVisit");
+		super.preVisit(node);
 	}
 
-	public StringBuilder getSb() {
-		return sb;
+	@Override
+	public void postVisit(ASTNode node) {
+		renderNode(node, "postVisit");
+		super.postVisit(node);
 	}
-
-	public void setSb(StringBuilder sb) {
-		this.sb = sb;
-	}
-	
-	
 
 }

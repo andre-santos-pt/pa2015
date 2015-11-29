@@ -1,15 +1,19 @@
-MethodDeclaration (MethodDeclaration) ::= <<
+preVisit_MethodDeclaration(MethodDeclaration) ::= <<
+\<hr> 
+>>
+
+postVisit_MethodDeclaration(MethodDeclaration) ::= <<
 \<ul>
 	\<ul>
 		\<ul>Method Name:
-			\<ul>\<b><MethodDeclaration.name>\</b>\</ul>
+			\<ul>\<b>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.name>\</a>\</b>\</ul>
 		\</ul>
 		\<ul>Return Type:
 			\<ul><MethodDeclaration.returnType2>\</ul>
 		\</ul>		
 		\<ul>Javadoc:
 			\<ul>
-				\<ul><MethodDeclaration.javadoc>\</ul> 			
+				\<ul>\<span><MethodDeclaration.javadoc>\</span>\</ul> 			
  			\</ul>
 		\</ul>		
 		\<ul>Parameters:
@@ -18,12 +22,6 @@ MethodDeclaration (MethodDeclaration) ::= <<
 				\<ul><length(MethodDeclaration.parameters)>\</ul>
  			\</ul>
 		\</ul>
-		\<ul>Position Start:
-			\<ul>
-				\<ul>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.startPosition>\</a>\</ul> 			
- 			\</ul>
-		\</ul>
-				
 	\</ul>
 \</ul>		
 >>

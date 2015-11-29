@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import pa.iscde.javadoc.generator.StringTemplateVisitor;
 import pt.iscte.pidesco.extensibility.PidescoView;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorListener;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 
 public class JavaDocView implements PidescoView {
 
@@ -42,21 +44,15 @@ public class JavaDocView implements PidescoView {
 
 		this.browser = new Browser(viewArea, SWT.NONE);
 		this.browser.setText("<h1>JavaDoc View</h1>");
+		
+		this.viewArea.getParent();
 
 		Button button = new Button(viewArea, SWT.SIMPLE);
 		button.setText("Export JavaDoc");
 
-		viewArea.addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				instance = null;
-			}
-		});
-
 		browser.addLocationListener(new LocationListener() {
 			@Override
 			public void changing(LocationEvent event) {
-
 			}
 
 			@Override
@@ -71,13 +67,44 @@ public class JavaDocView implements PidescoView {
 				}
 			}
 		});
+			
+		final JavaEditorListener javaEditorListener;
+		final JavaEditorServices javaEditorServices= JavaDocServiceLocator.getJavaEditorService();		
+		if (null != javaEditorServices) {
+			javaEditorServices.addListener(javaEditorListener = new JavaEditorListener() {
+				@Override
+				public void selectionChanged(File file, String text, int offset, int length) {
+				}
+				@Override
+				public void fileSaved(File file) {
+				}
+				
+				@Override
+				public void fileOpened(File file) {
+					generateJavadoc(file);
+				}
+				
+				@Override
+				public void fileClosed(File file) {
+				}
+			});
+		} else {
+			javaEditorListener = null;
+		}
+		
+		viewArea.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				instance = null;
+				if(null != javaEditorListener) {
+					javaEditorServices.removeListener(javaEditorListener);
+				}
+			}
+		});	
 
-		File openedFile = null;
-		if (null != (openedFile = JavaDocServiceLocator.getJavaEditorService().getOpenedFile())) {
-			StringTemplateVisitor jDoc = new StringTemplateVisitor();
-			JavaDocServiceLocator.getJavaEditorService().parseFile(openedFile, jDoc);
-			this.browser.setText(jDoc.getSb().toString());
-			lastParsedFile = openedFile;
+		File openedFile;
+		if( null != (openedFile = JavaDocServiceLocator.getJavaEditorService().getOpenedFile())) {
+			generateJavadoc(openedFile);
 		}
 
 	}
@@ -85,6 +112,16 @@ public class JavaDocView implements PidescoView {
 	public static void closeView() {
 		if (null != instance) {
 			instance.viewArea.dispose();
+		}
+	}
+
+	public void generateJavadoc(final File openedFile) {
+		if (null != openedFile) {
+			StringBuilder sb = new StringBuilder();
+			StringTemplateVisitor jDoc = new StringTemplateVisitor(sb);
+			JavaDocServiceLocator.getJavaEditorService().parseFile(openedFile, jDoc);
+			this.browser.setText(sb.toString());
+			lastParsedFile = openedFile;
 		}
 	}
 

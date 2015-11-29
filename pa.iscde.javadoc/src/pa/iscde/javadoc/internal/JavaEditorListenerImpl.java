@@ -8,8 +8,8 @@ public class JavaEditorListenerImpl implements pt.iscte.pidesco.javaeditor.servi
 
 	private final LogService logService;
 
-	public JavaEditorListenerImpl(LogService logService) {
-		this.logService = logService;
+	public JavaEditorListenerImpl() {
+		this.logService = JavaDocServiceLocator.getLogService();
 	}
 
 	@Override

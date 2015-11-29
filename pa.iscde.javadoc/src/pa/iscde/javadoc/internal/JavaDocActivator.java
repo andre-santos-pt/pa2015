@@ -15,9 +15,6 @@ public class JavaDocActivator implements BundleActivator {
 
 	public static JavaDocActivator instance;
 
-	// OSGi Services
-	private LogService logService;
-
 	private JavaEditorListener javaEditorListener;
 
 	private ProjectBrowserListener projectBrowserListener;
@@ -37,15 +34,15 @@ public class JavaDocActivator implements BundleActivator {
 
 		this.javaEditorServices = JavaDocServiceLocator.getJavaEditorService();
 		if (null != javaEditorServices) {
-			javaEditorServices.addListener(javaEditorListener = new JavaEditorListenerImpl(logService));
+			javaEditorServices.addListener(javaEditorListener = new JavaEditorListenerImpl());
 		}
 
 		this.projectBrowserServices = JavaDocServiceLocator.getProjectBrowserService();
 		if (null != projectBrowserServices) {
-			projectBrowserServices.addListener(projectBrowserListener = new ProjectBrowserListenerImpl(logService));
+			projectBrowserServices.addListener(projectBrowserListener = new ProjectBrowserListenerImpl());
 		}
 
-		JavaDocServicesImplementation jDocServiceImpl = new JavaDocServicesImplementation(logService);
+		JavaDocServicesImplementation jDocServiceImpl = new JavaDocServicesImplementation();
 		this.service = context.registerService(JavaDocServices.class, jDocServiceImpl, null);
 		JavaDocServiceLocator.setService(JavaDocServices.class, jDocServiceImpl);
 
@@ -56,7 +53,6 @@ public class JavaDocActivator implements BundleActivator {
 
 		instance = null;
 
-
 		if (javaEditorServices != null && null != javaEditorListener) {
 			javaEditorServices.removeListener(javaEditorListener);
 		}
@@ -66,7 +62,7 @@ public class JavaDocActivator implements BundleActivator {
 		}
 
 		this.service.unregister();
-		
+
 		JavaDocServiceLocator.deinitialize();
 	}
 

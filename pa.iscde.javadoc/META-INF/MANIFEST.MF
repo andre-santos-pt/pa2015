@@ -13,3 +13,5 @@ Import-Package: org.eclipse.jdt.core.dom,
  pt.iscte.pidesco.javaeditor.service
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: pa.iscde.javadoc.internal.JavaDocActivator
+Bundle-ClassPath: lib/ST-4.0.8.jar,
+ .

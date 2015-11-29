@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
@@ -21,6 +23,8 @@ public class JavaDocView implements PidescoView {
 
 	private Composite viewArea;
 	private Browser browser;
+
+	private File lastParsedFile;
 
 	public static JavaDocView getInstance() {
 		return instance;
@@ -49,9 +53,31 @@ public class JavaDocView implements PidescoView {
 			}
 		});
 
+		browser.addLocationListener(new LocationListener() {
+			@Override
+			public void changing(LocationEvent event) {
+
+			}
+
+			@Override
+			public void changed(LocationEvent event) {
+				if (event.location.contains("#") && event.location.contains("-")) {
+					if (null != lastParsedFile
+							&& lastParsedFile.equals(JavaDocServiceLocator.getJavaEditorService().getOpenedFile())) {
+						String location[] = event.location.substring(event.location.indexOf("#") + 1).split("-");
+						JavaDocServiceLocator.getJavaEditorService().selectText(lastParsedFile,
+								Integer.valueOf(location[0]), Integer.valueOf(location[1]));
+					}
+				}
+			}
+		});
+
 		File openedFile = null;
 		if (null != (openedFile = JavaDocServiceLocator.getJavaEditorService().getOpenedFile())) {
-			JavaDocServiceLocator.getJavaEditorService().parseFile(openedFile, new StringTemplateVisitor());
+			StringTemplateVisitor jDoc = new StringTemplateVisitor();
+			JavaDocServiceLocator.getJavaEditorService().parseFile(openedFile, jDoc);
+			this.browser.setText(jDoc.getSb().toString());
+			lastParsedFile = openedFile;
 		}
 
 	}

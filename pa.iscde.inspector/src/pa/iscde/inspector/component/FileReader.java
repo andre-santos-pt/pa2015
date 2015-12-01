@@ -55,8 +55,7 @@ public class FileReader {
 
 	public static String getPA2015Path() {
 
-		String path = FileReader.class.getResource(".").getPath();
-
+		String path = FileReader.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		Iterable<String> splitted_string = Splitter.on("/").omitEmptyStrings().split(path);
 
 		String final_string = "";
@@ -72,7 +71,7 @@ public class FileReader {
 	
 	public static String getPidescoPath() {
 
-		String path = FileReader.class.getResource(".").getPath();
+		String path = FileReader.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
 		Iterable<String> splitted_string = Splitter.on("/").omitEmptyStrings().split(path);
 

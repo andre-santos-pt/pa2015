@@ -20,7 +20,7 @@ public class PluginXmlParser {
 
 	public List<Extension> extension = new ArrayList<Extension>();
 	public List<ExtensionPoint> extensionPoint  = new ArrayList<ExtensionPoint>();
-
+	private Component component;
 	public List<Extension> getExtension() {
 		return extension;
 	}
@@ -29,8 +29,9 @@ public class PluginXmlParser {
 		return extensionPoint;
 	}
 
-	public PluginXmlParser ReadFile(File file) {
+	public PluginXmlParser ReadFile(File file, Component comp) {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		this.component = comp;
 		DocumentBuilder documentBuilder;
 		try {
 			documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -83,13 +84,13 @@ public class PluginXmlParser {
 				String name = (nameNode != null) ? nameNode.getTextContent() : null;
 				String  schema = (schemaNode != null) ? schemaNode.getTextContent() : null;
 
-				extensionPoint.add(new ExtensionPoint(id, name, schema));
+				extensionPoint.add(new ExtensionPoint(id, name, schema,component));
 			}
 		}
 	}
 	
 	public static void main(String[] args) {
-		PluginXmlParser pluginXmlParser= new PluginXmlParser().ReadFile(new File("C:\\Users\\Jorge\\git\\pidesco\\pt.iscte.pidesco\\plugin.xml"));
+		PluginXmlParser pluginXmlParser= new PluginXmlParser().ReadFile(new File("C:\\Users\\Jorge\\git\\pidesco\\pt.iscte.pidesco\\plugin.xml"), new Component());
 		
 		for (Extension extension : pluginXmlParser.getExtension()) {
 			System.out.println(extension);

@@ -3,10 +3,10 @@
 <plugin>
    <extension
          id="design"
-         name="List of Services"
+         name="Inspector"
          point="pt.iscte.pidesco.view">
       <view
-            class="pa.iscde.inspector.gui.Display">
+            class="pa.iscde.inspector.gui.InspectorView">
       </view>
    </extension>
 

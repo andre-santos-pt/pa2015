@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import pa.iscde.inspector.component.Component;
+import pa.iscde.inspector.component.ComponentData;
 import pa.iscde.inspector.internal.InspectorAtivator;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 import pt.iscte.pidesco.extensibility.PidescoView;
@@ -27,9 +28,9 @@ public class Display implements PidescoView {
 
 	public void init() {
 		componentDisigns = new ArrayList<ComponentDisign>();
-		List<Component> components = Component.getAllAvailableComponents();
+		List<ComponentData> components = Component.getAllAvailableComponents();
 
-		for (Component component : components) {
+		for (ComponentData component : components) {
 			componentDisigns.add(new ComponentDisign(component));
 		}
 

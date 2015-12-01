@@ -12,6 +12,7 @@ public class ManifestParser {
 	private String Name;
 	private List<String> requiredBundle = new ArrayList<String>();
 	private String ativator;
+	private String symbolicName;
 
 	public String getName() {
 		return Name;
@@ -36,9 +37,12 @@ public class ManifestParser {
 					line = fillRequiredBundleList(line, br);
 				}
 				if (line.startsWith("Bundle-Name")) {
-					Name = line.split(" ")[1];
+					Name = line.substring(line.indexOf(' ')+1);
 				} else if (line.startsWith("Bundle-Activator")) {
 					ativator = line.split(" ")[1];
+				}
+				if(line.startsWith("Bundle-SymbolicName")){
+					symbolicName = line.substring(line.indexOf(' ')+1,line.indexOf(';'));
 				}
 				line = br.readLine();
 			}
@@ -65,6 +69,10 @@ public class ManifestParser {
 			}
 		}
 		return line;
+	}
+
+	public String getSymbolicName() {
+		return symbolicName;
 	}
 
 	

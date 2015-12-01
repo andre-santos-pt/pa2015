@@ -4,40 +4,51 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Component {
+public class Component implements ComponentData{
 
 	private String Name;
-	private List<Extension> extension;
-	private List<ExtensionPoint> extensionPoint;
+	private List<Extension> extensions;
+	private List<ExtensionPoint> extensionPoints;
 	private List<String> requiredBundle;
 	private String ativator;
 	private boolean state;
+	private List<String> services;
+	private String symbolicName;
+	private static List<ExtensionPoint> EXTPOINTS = new ArrayList<ExtensionPoint>();
 
-	public static List<Component> getAllAvailableComponents() {
+	public static List<ComponentData> getAllAvailableComponents() {
 		List<FilesToRead> filesToReadPaths = FileReader.getFilesPaths();
-		List<Component> components = new ArrayList<Component>();
+		List<ComponentData> components = new ArrayList<ComponentData>();
 		for (FilesToRead path : filesToReadPaths) {
 			Component comp = new Component();
 			ManifestParser manifestParser = new ManifestParser().readFile(new File(path.getManifestPath()));
-			PluginXmlParser pluginXmlParser = new PluginXmlParser().ReadFile(new File(path.getPluginXmlPath()));
 
 			comp.Name = manifestParser.getName();
 			comp.requiredBundle = manifestParser.getRequiredBundle();
 			comp.ativator = manifestParser.getAtivator();
-			comp.extension = pluginXmlParser.getExtension();
-			comp.extensionPoint = pluginXmlParser.getExtensionPoint();
+			comp.symbolicName = manifestParser.getSymbolicName();
+			PluginXmlParser pluginXmlParser = new PluginXmlParser().ReadFile(new File(path.getPluginXmlPath()), comp);
+
+			comp.extensions = pluginXmlParser.getExtension();
+			comp.extensionPoints = pluginXmlParser.getExtensionPoint();
+			
+			EXTPOINTS.addAll(comp.extensionPoints);
 
 			components.add(comp);
+		}
+		for (ComponentData component : components) {
+			for (Extension extension : component.getExtensions()) {
+				extension.findConnections(EXTPOINTS);
+			}
 		}
 		return components;
 	}
 
 	public Component(String manifestPath, String pluginXmlPath) {
 		ManifestParser parser = new ManifestParser().readFile(new File(manifestPath));
-		PluginXmlParser pluginXmlParser = new PluginXmlParser().ReadFile(new File(manifestPath));
-		extension = pluginXmlParser.getExtension();
-		extensionPoint = pluginXmlParser.getExtensionPoint();
+		PluginXmlParser pluginXmlParser = new PluginXmlParser().ReadFile(new File(manifestPath), this);
+		extensions = pluginXmlParser.getExtension();
+		extensionPoints = pluginXmlParser.getExtensionPoint();
 		Name = parser.getName();
 		requiredBundle = parser.getRequiredBundle();
 		ativator = parser.getAtivator();
@@ -45,17 +56,17 @@ public class Component {
 
 	public Component() {
 	}
-
-	public List<Extension> getExtension() {
-		return extension;
+	@Override
+	public List<Extension> getExtensions() {
+		return extensions;
 	}
-
+	@Override
 	public String getName() {
 		return Name;
 	}
-
-	public List<ExtensionPoint> getExtensionPoint() {
-		return extensionPoint;
+	@Override
+	public List<ExtensionPoint> getExtensionPoints() {
+		return extensionPoints;
 	}
 
 	public boolean isState() {
@@ -71,25 +82,36 @@ public class Component {
 	}
 
 	public static void main(String[] args) {
-		List<Component> comp = Component.getAllAvailableComponents();
+		List<ComponentData> comp = Component.getAllAvailableComponents();
 
-		for (Component component : comp) {
-			System.out.println("Name: " + component.Name + " ");
-			System.out.println("Ativator: "  + component.ativator + " ");
+		for (ComponentData component : comp) {
+			System.out.println("Name: " + component.getName() + " ");
+			System.out.println("Ativator: " + ((Component)component).ativator + " ");
 
-			for (Extension extension : component.extension) {
+			for (Extension extension : component.getExtensions()) {
 				System.out.println(extension + " ");
 			}
 
-			for (ExtensionPoint extensionPoint : component.extensionPoint) {
+			for (ExtensionPoint extensionPoint : component.getExtensionPoints()) {
 				System.out.println(extensionPoint + " ");
 			}
 
-			for (String req : component.requiredBundle) {
+			for (String req : ((Component)component).requiredBundle) {
 				System.out.println("Required Bundle: " + req);
 			}
 			System.out.println("\n");
 		}
+	}
+
+	@Override
+	public List<String> getServices() {
+		return services;
+	}
+
+	@Override
+	public String getSymbolicName() {
+		
+		return symbolicName;
 	}
 
 }

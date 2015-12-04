@@ -1,0 +1,15 @@
+preVisit_TypeDeclaration(TypeDeclaration) ::= <<
+\<ul>
+	\<ul>
+		\<ul>Javadoc:
+			\<ul>
+				\<ul>\<span><TypeDeclaration.Javadoc>\</span>\</ul> 			
+ 			\</ul>
+		\</ul>		
+	\</ul>
+\</ul>		
+\<hr> 
+>>
+
+postVisit_TypeDeclaration(TypeDeclaration) ::= << 
+>>

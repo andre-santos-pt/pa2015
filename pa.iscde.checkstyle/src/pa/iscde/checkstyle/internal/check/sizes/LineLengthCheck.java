@@ -56,19 +56,19 @@ public class LineLengthCheck extends Check {
 
 	@Override
 	public void process(Map<String, Violation> violations) {
-		if (file.isDirectory()){
-			
+		if (file.isDirectory()) {
+
 			listFileNames = new ArrayList<String>();
 			List<String> listFiles = new ArrayList<String>();
 			listFiles = getFilesrecursively(file);
-			
-			for ( String s : listFiles ) {
-				File file = new File( s );
+
+			for (String s : listFiles) {
+				File file = new File(s);
 				setFile(file);
 				process(violations);
 			}
-		} else if (file.isFile()){
-		
+		} else if (file.isFile()) {
+
 			lines = getFileLines();
 			if (lines == null || lines.length == 0) {
 				return;

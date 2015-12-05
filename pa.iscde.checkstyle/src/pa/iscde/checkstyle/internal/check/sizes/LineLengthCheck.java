@@ -2,9 +2,7 @@ package pa.iscde.checkstyle.internal.check.sizes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
-import java.io.File;
 
 import pa.iscde.checkstyle.internal.check.Check;
 import pa.iscde.checkstyle.model.SeverityType;
@@ -55,39 +53,18 @@ public class LineLengthCheck extends Check {
 	}
 
 	@Override
-	public void process(Map<String, Violation> violations) {
-		if (file.isDirectory()) {
-
-			listFileNames = new ArrayList<String>();
-			List<String> listFiles = new ArrayList<String>();
-			listFiles = getFilesrecursively(file);
-
-			for (String s : listFiles) {
-				File file = new File(s);
-				setFile(file);
-				process(violations);
-			}
-		} else if (file.isFile()) {
-
-			lines = getFileLines();
-			if (lines == null || lines.length == 0) {
-				return;
-			}
-			processLines(violations);
-		}
+	public Violation process() {
+		this.lines = getFileLines();
+		return processLines();
 	}
 
 	/**
 	 * This method is used to apply this check for each line existing within the
 	 * file.
 	 * 
-	 * @param violations
-	 *            A violation auxiliary structure to be updated if a violation
-	 *            of this check is detected. If a check of this type is already
-	 *            defined in this structure, it is updated regarding to its
-	 *            count and the corresponding details.
+	 * @return Return a detected violation or null, if no violation is detected.
 	 */
-	private void processLines(Map<String, Violation> violations) {
+	private Violation processLines() {
 		int count = 0;
 		int offset = 0;
 
@@ -119,22 +96,16 @@ public class LineLengthCheck extends Check {
 		}
 
 		if (count == 0) {
-			return;
+			return null;
 		}
 
-		Violation violation = violations.get(CHECK_ID);
+		final Violation violation = new Violation();
+		violation.setSeverity(severity);
+		violation.setType(CHECK_ID);
+		violation.setDescription(message);
+		violation.setCount(count);
+		violation.setDetails(details);
 
-		if (violation == null) {
-			violation = new Violation();
-			violation.setSeverity(severity);
-			violation.setType(CHECK_ID);
-			violation.setDescription(message);
-			violation.setCount(count);
-			violation.setDetails(details);
-			violations.put(CHECK_ID, violation);
-		} else {
-			violation.getDetails().addAll(details);
-			violation.setCount(violation.getCount() + count);
-		}
+		return violation;
 	}
 }

@@ -9,12 +9,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Closeables;
-import com.google.common.io.Files;
 
 import pa.iscde.checkstyle.model.SeverityType;
 import pa.iscde.checkstyle.model.Violation;
@@ -60,16 +58,6 @@ public abstract class Check {
 	 * The lines existing in the file in which this check is being performed.
 	 */
 	protected String[] lines;
-	
-	/**
-	 * The files on which the check was performed.
-	 */
-	protected List<String> listFileNames = new ArrayList<String>();
-	
-	/**
-	 * The file extension on which the check was performed.
-	 */
-	private static final String FILE_EXTENSION = "java";
 
 	/**
 	 * Constructor.
@@ -123,11 +111,9 @@ public abstract class Check {
 	 * This method is implemented for each concrete check in order to detect the
 	 * existing violations based on the rules defined.
 	 * 
-	 * @param violations
-	 *            A violation auxiliary structure to be updated for each
-	 *            concrete check if a validation is detected.
+	 * @return The violations detected or null if no violation is detected.
 	 */
-	public abstract void process(Map<String, Violation> violations);
+	public abstract Violation process();
 
 	/**
 	 * This method is used to obtain, as an array structure, the lines existing
@@ -193,34 +179,4 @@ public abstract class Check {
 		}
 		return buf.toString();
 	}
-	
-	/**
-	 * This method is used to obtain the list of files 
-	 * on which the check is to be performed
-	 * 
-	 * @return The files as a list structure.
-	 */
-	public List<String> getFilesrecursively(File file) {
-		
-		File[] list = file.listFiles();
-		
-		if (list == null) return listFileNames;
-
-        for ( File f : list ) {
-            if ( f.isDirectory() ) {
-            	getFilesrecursively( f );
-            }
-            else {
- 
-                String fileExtension = (String) Files.getFileExtension(f.getAbsolutePath());
-                if (fileExtension.equals(FILE_EXTENSION)){
-                	listFileNames.add(f.getAbsolutePath());
-                }
-            }
-        }
-		
-		return listFileNames;
-	
-	}
-	
 }

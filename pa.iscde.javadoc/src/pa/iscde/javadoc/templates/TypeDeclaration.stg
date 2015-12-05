@@ -1,14 +1,17 @@
 preVisit_TypeDeclaration(TypeDeclaration) ::= <<
+\<hr> 
 \<ul>
 	\<ul>
-		\<ul>Javadoc:
+		\<ul>\<b>Class Name:\</b>
+			\<ul>\<b>\<a href="#<TypeDeclaration.startPosition>-<TypeDeclaration.javadoc.length>"><TypeDeclaration.Name>\</a>\</b>\</ul>
+		\</ul>	
+		\<ul>\<b>Javadoc:\</b>
 			\<ul>
-				\<ul>\<span><TypeDeclaration.Javadoc>\</span>\</ul> 			
+				\<ul>\<span><TypeDeclaration.javadoc>\</span>\</ul> 			
  			\</ul>
 		\</ul>		
 	\</ul>
-\</ul>		
-\<hr> 
+\</ul>	
 >>
 
 postVisit_TypeDeclaration(TypeDeclaration) ::= << 

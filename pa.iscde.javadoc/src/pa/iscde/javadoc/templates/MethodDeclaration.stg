@@ -5,18 +5,18 @@ preVisit_MethodDeclaration(MethodDeclaration) ::= <<
 postVisit_MethodDeclaration(MethodDeclaration) ::= <<
 \<ul>
 	\<ul>
-		\<ul>Method Name:
+		\<ul>\<b>Method Name:\</b>
 			\<ul>\<b>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.name>\</a>\</b>\</ul>
 		\</ul>
-		\<ul>Return Type:
+		\<ul>\<b>Return Type:\</b>
 			\<ul><MethodDeclaration.returnType2>\</ul>
 		\</ul>		
-		\<ul>Javadoc:
+		\<ul>\<b>Javadoc:\</b>
 			\<ul>
 				\<ul>\<span><MethodDeclaration.javadoc>\</span>\</ul> 			
  			\</ul>
 		\</ul>		
-		\<ul>Parameters:
+		\<ul>\<b>Parameters:\</b>
 			\<ul>
 				\<ul><MethodDeclaration.parameters>\</ul>
 				\<ul><length(MethodDeclaration.parameters)>\</ul>

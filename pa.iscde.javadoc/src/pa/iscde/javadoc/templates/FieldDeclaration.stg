@@ -5,13 +5,13 @@ preVisit_FieldDeclaration(FieldDeclaration) ::= <<
 postVisit_FieldDeclaration(FieldDeclaration) ::= <<
 \<ul>
 	\<ul>
-		\<ul>Field Name:
+		\<ul>\<b>Field Name:\</b>
 			\<ul>\<b>\<a href="#<FieldDeclaration.startPosition>-<FieldDeclaration.length>"><first(FieldDeclaration)>\</a>\</b>\</ul>
 		\</ul>
-		\<ul>Type:
+		\<ul>\<b>Type:\</b>
 			\<ul><FieldDeclaration.type>\</ul>
 		\</ul>		
-		\<ul>Javadoc:
+		\<ul>\<b>Javadoc:\</b>
 			\<ul>
 				\<ul>\<span><FieldDeclaration.javadoc>\</span>\</ul> 			
  			\</ul>

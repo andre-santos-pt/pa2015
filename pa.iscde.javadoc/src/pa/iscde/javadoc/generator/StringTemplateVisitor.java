@@ -31,18 +31,22 @@ public class StringTemplateVisitor extends ASTVisitor {
 		final ST template = group.getInstanceOf(operation + "_" + node.getClass().getSimpleName());
 		if (null != template) {
 			BodyDeclaration bd = (BodyDeclaration) node;
+			JavaDocBlock javaDoc = new JavaDocBlock();
+
 			if (bd.getJavadoc() != null) {
-				JavaDocBlock javaDoc = javaDocParser.parseJavaDoc(bd.getJavadoc().toString());
-				template.add(node.getClass().getSimpleName(), node);
-
-				if (node instanceof MethodDeclaration) {
-					template.add("k", javaDoc.getTags());
-					template.add("x", javaDoc);
-				}
-
-				stringBuilder.append(template.render());
+				javaDoc = javaDocParser.parseJavaDoc(bd.getJavadoc().toString());
 			}
+			
+			if(node instanceof MethodDeclaration){
+				System.out.println();
+			}
+
+			template.add(node.getClass().getSimpleName(), node);
+			template.add("JavaDoc", javaDoc);
+
+			stringBuilder.append(template.render());
 		}
+
 	}
 
 	@Override

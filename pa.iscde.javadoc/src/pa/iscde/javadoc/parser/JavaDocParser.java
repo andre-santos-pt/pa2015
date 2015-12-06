@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.service.log.LogService;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import pa.iscde.javadoc.internal.JavaDocServiceLocator;
 import pa.iscde.javadoc.internal.JavaDocTagI;
 import pa.iscde.javadoc.parser.export.JavaDocNamedTagI;
 import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
+import pa.iscde.javadoc.parser.structure.JavaDocAnnotation;
 import pa.iscde.javadoc.parser.structure.JavaDocBlock;
 import pa.iscde.javadoc.parser.tag.AuthorTag;
 import pa.iscde.javadoc.parser.tag.DeprecatedTag;
@@ -91,28 +95,35 @@ public class JavaDocParser {
 
 		Multimap<String, JavaDocAnnotation> annotations = ArrayListMultimap.create();
 
-		for (int i = 1; i < javaDocDetailed.length; i++) {
-			name = null;
-			description = null;
+		try {
+			for (int i = 1; i < javaDocDetailed.length; i++) {
+				name = null;
+				description = null;
+				
+				String tag = javaDocDetailed[i].substring(0, javaDocDetailed[i].indexOf(' '));
+				int endIndex = javaDocDetailed[i].indexOf(' ') + 1;
+				String text = javaDocDetailed[i].substring(endIndex == 0 ? javaDocDetailed[i].length() : endIndex);
 
-			String tag = javaDocDetailed[i].substring(0, javaDocDetailed[i].indexOf(' '));
-			String text = javaDocDetailed[i].substring(javaDocDetailed[i].indexOf(' ') + 1);
+				JavaDocTagI anotTag = tags.get(tag);
 
-			JavaDocTagI anotTag = this.tags.get(tag);
+				if (anotTag != null) {
+					if (anotTag instanceof JavaDocNamedTagI) {
 
-			if (anotTag != null) {
-				if (anotTag instanceof JavaDocNamedTagI) {
-					name = text.substring(0, text.indexOf(' '));
-					description = text.substring(text.indexOf(' ') + 1);
-				} else if (anotTag instanceof JavaDocUnnamedTagI) {
-					description = text;
+						name = text.substring(0, text.indexOf(' ') == -1 ? text.length() : text.indexOf(' '));
+						endIndex = text.indexOf(' ') + 1;
+						description = text.substring(endIndex == 0 ? text.length() : endIndex);
+
+					} else if (anotTag instanceof JavaDocUnnamedTagI) {
+						description = text;
+					}
+
+					anot = new JavaDocAnnotation(anotTag, name, description);
+					annotations.put(anot.getTagName(), anot);
 				}
-
-				anot = new JavaDocAnnotation(anotTag, name, description);
-				annotations.put(anot.getTagName(), anot);
 			}
+		} catch(Exception e) {
+			JavaDocServiceLocator.getLogService().log(LogService.LOG_ERROR, e.getMessage());
 		}
-
 		return annotations;
 	}
 

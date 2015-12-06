@@ -1,18 +1,28 @@
-preVisit_TypeDeclaration(TypeDeclaration) ::= <<
+preVisit_TypeDeclaration(TypeDeclaration, JavaDoc) ::= <<
 \<hr> 
-\<ul>
+
+\<ul>\<b>Class Name:\</b>
+	\<ul>\<b>\<a href="#<TypeDeclaration.startPosition>-<TypeDeclaration.length>"><TypeDeclaration.Name>\</a>\</b>\</ul>
+\</ul>
+	
+<if(JavaDoc.description)>
 	\<ul>
-		\<ul>\<b>Class Name:\</b>
-			\<ul>\<b>\<a href="#<TypeDeclaration.startPosition>-<TypeDeclaration.javadoc.length>"><TypeDeclaration.Name>\</a>\</b>\</ul>
-		\</ul>	
-		\<ul>\<b>Javadoc:\</b>
-			\<ul>
-				\<ul>\<span><TypeDeclaration.javadoc>\</span>\</ul> 			
- 			\</ul>
-		\</ul>		
+		\<b>Description\</b>
+		\<ul><JavaDoc.description>\</ul>
+	\</ul>	
+<endif>
+		
+<JavaDoc.tags:{anotTag|
+	\<ul>
+		\<b><first(JavaDoc.annotationsMap.(anotTag)).tag.headerName>\</b>
+			<JavaDoc.annotationsMap.(anotTag):{p|
+				\<ul>
+					<p.name> <if(p.name && p.description)>-<endif> <p.description>
+				\</ul>
+			}; separator="\n">
 	\</ul>
-\</ul>	
+}; separator="\n">
 >>
 
-postVisit_TypeDeclaration(TypeDeclaration) ::= << 
+postVisit_TypeDeclaration(TypeDeclaration, JavaDoc) ::= << 
 >>

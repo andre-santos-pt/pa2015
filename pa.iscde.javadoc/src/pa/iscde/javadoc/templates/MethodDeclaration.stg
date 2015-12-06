@@ -1,28 +1,29 @@
-preVisit_MethodDeclaration(MethodDeclaration, k, x) ::= <<
-\<hr> 
+preVisit_MethodDeclaration(MethodDeclaration, JavaDoc) ::= <<
+\<hr>
+\<ul>\<b>Method Name:\</b>
+	\<ul>
+		\<b>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.name>\</a>\</b>
+	\</ul>
+\</ul>	
+
+<if(JavaDoc.description)>
+	\<ul>
+		\<b>Description\</b>
+		\<ul><JavaDoc.description>\</ul>
+	\</ul>	
+<endif>
+		
+<JavaDoc.tags:{anotTag|
+	\<ul>
+		\<b><first(JavaDoc.annotationsMapWrapper.(anotTag)).tag.headerName>\</b>
+			<JavaDoc.annotationsMapWrapper.(anotTag):{p|
+				\<ul>
+					<p.name> <if(p.name && p.description)>-<endif> <p.description>
+				\</ul>
+			}; separator="\n">
+	\</ul>
+}; separator="\n">
 >>
 
-postVisit_MethodDeclaration(MethodDeclaration, k, x) ::= <<
-\<ul>
-	\<ul>
-		\<ul>\<b>Method Name:\</b>
-			\<ul>\<b>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.name>\</a>\</b>\</ul>
-		\</ul>	
-		
-		<if(x.description)>
-			\<br>\<ul>\<b>Description:\</b>
-				\<ul><x.description>\</ul>
-			\</ul>	
-		<endif>
-		
-		<x.tags:{header|\<br>\<ul>\<b><first(x.annotationsMap.(header)).tag.headerName>:\</b>
-			<x.annotationsMap.(header):{p|\<li>
-				<if(p.name)>
-					<p.name> - 
-				<endif>
-			<p.description>\</li>}; separator="\n">
-		\</ul>}; separator="\n">
-		\</ul>
-	\</ul>
-\</ul>		
+postVisit_MethodDeclaration(MethodDeclaration, JavaDoc) ::= <<
 >>

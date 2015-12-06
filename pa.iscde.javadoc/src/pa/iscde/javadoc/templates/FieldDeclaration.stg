@@ -1,21 +1,28 @@
-preVisit_FieldDeclaration(FieldDeclaration) ::= <<
+preVisit_FieldDeclaration(FieldDeclaration, JavaDoc) ::= <<
 \<hr> 
 >>
 
-postVisit_FieldDeclaration(FieldDeclaration) ::= <<
+postVisit_FieldDeclaration(FieldDeclaration, JavaDoc) ::= <<
+
+\<ul>\<b>Field Name:\</b>
+	\<ul>\<b>\<a href="#<FieldDeclaration.startPosition>-<FieldDeclaration.length>"><first(FieldDeclaration)>\</a>\</b>\</ul>
+\</ul>
+
 \<ul>
+	\<b>Type:\</b>
 	\<ul>
-		\<ul>\<b>Field Name:\</b>
-			\<ul>\<b>\<a href="#<FieldDeclaration.startPosition>-<FieldDeclaration.length>"><first(FieldDeclaration)>\</a>\</b>\</ul>
-		\</ul>
-		\<ul>\<b>Type:\</b>
-			\<ul><FieldDeclaration.type>\</ul>
-		\</ul>		
-		\<ul>\<b>Javadoc:\</b>
-			\<ul>
-				\<ul>\<span><FieldDeclaration.javadoc>\</span>\</ul> 			
- 			\</ul>
-		\</ul>		
-	\</ul>
+		<FieldDeclaration.type>
+	\</ul>	
 \</ul>		
+
+<JavaDoc.tags:{anotTag|
+	\<ul>
+		\<b><first(JavaDoc.annotationsMap.(anotTag)).tag.headerName>\</b>
+			<JavaDoc.annotationsMap.(anotTag):{p|
+				\<ul>
+					<p.name> <if(p.name && p.description)>-<endif> <p.description>
+				\</ul>
+			}; separator="\n">
+	\</ul>
+}; separator="\n">
 >>

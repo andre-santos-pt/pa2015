@@ -1,4 +1,4 @@
-package pa.iscde.javadoc.parser;
+package pa.iscde.javadoc.parser.structure;
 
 import pa.iscde.javadoc.internal.JavaDocTagI;
 
@@ -18,7 +18,9 @@ public class JavaDocAnnotation {
 		if (name != null && !name.equals("")) {
 			this.name = name;
 		}
-		this.description = description;
+		if (description != null && !description.equals("")) {
+			this.description = description;
+		}
 	}
 
 	public JavaDocTagI getTag() {

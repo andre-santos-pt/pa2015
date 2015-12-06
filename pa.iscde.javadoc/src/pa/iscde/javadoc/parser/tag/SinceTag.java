@@ -5,12 +5,12 @@ import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
 public class SinceTag implements JavaDocUnnamedTagI {
 
 	@Override
-	public String headerName() {
+	public String getHeaderName() {
 		return "Since";
 	}
 
 	@Override
-	public String tagName() {
+	public String getTagName() {
 		return "since";
 	}
 }

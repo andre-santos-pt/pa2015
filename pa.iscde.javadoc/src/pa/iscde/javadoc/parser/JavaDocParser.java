@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.service.log.LogService;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import pa.iscde.javadoc.internal.JavaDocServiceLocator;
 import pa.iscde.javadoc.internal.JavaDocTagI;
 import pa.iscde.javadoc.parser.export.JavaDocNamedTagI;
 import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
+import pa.iscde.javadoc.parser.structure.JavaDocAnnotation;
 import pa.iscde.javadoc.parser.structure.JavaDocBlock;
 import pa.iscde.javadoc.parser.tag.AuthorTag;
 import pa.iscde.javadoc.parser.tag.DeprecatedTag;
@@ -29,11 +33,10 @@ import pa.iscde.javadoc.parser.tag.VersionTag;
  */
 public class JavaDocParser {
 
-	private List<String> orderedTags = new ArrayList<String>();
-	private Map<String, JavaDocTagI> tags = new HashMap<String, JavaDocTagI>();
+	private static List<String> orderedTags = new ArrayList<String>();
+	private static Map<String, JavaDocTagI> tags = new HashMap<String, JavaDocTagI>();
 
-	public JavaDocParser() {
-
+	static {
 		// Default JavaDocTags
 		List<JavaDocTagI> tags = new ArrayList<JavaDocTagI>();
 		tags.add(new AuthorTag());
@@ -47,21 +50,22 @@ public class JavaDocParser {
 		tags.add(new DeprecatedTag());
 
 		for (JavaDocTagI tag : tags) {
-			this.addTag(tag);
+			addTag(tag);
 		}
+	}
+
+	public JavaDocParser() {
 	}
 
 	public JavaDocParser(List<JavaDocTagI> tags) {
-		this();
-
 		for (JavaDocTagI tag : tags) {
-			this.addTag(tag);
+			addTag(tag);
 		}
 	}
 
-	private void addTag(JavaDocTagI newTag) {
-		this.tags.put(newTag.tagName(), newTag);
-		this.orderedTags.add(newTag.tagName());
+	private static void addTag(JavaDocTagI newTag) {
+		tags.put(newTag.getTagName(), newTag);
+		orderedTags.add(newTag.getTagName());
 	}
 
 	public JavaDocBlock parseJavaDoc(String javadoc) {
@@ -69,15 +73,16 @@ public class JavaDocParser {
 		JavaDocBlock javaDocBlock = new JavaDocBlock();
 		Multimap<String, JavaDocAnnotation> annotations = ArrayListMultimap.create();
 
-		javadoc = javadoc.replace("/** * ", "");
-		javadoc = javadoc.replace(" * ", "");
-		javadoc = javadoc.replace("*/", "");
+		javadoc = javadoc.replace("\n", "");
+		javadoc = javadoc.replace("*", "");
+		javadoc = javadoc.replace("/", "");
+		javadoc = javadoc.trim();
 		String[] javaDocDetailed = javadoc.split("@");
 
-		String description = javaDocDetailed[0];
+		String description = javaDocDetailed[0].isEmpty() ? null : javaDocDetailed[0];
 		annotations = this.extractAnnotations(javaDocDetailed);
 
-		javaDocBlock.setDesciption(description);
+		javaDocBlock.setDescription(description);
 		javaDocBlock.setAnnotations(annotations);
 
 		return javaDocBlock;
@@ -90,37 +95,44 @@ public class JavaDocParser {
 
 		Multimap<String, JavaDocAnnotation> annotations = ArrayListMultimap.create();
 
-		for (int i = 1; i < javaDocDetailed.length; i++) {
-			name = null;
-			description = null;
+		try {
+			for (int i = 1; i < javaDocDetailed.length; i++) {
+				name = null;
+				description = null;
+				
+				String tag = javaDocDetailed[i].substring(0, javaDocDetailed[i].indexOf(' '));
+				int endIndex = javaDocDetailed[i].indexOf(' ') + 1;
+				String text = javaDocDetailed[i].substring(endIndex == 0 ? javaDocDetailed[i].length() : endIndex);
 
-			String tag = javaDocDetailed[i].substring(0, javaDocDetailed[i].indexOf(' '));
-			String text = javaDocDetailed[i].substring(javaDocDetailed[i].indexOf(' ') + 1);
+				JavaDocTagI anotTag = tags.get(tag);
 
-			JavaDocTagI anotTag = this.tags.get(tag);
+				if (anotTag != null) {
+					if (anotTag instanceof JavaDocNamedTagI) {
 
-			if (anotTag != null) {
-				if (anotTag instanceof JavaDocNamedTagI) {
-					name = text.substring(0, text.indexOf(' '));
-					description = text.substring(text.indexOf(' ') + 1);
-				} else if (anotTag instanceof JavaDocUnnamedTagI) {
-					description = text;
+						name = text.substring(0, text.indexOf(' ') == -1 ? text.length() : text.indexOf(' '));
+						endIndex = text.indexOf(' ') + 1;
+						description = text.substring(endIndex == 0 ? text.length() : endIndex);
+
+					} else if (anotTag instanceof JavaDocUnnamedTagI) {
+						description = text;
+					}
+
+					anot = new JavaDocAnnotation(anotTag, name, description);
+					annotations.put(anot.getTagName(), anot);
 				}
-
-				anot = new JavaDocAnnotation(tag, name, description);
-				annotations.put(anot.getTag(), anot);
 			}
+		} catch(Exception e) {
+			JavaDocServiceLocator.getLogService().log(LogService.LOG_ERROR, e.getMessage());
 		}
-
 		return annotations;
 	}
 
 	public String printJavaDoc(JavaDocBlock javaDocBlock) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(javaDocBlock.getDesciption() + "\n");
+		sb.append(javaDocBlock.getDescription() + "\n");
 
-		for (String tag : this.orderedTags) {
+		for (String tag : orderedTags) {
 			for (JavaDocAnnotation anot : javaDocBlock.getAnnotations(tag)) {
 				if (anot.getName() == null || anot.getName().equals("")) {
 					sb.append("@" + anot.getTag() + " " + anot.getDescription() + "\n");
@@ -132,17 +144,24 @@ public class JavaDocParser {
 		return sb.toString();
 	}
 
+	public static List<String> orderedTags() {
+		return new ArrayList<String>(orderedTags);
+	}
+
 	public static void main(String[] args) {
 
 		String javadoc = "/** * Create a CalculatorGUI with the given title * @param x the window title * @param y the window title */";
 		String javadoc2 = "/** * Classe SOKOBANGUI * @author João Paulo Barros * @version 2014/05/05 */";
-		String javadoc3 = "/** * Processe Something * @deprecated ups " + "* @param annotations Anot ksjks jsjk sjk "
-				+ "* @param roundEnv Env s ksks " + "* @return A piece of shit " + "* @throws RuntimeException "
-				+ "* @throws Exception " + "* @see http://www.google.pt " + "* @teste Miguel Nobre" + "*/";
-
+		String javadoc3 = "/** * Processe Something * fhfjhdjfhjd @deprecated ups "
+				+ "* @param annotations Anot ksjks jsjk sjk " + "* @param roundEnv Env s ksks "
+				+ "* @return A piece of shit " + "* @throws RuntimeException " + "* @throws Exception * @lol blabla "
+				+ "* @see http://www.google.pt " + "* @teste Miguel Nobre" + "*/";
+		String javadoc4 = "/** * efd * @param cxx gggg * @return dsfdsadw */";
 		JavaDocParser javaDocParser = new JavaDocParser();
 
-		JavaDocBlock javaDocBlock = javaDocParser.parseJavaDoc(javadoc3);
+		JavaDocBlock javaDocBlock = javaDocParser.parseJavaDoc(javadoc4);
+		System.out.println(javaDocBlock.getDescription());
 		System.out.println(javaDocParser.printJavaDoc(javaDocBlock));
 	}
+
 }

@@ -1,16 +1,16 @@
 package pa.iscde.javadoc.parser.tag;
 
-import pa.iscde.javadoc.internal.JavaDocTagI;
+import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
 
-public class SerialTag implements JavaDocTagI {
+public class SerialTag implements JavaDocUnnamedTagI {
 
 	@Override
-	public String headerName() {
+	public String getHeaderName() {
 		return "Serial";
 	}
 
 	@Override
-	public String tagName() {
+	public String getTagName() {
 		return "serial";
 	}
 }

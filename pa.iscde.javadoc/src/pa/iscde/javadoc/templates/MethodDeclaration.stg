@@ -1,26 +1,27 @@
-preVisit_MethodDeclaration(MethodDeclaration) ::= <<
+preVisit_MethodDeclaration(MethodDeclaration, k, x) ::= <<
 \<hr> 
 >>
 
-postVisit_MethodDeclaration(MethodDeclaration) ::= <<
+postVisit_MethodDeclaration(MethodDeclaration, k, x) ::= <<
 \<ul>
 	\<ul>
 		\<ul>\<b>Method Name:\</b>
 			\<ul>\<b>\<a href="#<MethodDeclaration.startPosition>-<MethodDeclaration.length>"><MethodDeclaration.name>\</a>\</b>\</ul>
-		\</ul>
-		\<ul>\<b>Return Type:\</b>
-			\<ul><MethodDeclaration.returnType2>\</ul>
-		\</ul>		
-		\<ul>\<b>Javadoc:\</b>
-			\<ul>
-				\<ul>\<span><MethodDeclaration.javadoc>\</span>\</ul> 			
- 			\</ul>
-		\</ul>		
-		\<ul>\<b>Parameters:\</b>
-			\<ul>
-				\<ul><MethodDeclaration.parameters>\</ul>
-				\<ul><length(MethodDeclaration.parameters)>\</ul>
- 			\</ul>
+		\</ul>	
+		
+		<if(x.description)>
+			\<br>\<ul>\<b>Description:\</b>
+				\<ul><x.description>\</ul>
+			\</ul>	
+		<endif>
+		
+		<x.tags:{header|\<br>\<ul>\<b><first(x.annotationsMap.(header)).tag.headerName>:\</b>
+			<x.annotationsMap.(header):{p|\<li>
+				<if(p.name)>
+					<p.name> - 
+				<endif>
+			<p.description>\</li>}; separator="\n">
+		\</ul>}; separator="\n">
 		\</ul>
 	\</ul>
 \</ul>		

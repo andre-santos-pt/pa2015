@@ -1,17 +1,19 @@
 package pa.iscde.javadoc.parser;
 
+import pa.iscde.javadoc.internal.JavaDocTagI;
+
 public class JavaDocAnnotation {
 
-	private String tag;
+	private JavaDocTagI tag;
 	private String name;
 	private String description;
 
-	public JavaDocAnnotation(String tag, String description) {
+	public JavaDocAnnotation(JavaDocTagI tag, String description) {
 		this.tag = tag;
 		this.description = description;
 	}
 
-	public JavaDocAnnotation(String tag, String name, String description) {
+	public JavaDocAnnotation(JavaDocTagI tag, String name, String description) {
 		this.tag = tag;
 		if (name != null && !name.equals("")) {
 			this.name = name;
@@ -19,11 +21,11 @@ public class JavaDocAnnotation {
 		this.description = description;
 	}
 
-	public String getTag() {
+	public JavaDocTagI getTag() {
 		return tag;
 	}
 
-	public void setTag(String tag) {
+	public void setTag(JavaDocTagI tag) {
 		this.tag = tag;
 	}
 
@@ -41,5 +43,9 @@ public class JavaDocAnnotation {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getTagName() {
+		return this.tag.getTagName();
 	}
 }

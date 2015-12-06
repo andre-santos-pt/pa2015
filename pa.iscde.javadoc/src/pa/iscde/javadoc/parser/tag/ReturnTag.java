@@ -5,12 +5,12 @@ import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
 public class ReturnTag implements JavaDocUnnamedTagI {
 
 	@Override
-	public String tagName() {
+	public String getTagName() {
 		return "return";
 	}
 
 	@Override
-	public String headerName() {
+	public String getHeaderName() {
 		return "Returns";
 	}
 }

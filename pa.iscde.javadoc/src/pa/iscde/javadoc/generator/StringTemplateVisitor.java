@@ -3,6 +3,7 @@ package pa.iscde.javadoc.generator;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -33,6 +34,12 @@ public class StringTemplateVisitor extends ASTVisitor {
 			if (bd.getJavadoc() != null) {
 				JavaDocBlock javaDoc = javaDocParser.parseJavaDoc(bd.getJavadoc().toString());
 				template.add(node.getClass().getSimpleName(), node);
+
+				if (node instanceof MethodDeclaration) {
+					template.add("k", javaDoc.getTags());
+					template.add("x", javaDoc);
+				}
+
 				stringBuilder.append(template.render());
 			}
 		}

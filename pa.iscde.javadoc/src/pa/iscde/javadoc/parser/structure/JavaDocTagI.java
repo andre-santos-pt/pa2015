@@ -1,4 +1,4 @@
-package pa.iscde.javadoc.internal;
+package pa.iscde.javadoc.parser.structure;
 
 public interface JavaDocTagI {
 	

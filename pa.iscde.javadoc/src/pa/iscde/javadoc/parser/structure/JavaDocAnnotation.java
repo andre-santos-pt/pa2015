@@ -1,7 +1,5 @@
 package pa.iscde.javadoc.parser.structure;
 
-import pa.iscde.javadoc.internal.JavaDocTagI;
-
 public class JavaDocAnnotation {
 
 	private JavaDocTagI tag;

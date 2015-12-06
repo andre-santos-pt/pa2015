@@ -5,17 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.osgi.service.log.LogService;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import pa.iscde.javadoc.internal.JavaDocServiceLocator;
-import pa.iscde.javadoc.internal.JavaDocTagI;
 import pa.iscde.javadoc.parser.export.JavaDocNamedTagI;
 import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
 import pa.iscde.javadoc.parser.structure.JavaDocAnnotation;
 import pa.iscde.javadoc.parser.structure.JavaDocBlock;
+import pa.iscde.javadoc.parser.structure.JavaDocTagI;
 import pa.iscde.javadoc.parser.tag.AuthorTag;
 import pa.iscde.javadoc.parser.tag.DeprecatedTag;
 import pa.iscde.javadoc.parser.tag.ParamTag;
@@ -25,12 +31,8 @@ import pa.iscde.javadoc.parser.tag.SerialTag;
 import pa.iscde.javadoc.parser.tag.SinceTag;
 import pa.iscde.javadoc.parser.tag.ThrowsTag;
 import pa.iscde.javadoc.parser.tag.VersionTag;
+import pt.iscde.javadoc.annotations.mfane.JavaDocAnnotationsExtension;
 
-/**
- * 
- * @author Miguel
- * @author Nobre
- */
 public class JavaDocParser {
 
 	private static List<String> orderedTags = new ArrayList<String>();
@@ -49,23 +51,15 @@ public class JavaDocParser {
 		tags.add(new SerialTag());
 		tags.add(new DeprecatedTag());
 
-		for (JavaDocTagI tag : tags) {
-			addTag(tag);
-		}
+		addTags(tags);
+		addExternalTags();
 	}
 
 	public JavaDocParser() {
 	}
 
 	public JavaDocParser(List<JavaDocTagI> tags) {
-		for (JavaDocTagI tag : tags) {
-			addTag(tag);
-		}
-	}
-
-	private static void addTag(JavaDocTagI newTag) {
-		tags.put(newTag.getTagName(), newTag);
-		orderedTags.add(newTag.getTagName());
+		addTags(tags);
 	}
 
 	public JavaDocBlock parseJavaDoc(String javadoc) {
@@ -99,7 +93,7 @@ public class JavaDocParser {
 			for (int i = 1; i < javaDocDetailed.length; i++) {
 				name = null;
 				description = null;
-				
+
 				String tag = javaDocDetailed[i].substring(0, javaDocDetailed[i].indexOf(' '));
 				int endIndex = javaDocDetailed[i].indexOf(' ') + 1;
 				String text = javaDocDetailed[i].substring(endIndex == 0 ? javaDocDetailed[i].length() : endIndex);
@@ -121,7 +115,7 @@ public class JavaDocParser {
 					annotations.put(anot.getTagName(), anot);
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			JavaDocServiceLocator.getLogService().log(LogService.LOG_ERROR, e.getMessage());
 		}
 		return annotations;
@@ -148,20 +142,35 @@ public class JavaDocParser {
 		return new ArrayList<String>(orderedTags);
 	}
 
-	public static void main(String[] args) {
-
-		String javadoc = "/** * Create a CalculatorGUI with the given title * @param x the window title * @param y the window title */";
-		String javadoc2 = "/** * Classe SOKOBANGUI * @author João Paulo Barros * @version 2014/05/05 */";
-		String javadoc3 = "/** * Processe Something * fhfjhdjfhjd @deprecated ups "
-				+ "* @param annotations Anot ksjks jsjk sjk " + "* @param roundEnv Env s ksks "
-				+ "* @return A piece of shit " + "* @throws RuntimeException " + "* @throws Exception * @lol blabla "
-				+ "* @see http://www.google.pt " + "* @teste Miguel Nobre" + "*/";
-		String javadoc4 = "/** * efd * @param cxx gggg * @return dsfdsadw */";
-		JavaDocParser javaDocParser = new JavaDocParser();
-
-		JavaDocBlock javaDocBlock = javaDocParser.parseJavaDoc(javadoc4);
-		System.out.println(javaDocBlock.getDescription());
-		System.out.println(javaDocParser.printJavaDoc(javaDocBlock));
+	private static void addTags(List<? extends JavaDocTagI> newTags) {
+		if (newTags != null) {
+			for (JavaDocTagI tag : newTags) {
+				addTag(tag);
+			}
+		}
 	}
 
+	private static void addTag(JavaDocTagI newTag) {
+		tags.put(newTag.getTagName(), newTag);
+		orderedTags.add(newTag.getTagName());
+	}
+
+	private static void addExternalTags() {
+		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.javadoc.annotations");
+
+		IExtension[] extensions = extensionPoint.getExtensions();
+		for (IExtension e : extensions) {
+			IConfigurationElement[] confElements = e.getConfigurationElements();
+			for (IConfigurationElement c : confElements) {
+				try {
+					JavaDocAnnotationsExtension o = (JavaDocAnnotationsExtension) c.createExecutableExtension("class");
+					addTags(o.getNamedTags());
+					addTags(o.getUnnamedTags());
+				} catch (CoreException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
 }

@@ -5,8 +5,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import pa.iscde.javadoc.service.JavaDocServices;
-import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserListener;
-import pt.iscte.pidesco.projectbrowser.service.ProjectBrowserServices;
 
 public class JavaDocActivator implements BundleActivator {
 

@@ -33,11 +33,6 @@ import pa.iscde.javadoc.parser.tag.ThrowsTag;
 import pa.iscde.javadoc.parser.tag.VersionTag;
 import pt.iscde.javadoc.annotations.mfane.JavaDocAnnotationsExtension;
 
-/**
- * 
- * @author Miguel
- * @author Nobre
- */
 public class JavaDocParser {
 
 	private static List<String> orderedTags = new ArrayList<String>();
@@ -56,11 +51,8 @@ public class JavaDocParser {
 		tags.add(new SerialTag());
 		tags.add(new DeprecatedTag());
 
-		for (JavaDocTagI tag : tags) {
-			addTag(tag);
-		}
-
-		integrateExternalAnnotation();
+		addTags(tags);
+		addExternalTags();
 	}
 
 	public JavaDocParser() {
@@ -68,19 +60,6 @@ public class JavaDocParser {
 
 	public JavaDocParser(List<JavaDocTagI> tags) {
 		addTags(tags);
-	}
-
-	private static void addTags(List<? extends JavaDocTagI> newTags) {
-		if (newTags != null) {
-			for (JavaDocTagI tag : newTags) {
-				addTag(tag);
-			}
-		}
-	}
-
-	private static void addTag(JavaDocTagI newTag) {
-		tags.put(newTag.getTagName(), newTag);
-		orderedTags.add(newTag.getTagName());
 	}
 
 	public JavaDocBlock parseJavaDoc(String javadoc) {
@@ -163,7 +142,20 @@ public class JavaDocParser {
 		return new ArrayList<String>(orderedTags);
 	}
 
-	private static void integrateExternalAnnotation() {
+	private static void addTags(List<? extends JavaDocTagI> newTags) {
+		if (newTags != null) {
+			for (JavaDocTagI tag : newTags) {
+				addTag(tag);
+			}
+		}
+	}
+
+	private static void addTag(JavaDocTagI newTag) {
+		tags.put(newTag.getTagName(), newTag);
+		orderedTags.add(newTag.getTagName());
+	}
+
+	private static void addExternalTags() {
 		IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.javadoc.annotations");
 

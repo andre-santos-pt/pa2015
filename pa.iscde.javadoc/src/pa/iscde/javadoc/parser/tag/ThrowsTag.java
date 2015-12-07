@@ -5,12 +5,12 @@ import pa.iscde.javadoc.parser.export.JavaDocUnnamedTagI;
 public class ThrowsTag implements JavaDocUnnamedTagI {
 
 	@Override
-	public String headerName() {
+	public String getHeaderName() {
 		return "Throws";
 	}
 
 	@Override
-	public String tagName() {
+	public String getTagName() {
 		return "throws";
 	}
 }

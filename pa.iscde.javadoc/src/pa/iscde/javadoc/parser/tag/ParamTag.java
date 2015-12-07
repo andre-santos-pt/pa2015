@@ -5,12 +5,12 @@ import pa.iscde.javadoc.parser.export.JavaDocNamedTagI;
 public class ParamTag implements JavaDocNamedTagI{
 
 	@Override
-	public String tagName() {
+	public String getTagName() {
 		return "param";
 	}
 
 	@Override
-	public String headerName() {
+	public String getHeaderName() {
 		return "Parameters";
 	}
 }

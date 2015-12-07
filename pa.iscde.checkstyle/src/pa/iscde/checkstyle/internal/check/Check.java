@@ -22,12 +22,12 @@ import pa.iscde.checkstyle.model.Violation;
  * specific checks, concrete classes, should be implemented.
  */
 public abstract class Check {
-	private static final Logger LOGGER = Logger.getLogger(Check.class.getName());
+	protected static final Logger LOGGER = Logger.getLogger(Check.class.getName());
 
 	/**
 	 * The number of characters to read at once.
 	 */
-	private static final int READ_BUFFER_SIZE = 1024;
+	protected static final int READ_BUFFER_SIZE = 1024;
 
 	/**
 	 * The unique identification for each check type.
@@ -69,7 +69,7 @@ public abstract class Check {
 	 * @param severity
 	 *            The default severity type associated to check.
 	 */
-	protected Check(String checkId, String message, SeverityType severity) {
+	public Check(String checkId, String message, SeverityType severity) {
 		this.checkId = checkId;
 		this.message = message;
 		this.severity = severity;
@@ -121,7 +121,7 @@ public abstract class Check {
 	 * 
 	 * @return The lines existing within a file as an array structure.
 	 */
-	public String[] getFileLines() {
+	protected String[] getFileLines() {
 		final List<String> textLines = new ArrayList<>();
 		try {
 			String fileContents = readFile();
@@ -156,7 +156,7 @@ public abstract class Check {
 	 *             An exception thrown while the content's file is being
 	 *             processed.
 	 */
-	private String readFile() throws IOException {
+	protected String readFile() throws IOException {
 		if (file == null) {
 			return null;
 		}

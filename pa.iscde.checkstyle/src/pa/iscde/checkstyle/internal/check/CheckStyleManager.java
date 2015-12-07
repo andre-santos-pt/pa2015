@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Platform;
 
 import com.google.common.io.Files;
 
-import pa.iscde.checkstyle.extensibility.check.ICheckExtensionPoint;
 import pa.iscde.checkstyle.internal.check.sizes.FileLengthCheck;
 import pa.iscde.checkstyle.internal.check.sizes.LineLengthCheck;
 import pa.iscde.checkstyle.model.SharedModel;
@@ -46,11 +45,6 @@ public final class CheckStyleManager {
 	 * The list of the registered checks to be performed.
 	 */
 	private final List<Check> registeredChecks = new ArrayList<Check>();
-
-	/**
-	 * The list of the checks from extension points to be performed.
-	 */
-	private final List<Check> extensionChecks = new ArrayList<Check>();
 
 	/**
 	 * The structure to be updated with the violations detected based on the
@@ -116,7 +110,7 @@ public final class CheckStyleManager {
 			final List<File> childFiles = new ArrayList<File>();
 
 			if (!element.isClass() && file.isDirectory()) {
-				scanFilesRecursively(file, childFiles);
+				searchFilesRecursively(file, childFiles);
 			} else if (element.isClass()) {
 				childFiles.add(file);
 			}
@@ -153,20 +147,18 @@ public final class CheckStyleManager {
 	}
 
 	/**
-	 * This method is used to load and execute the checkstyle extension points.
+	 * This method is used to load and execute the check extension points
+	 * implemented by other components.
 	 */
 	private void addCheckExtensionPoints() {
-		this.extensionChecks.clear();
-
 		final IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.checkstyle.check");
 
 		final IExtension[] extensions = extensionPoint.getExtensions();
 		for (IExtension extension : extensions) {
 			final IConfigurationElement comp = extension.getConfigurationElements()[0];
 			try {
-				final ICheckExtensionPoint check = (ICheckExtensionPoint) comp.createExecutableExtension("class");
-				check.addChecks(extensionChecks);
-				this.registeredChecks.addAll(extensionChecks);
+				final Check check = (Check) comp.createExecutableExtension("class");
+				this.registeredChecks.add(check);
 			} catch (CoreException e) {
 				System.out.println(String.format(
 						"It was not possible to execute the method addChecks for the extension with id %s",
@@ -176,15 +168,17 @@ public final class CheckStyleManager {
 	}
 
 	/**
-	 * This method is used to obtain the list of files on which the check is to
-	 * be performed
+	 * This method is used to search recursively all the child files that are
+	 * within a certain folder.
 	 * 
 	 * @param childFiles
-	 * @param file
-	 * 
+	 *            The list of child files existing within a certain directory.
+	 * @param root
+	 *            The root (directory) from which the search of the child files
+	 *            should be performed.
 	 */
-	public void scanFilesRecursively(final File file, List<File> childFiles) {
-		final File[] list = file.listFiles();
+	public void searchFilesRecursively(final File root, List<File> childFiles) {
+		final File[] list = root.listFiles();
 
 		if (list == null) {
 			return;
@@ -192,7 +186,7 @@ public final class CheckStyleManager {
 
 		for (File f : list) {
 			if (f.isDirectory()) {
-				scanFilesRecursively(f, childFiles);
+				searchFilesRecursively(f, childFiles);
 			} else {
 				String fileExtension = (String) Files.getFileExtension(f.getAbsolutePath());
 				if (fileExtension.equals(JAVA_FILE_EXTENSION)) {

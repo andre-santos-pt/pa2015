@@ -15,6 +15,6 @@ Import-Package: org.eclipse.core.runtime;version="3.5.0",
  pt.iscte.pidesco.projectbrowser.service
 Bundle-Activator: pa.iscde.checkstyle.internal.CheckStyleActivator
 Bundle-ActivationPolicy: lazy
-Export-Package: pa.iscde.checkstyle.extensibility.check,
+Export-Package: pa.iscde.checkstyle.extensibility,
  pa.iscde.checkstyle.internal.check,
  pa.iscde.checkstyle.model

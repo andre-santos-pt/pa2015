@@ -33,8 +33,6 @@ public class FileLengthCheck extends Check {
 	 */
 	private static final String LOG_LINE_MESSAGE = "File length is '%d' lines (max allowed is '%d').";
 
-	protected List<String> listFiles;
-
 	/**
 	 * Default construct.
 	 */

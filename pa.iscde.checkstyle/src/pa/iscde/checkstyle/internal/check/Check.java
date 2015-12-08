@@ -24,12 +24,13 @@ import pa.iscde.checkstyle.model.Violation;
  * specific checks, concrete classes, should be implemented.
  */
 public abstract class Check {
-	private static final Logger LOGGER = Logger.getLogger(Check.class.getName());
 
 	/**
 	 * The number of characters to read at once.
 	 */
 	private static final int READ_BUFFER_SIZE = 1024;
+
+	protected static final Logger LOGGER = Logger.getLogger(Check.class.getName());
 
 	/**
 	 * The unique identification for each check type.
@@ -60,12 +61,12 @@ public abstract class Check {
 	 * The lines existing in the file in which this check is being performed.
 	 */
 	protected String[] lines;
-	
+
 	/**
 	 * The files on which the check was performed.
 	 */
 	protected List<String> listFileNames = new ArrayList<String>();
-	
+
 	/**
 	 * The file extension on which the check was performed.
 	 */
@@ -170,7 +171,7 @@ public abstract class Check {
 	 *             An exception thrown while the content's file is being
 	 *             processed.
 	 */
-	private String readFile() throws IOException {
+	protected String readFile() throws IOException {
 		if (file == null) {
 			return null;
 		}
@@ -193,34 +194,34 @@ public abstract class Check {
 		}
 		return buf.toString();
 	}
-	
+
 	/**
-	 * This method is used to obtain the list of files 
-	 * on which the check is to be performed
+	 * This method is used to obtain recursively the list of files on which the
+	 * check is to be performed
 	 * 
 	 * @return The files as a list structure.
 	 */
-	public List<String> getFilesrecursively(File file) {
-		
-		File[] list = file.listFiles();
-		
-		if (list == null) return listFileNames;
+	public List<String> getFilesRecursively(File file) {
 
-        for ( File f : list ) {
-            if ( f.isDirectory() ) {
-            	getFilesrecursively( f );
-            }
-            else {
- 
-                String fileExtension = (String) Files.getFileExtension(f.getAbsolutePath());
-                if (fileExtension.equals(FILE_EXTENSION)){
-                	listFileNames.add(f.getAbsolutePath());
-                }
-            }
-        }
-		
+		File[] list = file.listFiles();
+
+		if (list == null)
+			return listFileNames;
+
+		for (File f : list) {
+			if (f.isDirectory()) {
+				getFilesRecursively(f);
+			} else {
+
+				String fileExtension = Files.getFileExtension(f.getAbsolutePath());
+				if (fileExtension.equals(FILE_EXTENSION)) {
+					listFileNames.add(f.getAbsolutePath());
+				}
+			}
+		}
+
 		return listFileNames;
-	
+
 	}
-	
+
 }

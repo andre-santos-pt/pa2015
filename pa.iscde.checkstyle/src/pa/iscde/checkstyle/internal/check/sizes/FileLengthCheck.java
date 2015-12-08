@@ -51,11 +51,12 @@ public class FileLengthCheck extends Check {
 
 			listFileNames = new ArrayList<String>();
 			List<String> listFiles = new ArrayList<String>();
-			listFiles = getFilesrecursively(file);
+			listFiles = getFilesRecursively(file);
 
 			for (String s : listFiles) {
 				File file = new File(s);
 				setFile(file);
+				setResource(file.getName());
 				process(violations);
 			}
 

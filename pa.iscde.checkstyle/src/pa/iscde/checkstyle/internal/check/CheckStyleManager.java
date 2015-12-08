@@ -9,6 +9,7 @@ import java.util.Map;
 
 import pa.iscde.checkstyle.internal.check.sizes.FileLengthCheck;
 import pa.iscde.checkstyle.internal.check.sizes.LineLengthCheck;
+import pa.iscde.checkstyle.internal.check.sizes.MethodCountCheck;
 import pa.iscde.checkstyle.model.SharedModel;
 import pa.iscde.checkstyle.model.Violation;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
@@ -24,7 +25,7 @@ public final class CheckStyleManager {
 	/**
 	 * Indicates the number of registered checks.
 	 */
-	private static final int NUMBER_REGISTERED_CHECKS = 2;
+	private static final int NUMBER_REGISTERED_CHECKS = 3;
 
 	/**
 	 * Eager instantiation of this Singleton.
@@ -50,6 +51,8 @@ public final class CheckStyleManager {
 	private CheckStyleManager() {
 		registeredChecks.add(new LineLengthCheck());
 		registeredChecks.add(new FileLengthCheck());
+		registeredChecks.add(new MethodCountCheck());
+		
 	}
 
 	/**

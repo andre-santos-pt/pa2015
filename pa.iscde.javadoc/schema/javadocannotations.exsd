@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="pa.iscde.javadoc.annotations" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="pa.iscde.javadoc.annotations" id="javadocannotations" name="JavaDoc Annotations"/>
+      </appinfo>
+      <documentation>
+         &lt;br&gt;
+Esta extensão permite adicionar novas tags ao JavaDoc, de forma a poderem ser extraidas e apresentadas.
+&lt;br&gt;
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="item"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="item">
+      <complexType>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":pt.iscde.javadoc.annotation.mfane.JavaDocAnnotationsExtension"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;br&gt;
+Basta apenas criar um objecto que implemente a interface JavaDocAnnotationsExtension;
+&lt;br&gt;
+&lt;code&gt;
+Exemplo:
+&lt;br&gt;
+public class TestAnot implements JavaDocAnnotationsExtension {
+&lt;br&gt;
+&lt;br&gt;
+ @Override
+ public List&lt;JavaDocNamedTagI&gt; getNamedTags() {
+ &lt;br&gt;
+  List&lt;JavaDocNamedTagI&gt; namedTags = new ArrayList&lt;JavaDocNamedTagI&gt;();
+  &lt;br&gt;
+  namedTags.add(new JavaDocNamedTagI() {
+   &lt;br&gt;
+   @Override
+   public String getTagName() {
+    return &quot;name&quot;;
+   }
+   &lt;br&gt;
+   @Override
+   public String getHeaderName() {
+   &lt;br&gt;
+    return &quot;Names&quot;;
+   }
+  });
+  &lt;br&gt;
+  return namedTags;
+ }
+&lt;br&gt;
+&lt;br&gt;
+ @Override
+ public List&lt;JavaDocUnnamedTagI&gt; getUnnamedTags() {
+ &lt;br&gt;
+  List&lt;JavaDocUnnamedTagI&gt; unnamedTags = new ArrayList&lt;JavaDocUnnamedTagI&gt;();
+  &lt;br&gt;
+  unnamedTags.add(new JavaDocUnnamedTagI() {
+   &lt;br&gt;
+   @Override
+   public String getTagName() {
+   &lt;br&gt;
+    return &quot;unname&quot;;
+   }
+   &lt;br&gt;
+   @Override
+   public String getHeaderName() {
+   &lt;br&gt;
+    return &quot;Unnames&quot;;
+   }
+  });
+  &lt;br&gt;
+  return unnamedTags;
+ }
+}
+&lt;/code&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         &lt;br&gt;
+public List&lt; JavaDocNamedTagI &gt; getNamedTags(): Método que retorna Tags com a seguinte estrutura: @tag name descricao
+&lt;br&gt;
+public List&lt; JavaDocUnnamedTagI &gt; getUnnamedTags(): Método que retorna Tags com a seguinte estrutura: @tag descricao
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

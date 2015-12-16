@@ -38,7 +38,6 @@ public class SelectedItemListener extends ProjectBrowserListener.Adapter {
 
 		final List<SourceElement> selectedElements = new ArrayList<SourceElement>(elements.size());
 		for (SourceElement element : elements) {
-			//if (element.isClass() && !selectedElements.contains(element)) {
 			if (!selectedElements.contains(element)) {
 				selectedElements.add(element);
 			}

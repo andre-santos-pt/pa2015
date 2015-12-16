@@ -11,7 +11,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import pa.iscde.javadoc.generator.StringTemplateVisitor;
@@ -46,9 +45,6 @@ public class JavaDocView implements PidescoView {
 		this.browser.setText("<h1>JavaDoc View</h1>");
 		
 		this.viewArea.getParent();
-
-		Button button = new Button(viewArea, SWT.SIMPLE);
-		button.setText("Export JavaDoc");
 
 		browser.addLocationListener(new LocationListener() {
 			@Override

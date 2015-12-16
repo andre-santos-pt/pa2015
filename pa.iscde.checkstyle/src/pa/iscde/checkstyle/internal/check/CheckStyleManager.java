@@ -1,5 +1,6 @@
 package pa.iscde.checkstyle.internal.check;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,8 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+
+import com.google.common.io.Files;
+
 import pa.iscde.checkstyle.internal.check.sizes.FileLengthCheck;
 import pa.iscde.checkstyle.internal.check.sizes.LineLengthCheck;
+import pa.iscde.checkstyle.internal.check.sizes.MethodCountCheck;
 import pa.iscde.checkstyle.model.SharedModel;
 import pa.iscde.checkstyle.model.Violation;
 import pt.iscte.pidesco.projectbrowser.model.SourceElement;
@@ -22,9 +33,9 @@ import pt.iscte.pidesco.projectbrowser.model.SourceElement;
 public final class CheckStyleManager {
 
 	/**
-	 * Indicates the number of registered checks.
+	 * The file extension on which the check was performed.
 	 */
-	private static final int NUMBER_REGISTERED_CHECKS = 2;
+	private static final String JAVA_FILE_EXTENSION = "java";
 
 	/**
 	 * Eager instantiation of this Singleton.
@@ -34,7 +45,7 @@ public final class CheckStyleManager {
 	/**
 	 * The list of the registered checks to be performed.
 	 */
-	private final List<Check> registeredChecks = new ArrayList<Check>(NUMBER_REGISTERED_CHECKS);
+	private final List<Check> registeredChecks = new ArrayList<Check>();
 
 	/**
 	 * The structure to be updated with the violations detected based on the
@@ -45,11 +56,19 @@ public final class CheckStyleManager {
 	private final Map<String, Violation> violations = new HashMap<String, Violation>();
 
 	/**
+	 * This is used to retrieve the registered extension points defined in the
+	 * platform.
+	 */
+	private final IExtensionRegistry extRegistry = Platform.getExtensionRegistry();
+
+	/**
 	 * Default constructor.
 	 */
 	private CheckStyleManager() {
 		registeredChecks.add(new LineLengthCheck());
 		registeredChecks.add(new FileLengthCheck());
+		registeredChecks.add(new MethodCountCheck());
+		
 	}
 
 	/**
@@ -66,22 +85,58 @@ public final class CheckStyleManager {
 	 * the registered checks.
 	 */
 	public void process() {
+		addCheckExtensionPoints();
 		resetViolations();
 		recalculateViolations();
 	}
 
 	/**
+	 * This method is used to return the detected violations after the check
+	 * style process is finished.
+	 * 
+	 * @return The detected violations.
+	 */
+	public Map<String, Violation> getViolations() {
+		return Collections.unmodifiableMap(violations);
+	}
+
+	/**
 	 * This method is used recalculate the violations for the selected source
 	 * elements, using for that end the registered checks. It's important to
-	 * notice that the selected source elements are provided by a shared model.
+	 * notice that the selected source elements are provided by the shared
+	 * model.
 	 */
 	private void recalculateViolations() {
 		final Collection<SourceElement> elements = SharedModel.getInstance().getElements();
 		for (SourceElement element : elements) {
+			final File file = element.getFile();
+			final List<File> childFiles = new ArrayList<File>();
+
+			if (!element.isClass() && file.isDirectory()) {
+				searchFilesRecursively(file, childFiles);
+			} else if (element.isClass()) {
+				childFiles.add(file);
+			}
+
 			for (Check check : registeredChecks) {
-				check.setResource(element.getName());
-				check.setFile(element.getFile());
-				check.process(violations);
+				for (File childFile : childFiles) {
+					check.setResource(childFile.getName());
+					check.setFile(childFile);
+
+					final Violation calculatedViolation = check.process();
+					final Violation existingViolation = violations.get(check.getCheckId());
+
+					if (calculatedViolation == null) {
+						continue;
+					}
+
+					if (existingViolation == null) {
+						violations.put(check.getCheckId(), calculatedViolation);
+					} else {
+						existingViolation.getDetails().addAll(calculatedViolation.getDetails());
+						existingViolation.setCount(existingViolation.getCount() + calculatedViolation.getCount());
+					}
+				}
 			}
 		}
 	}
@@ -95,12 +150,52 @@ public final class CheckStyleManager {
 	}
 
 	/**
-	 * This method is used to return the detected violations after the check
-	 * style process is finished.
-	 * 
-	 * @return The detected violations.
+	 * This method is used to load and execute the check extension points
+	 * implemented by other components.
 	 */
-	public Map<String, Violation> getViolations() {
-		return Collections.unmodifiableMap(violations);
+	private void addCheckExtensionPoints() {
+		final IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.checkstyle.check");
+
+		final IExtension[] extensions = extensionPoint.getExtensions();
+		for (IExtension extension : extensions) {
+			final IConfigurationElement comp = extension.getConfigurationElements()[0];
+			try {
+				final Check check = (Check) comp.createExecutableExtension("class");
+				this.registeredChecks.add(check);
+			} catch (CoreException e) {
+				System.out.println(String.format(
+						"It was not possible to execute the method addChecks for the extension with id %s",
+						extension.getUniqueIdentifier()));
+			}
+		}
+	}
+
+	/**
+	 * This method is used to search recursively all the child files that are
+	 * within a certain folder.
+	 * 
+	 * @param childFiles
+	 *            The list of child files existing within a certain directory.
+	 * @param root
+	 *            The root (directory) from which the search of the child files
+	 *            should be performed.
+	 */
+	public void searchFilesRecursively(final File root, List<File> childFiles) {
+		final File[] list = root.listFiles();
+
+		if (list == null) {
+			return;
+		}
+
+		for (File f : list) {
+			if (f.isDirectory()) {
+				searchFilesRecursively(f, childFiles);
+			} else {
+				String fileExtension = (String) Files.getFileExtension(f.getAbsolutePath());
+				if (fileExtension.equals(JAVA_FILE_EXTENSION)) {
+					childFiles.add(f);
+				}
+			}
+		}
 	}
 }

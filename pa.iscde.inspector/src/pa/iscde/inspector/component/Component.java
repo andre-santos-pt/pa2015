@@ -2,7 +2,13 @@ package pa.iscde.inspector.component;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.osgi.framework.Bundle;
 
 public class Component implements ComponentData{
 
@@ -14,11 +20,12 @@ public class Component implements ComponentData{
 	private boolean state;
 	private List<String> services;
 	private String symbolicName;
+	private Bundle bundle;
 	private static List<ExtensionPoint> EXTPOINTS = new ArrayList<ExtensionPoint>();
 
-	public static List<ComponentData> getAllAvailableComponents() {
+	public static HashMap<String,ComponentData> getAllAvailableComponents() {
 		List<FilesToRead> filesToReadPaths = FileReader.getFilesPaths();
-		List<ComponentData> components = new ArrayList<ComponentData>();
+		HashMap<String,ComponentData> components = new HashMap<String,ComponentData>();
 		for (FilesToRead path : filesToReadPaths) {
 			Component comp = new Component();
 			ManifestParser manifestParser = new ManifestParser().readFile(new File(path.getManifestPath()));
@@ -34,10 +41,10 @@ public class Component implements ComponentData{
 			
 			EXTPOINTS.addAll(comp.extensionPoints);
 
-			components.add(comp);
+			components.put(manifestParser.getSymbolicName(),comp);
 		}
-		for (ComponentData component : components) {
-			for (Extension extension : component.getExtensions()) {
+		for (Entry<String, ComponentData> component : components.entrySet()) {
+			for (Extension extension : component.getValue().getExtensions()) {
 				extension.findConnections(EXTPOINTS);
 			}
 		}
@@ -66,7 +73,7 @@ public class Component implements ComponentData{
 	}
 	@Override
 	public List<ExtensionPoint> getExtensionPoints() {
-		return extensionPoints;
+		return Collections.unmodifiableList(extensionPoints);
 	}
 
 	public boolean isState() {
@@ -81,27 +88,27 @@ public class Component implements ComponentData{
 		return requiredBundle;
 	}
 
-	public static void main(String[] args) {
-		List<ComponentData> comp = Component.getAllAvailableComponents();
-
-		for (ComponentData component : comp) {
-			System.out.println("Name: " + component.getName() + " ");
-			System.out.println("Ativator: " + ((Component)component).ativator + " ");
-
-			for (Extension extension : component.getExtensions()) {
-				System.out.println(extension + " ");
-			}
-
-			for (ExtensionPoint extensionPoint : component.getExtensionPoints()) {
-				System.out.println(extensionPoint + " ");
-			}
-
-			for (String req : ((Component)component).requiredBundle) {
-				System.out.println("Required Bundle: " + req);
-			}
-			System.out.println("\n");
-		}
-	}
+//	public static void main(String[] args) {
+//		List<ComponentData> comp = Component.getAllAvailableComponents();
+//
+//		for (ComponentData component : comp) {
+//			System.out.println("Name: " + component.getName() + " ");
+//			System.out.println("Ativator: " + ((Component)component).ativator + " ");
+//
+//			for (Extension extension : component.getExtensions()) {
+//				System.out.println(extension + " ");
+//			}
+//
+//			for (ExtensionPoint extensionPoint : component.getExtensionPoints()) {
+//				System.out.println(extensionPoint + " ");
+//			}
+//
+//			for (String req : ((Component)component).requiredBundle) {
+//				System.out.println("Required Bundle: " + req);
+//			}
+//			System.out.println("\n");
+//		}
+//	}
 
 	@Override
 	public List<String> getServices() {
@@ -112,6 +119,17 @@ public class Component implements ComponentData{
 	public String getSymbolicName() {
 		
 		return symbolicName;
+	}
+
+	@Override
+	public Bundle getBundle() {
+		
+		return bundle;
+	}
+
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
+		
 	}
 
 }

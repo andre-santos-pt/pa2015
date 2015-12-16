@@ -17,6 +17,7 @@ public class TestExtensionPoint {
 	IExtensionPoint extensionPoint = extRegistry.getExtensionPoint("pa.iscde.inspector.inspectorAction");
 
 	Collection<IAction> iActions = new ArrayList<IAction>();
+	
 
 	public TestExtensionPoint() {
 		init();

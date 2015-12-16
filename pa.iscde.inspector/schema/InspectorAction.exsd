@@ -62,7 +62,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":pa.iscde.inspector.gui.IAction"/>
+                  <meta.attribute kind="java" basedOn=":pa.iscde.inspector.extensibility.IAction"/>
                </appinfo>
             </annotation>
          </attribute>

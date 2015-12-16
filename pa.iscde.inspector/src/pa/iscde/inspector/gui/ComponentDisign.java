@@ -1,28 +1,25 @@
 package pa.iscde.inspector.gui;
 
-import java.awt.Color;
-import java.awt.Event;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
-import javax.swing.event.EventListenerList;
-
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.IContainer;
 import org.eclipse.zest.core.widgets.ZestStyles;
+import org.osgi.framework.Bundle;
 
 import pa.iscde.inspector.component.ComponentData;
 import pa.iscde.inspector.component.Extension;
 import pa.iscde.inspector.component.ExtensionPoint;
+import pa.iscde.inspector.extensibility.IActionComponent;
 
-public class ComponentDisign {
+public class ComponentDisign implements IActionComponent {
 	private Color color;
 	private boolean isAtive;
 	private GraphNode node;
@@ -30,14 +27,14 @@ public class ComponentDisign {
 	private List<GraphConnection> graphConnections;
 	private ComponentData componentData;
 	private List<Extension> extensions;
+	private String name;
 
 	public ComponentDisign(ComponentData component) {
 		this.componentData = component;
 		extensions = component.getExtensions();
-		color = Color.BLUE;
 		isAtive = true;
 		graphConnections = new ArrayList<GraphConnection>();
-
+		name = component.getName();
 	}
 
 	public void setExtensionPointOwnerDesign() {
@@ -66,7 +63,19 @@ public class ComponentDisign {
 
 	public void drawNode(IContainer graphModel) {
 		graph = (Graph) graphModel;
-		node = new GraphNode(graph, SWT.NONE, getName(), this);
+		node = new GraphNode(graph, SWT.NONE, name, this);
+		if (getBundle() != null) {
+			System.out.println(getBundle().getState());
+			color = new Color(node.getDisplay(), RGBState.GET_COLOR(getBundle().getState()));
+		} else
+			color = new Color(node.getDisplay(), RGBState.GET_COLOR(-1));
+
+		node.setBackgroundColor(color);
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		node.setText(name);
 	}
 
 	public void drawConnections() {
@@ -79,16 +88,13 @@ public class ComponentDisign {
 				graphConnections.add(graphConnection);
 			}
 		}
-//		if (graphConnections.size() > 1) {
-//			handleOverlappindConnection();
-//		}
 	}
 
 	private void handleOverlappindConnection() {
 		int i = 0;
 		StringBuilder text = new StringBuilder();
 		for (GraphConnection graphConnection : graphConnections) {
-			text.append(graphConnection.getText()+ System.getProperty("line.separator"));
+			text.append(graphConnection.getText() + System.getProperty("line.separator"));
 			if (i++ == 0) {
 				graphConnection.setText(graphConnections.size() + ": connections");
 				graphConnection.highlight();
@@ -113,6 +119,8 @@ public class ComponentDisign {
 
 	public void setColor(Color color) {
 		this.color = color;
+		if (node != null)
+			node.setBackgroundColor(color);
 	}
 
 	public boolean isAtive() {
@@ -131,12 +139,25 @@ public class ComponentDisign {
 	}
 
 	public String getSymbolicName() {
-		// TODO Auto-generated method stub
 		return componentData.getSymbolicName();
 	}
 
 	public List<ExtensionPoint> getExtensionPoints() {
 		return componentData.getExtensionPoints();
+	}
+
+	@Override
+	public Bundle getBundle() {
+
+		return componentData.getBundle();
+	}
+
+	public void setBlundeState(int type) {
+		if (node != null) {
+			System.out.println(type);
+			color = new Color(color.getDevice(), RGBState.GET_COLOR(type));
+			node.setBackgroundColor(color);
+		}
 	}
 
 }

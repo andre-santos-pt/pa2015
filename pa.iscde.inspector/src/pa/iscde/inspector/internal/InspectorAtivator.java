@@ -1,5 +1,11 @@
 package pa.iscde.inspector.internal;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -8,6 +14,11 @@ import org.osgi.framework.ServiceReference;
 
 import com.google.common.util.concurrent.Service;
 
+import pa.iscde.inspector.component.Component;
+import pa.iscde.inspector.component.ComponentData;
+import pa.iscde.inspector.component.Extension;
+import pa.iscde.inspector.component.ExtensionPoint;
+import pa.iscde.inspector.gui.ComponentDisign;
 import pt.iscte.pidesco.extensibility.PidescoServices;
 
 public class InspectorAtivator implements BundleActivator {
@@ -15,47 +26,61 @@ public class InspectorAtivator implements BundleActivator {
 	private static InspectorAtivator instance;
 	private PidescoServices service;
 	private BundleContext context;
-	
+	private HashMap<String, ComponentData> bundlemap;
+	private HashMap<String, ComponentDisign> bundleDesignMap;
+
 	@Override
 	public void start(BundleContext context) throws Exception {
 		instance = this;
-		System.out.println("started");
-		ServiceReference<PidescoServices> serviceReference = context.getServiceReference(PidescoServices.class);
-		service = context.getService(serviceReference);
 		this.context = context;
+		addBundles();
+		createBlundleDisgnMap();
+	}
+
+	private void createBlundleDisgnMap() {
+		bundleDesignMap = new HashMap<String, ComponentDisign>();
+		for (Entry<String, ComponentData> entry : bundlemap.entrySet()) {
+			bundleDesignMap.put(entry.getKey(), new ComponentDisign(entry.getValue()));  
+		}
+		context.addBundleListener(new BundleChange(bundleDesignMap));
 		
-		ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(null, null);
-		for (ServiceReference<?> serviceReference2 : allServiceReferences) {
-			Object service2 = context.getService(serviceReference2);
-			if(service2.getClass().getInterfaces().length != 0){
-				System.out.println(service2.getClass().getInterfaces()[0].getName());
+	}
+
+	private void addBundles() {
+		Bundle[] bundles = context.getBundles();
+		bundlemap = Component.getAllAvailableComponents();
+		for (int i = 0; i < bundles.length; i++) {
+			String key = bundles[i].getSymbolicName();
+			if (bundlemap.containsKey(key)) {
+				((Component) bundlemap.get(key)).setBundle(bundles[i]);
 			}
 		}
-				
-		context.addBundleListener(new BundleListener() {
-			
-			@Override
-			public void bundleChanged(BundleEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
+	}
+
+	public HashMap<String, ComponentDisign> getBundleDesignMap() {
+		return bundleDesignMap;
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		instance = null;
 		context = null;
-		
+
 	}
-	
+
+	public HashMap<String, ComponentData> getBundlemap() {
+		return bundlemap;
+	}
+
 	public BundleContext getContext() {
 		return context;
 	}
-	
+
 	public static InspectorAtivator getInstance() {
 		return instance;
 	}
+
 	public PidescoServices getService() {
 		return service;
 	}

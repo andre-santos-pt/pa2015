@@ -14,8 +14,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
@@ -32,6 +35,7 @@ public class ComponentGUI {
 	Composite zestPanel;
 	Composite configButtonPanel;
 	Composite actionPanel;
+	private Graph graph;
 	
 
 	public ComponentGUI(Composite viewArea,List<ComponentDisign> componentDisigns) {
@@ -46,19 +50,17 @@ public class ComponentGUI {
 		zestPanel = new Composite(viewArea,SWT.NONE);
 		zestPanel.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		actionPanel = new Composite(viewArea,SWT.NONE);
+		actionPanel.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		actionPanel.setLayout(new FillLayout());
 		
 		composites.add(zestPanel);
 		composites.add(configButtonPanel);
 		composites.add(actionPanel);
-
-		
-		
 	}
 
 	public void fillArea() {
 		organizeLayout();
-		final Graph graph = new Graph(zestPanel, SWT.NONE);
+		graph = new Graph(zestPanel, SWT.NONE);
 		graph.addSelectionListener(new GUISelectionAdapter());
 		graph.setConnectionStyle(ZestStyles.CONNECTIONS_SOLID);
 		drawNode(graph);
@@ -82,17 +84,43 @@ public class ComponentGUI {
 				
 			}
 		});
-		addAtionButton();
+		addAtionTab();
 		zestPanel.setLayout(new FillLayout());
+		
 
 
 	}
 	
-	private void addAtionButton(){
+	private void addAtionTab(){
 		TestExtensionPoint testExtensionPoint = new TestExtensionPoint();
-		for (IAction actions : testExtensionPoint.getiActions()) {
-			final Button b = new Button(actionPanel,SWT.NONE);
-			b.setText(actions.Name());
+		TabFolder tabFolder = new TabFolder(actionPanel, SWT.NONE);
+
+		for (final IAction actions : testExtensionPoint.getiActions()) {
+			graph.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					for (ComponentDisign componentDisign : componentDisigns) {
+						if(componentDisign.getNode().equals(((Graph)e.widget).getSelection().get(0))){
+							actions.selectionChange(componentDisign);
+						}
+
+					}
+					
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+			TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
+			tabItem.setText(actions.TabName());
+			Composite composite = new Composite(tabFolder,SWT.NONE);
+			tabItem.setControl(composite);
+			actions.actionComposite(composite);
 		}
 	}
 

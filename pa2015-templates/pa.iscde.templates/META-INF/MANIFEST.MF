@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Templates
+Bundle-SymbolicName: pa.iscde.templates;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: pt.iscte.pidesco;bundle-version="0.1.0",
+ pt.iscte.pidesco.javaeditor;bundle-version="1.1.0",
+ pt.iscte.pidesco.projectbrowser;bundle-version="0.1.0",
+ org.eclipse.swt;bundle-version="3.104.0",
+ org.eclipse.osgi
+Bundle-Activator: pa.iscde.templates.Activator
+Import-Package: org.eclipse.jdt.core.compiler,
+ org.eclipse.jdt.core.dom,
+ org.eclipse.jdt.internal.compiler,
+ org.eclipse.jface.text,
+ org.eclipse.jface.viewers

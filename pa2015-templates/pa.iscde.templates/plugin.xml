@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="pa.iscde.templates.coding.TemplateReturns" name="DefaultCode" schema="schema/pa.iscde.templates.coding.TemplateReturns.exsd"/>
+   <extension
+         id="templateViewer"
+         name="Templates"
+         point="pt.iscte.pidesco.view">
+      <view
+            class="pa.iscde.templates.TemplateViewer"
+            icon="template.png">
+      </view>
+   </extension>
+
+</plugin>

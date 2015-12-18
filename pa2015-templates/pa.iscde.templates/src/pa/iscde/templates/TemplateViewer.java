@@ -147,7 +147,7 @@ public class TemplateViewer implements PidescoView {
 		});
 	}
 	@Override
-	public void createContents(Composite viewArea, Map<String, Image> imageMap) throws Exception {
+	public void createContents(Composite viewArea, Map<String, Image> imageMap) {
 		//Get pidesco services
 		_jeServices = Activator.getActivator().getJavaEditorservice(); 
 		_pbservices = Activator.getActivator().getProjectBrowserServices();	

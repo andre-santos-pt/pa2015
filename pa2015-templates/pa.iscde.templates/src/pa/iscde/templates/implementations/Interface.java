@@ -107,7 +107,7 @@ public class Interface implements Iimplement{
 			String strLine;
 			boolean add=true;
 			while ((strLine = br.readLine()) != null)   {
-				  if (strLine.trim().contains(s.declaration.trim())) {
+				  if (strLine.trim().contains(s.getSignature().trim())) {
 					  add = false;
 					  break;
 				  }

@@ -31,8 +31,8 @@ public class ClassDeclaration {
 			String strLine;
 			boolean isBody = false;
 			while ((strLine = br.readLine()) != null)   {
-				  if (strLine.contains("package")) packageID = strLine.replace("package ", "");
-				  if (strLine.contains("include")) includes.add(strLine);
+				  if (strLine.contains("package")) packageID = strLine.replace("package ", "").replace(";", "");
+				  if (strLine.contains("import")) includes.add(strLine);
 				  if (strLine.contains("class") || strLine.contains("interface")) {
 					  classD = strLine; 
 				  }

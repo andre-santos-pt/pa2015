@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import pa.iscde.templates.anotator.Anotation;
 import pa.iscde.templates.anotator.Ianotate;
 import pa.iscde.templates.anotator.TemplateAnnotator;
 import pa.iscde.templates.coding.DefaultReturns;
@@ -212,13 +213,17 @@ public class TemplateViewer implements PidescoView {
 
 		Collection<MethodDeclaration> missingMethods = toImplement.implement(_jeServices.getOpenedFile());
 		int lineToWrite = 2;
-		
+		int addedIncludes = 0;
 		for (String inc : annotator.getIncludes())
 		{
-			if (addinclude(declararion, inc, lineToWrite)) lineToWrite++;
+			if (addinclude(declararion, inc, lineToWrite)) 
+				{
+				lineToWrite++;
+				addedIncludes++;
+				}
 		}
 		
-		lineToWrite = lineToWrite+ declararion.lines - 1;
+		lineToWrite = addedIncludes+ declararion.lines - 1;
 		
 		for (MethodDeclaration md : missingMethods)
 		{
@@ -288,6 +293,14 @@ public class TemplateViewer implements PidescoView {
 				  AbstractClass it = new AbstractClass(s);
 				  addSubElements("extends", i, s.getName().replace(".java", ""), getSourceItems(), it);
 				  _abstractClasses.add(it);
+				}
+				else if (declaration.isAnotator())
+				{
+					//Just for test the Author anotation
+					annotator = new TemplateAnnotator();
+					Anotation a = new Anotation(s);
+					a.addKeyValue("name", "Filipe e Ricardo");
+					annotator.addAnotation(a);
 				}
 			}
 			else if (s.isPackage())

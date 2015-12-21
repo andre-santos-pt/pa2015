@@ -35,8 +35,8 @@ public class TemplateAnnotator implements Ianotate {
 		Collection<String> tmp = new ArrayList<>();
 		for (Anotation a : annotations)
 		{
-			if (!tmp.contains("import "+a.getRequiredPackage()))
-				tmp.add("import "+a.getRequiredPackage());
+			if (!tmp.contains("import "+a.getRequiredPackage()+"."+a.getSourceName()+";"))
+				tmp.add("import "+a.getRequiredPackage()+"."+a.getSourceName()+";");
 		}
 		return tmp;
 	}

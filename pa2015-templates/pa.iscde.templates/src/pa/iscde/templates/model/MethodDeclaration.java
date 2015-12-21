@@ -8,7 +8,7 @@ public class MethodDeclaration {
 	
 	public MethodDeclaration (String txt)
 	{
-		declaration = txt;
+		declaration = txt.replace("\t", "");
 	}
 	
 	public String AccessModifier()

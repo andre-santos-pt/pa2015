@@ -30,6 +30,11 @@ public class Anotation {
 		keyValues = new ArrayList<>();
 	}
 	
+	public String getSourceName()
+	{
+		return anotatorClass.getName().replace(".java", "");
+	}
+	
 	public void setAnotatorClass (SourceElement anotator)
 	{
 		this.anotatorClass = anotator;
@@ -53,9 +58,10 @@ public class Anotation {
 			int i = 0;
 			for (anotationKeyValue a :keyValues)
 			{
-				if (i == keyValues.size()-1) tmp.add("\t"+a.key+" = "+a.value+",");
-				else tmp.add("\t"+a.key+" = "+a.value+")");
+				if (i == keyValues.size()-1 && keyValues.size() != 1) tmp.add("\t"+a.key+" = \""+a.value+"\",");
+				else tmp.add("\t"+a.key+" = \""+a.value+"\"");
 			}
+			tmp.add(")");
 		}
 		return tmp;
 	}
